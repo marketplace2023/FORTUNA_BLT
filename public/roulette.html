@@ -34,7 +34,12 @@
 
     <div class="table-layout">
       <section class="stage" aria-label="Rueda de ruleta">
-        <div class="wheel"><canvas id="wheel" width="600" height="600" aria-hidden="true"></canvas></div>
+        <div class="wheel">
+          <canvas id="wheel" width="600" height="600" aria-hidden="true"></canvas>
+          <div id="resultFlash" class="result-flash" aria-hidden="true" hidden>
+            <strong></strong><span></span>
+          </div>
+        </div>
         <div class="game-heading">
           <div class="heading-detail"><strong id="maxWin"></strong><span id="rtp"></span></div>
         </div>

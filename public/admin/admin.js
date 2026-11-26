@@ -352,7 +352,7 @@ async function games() {
             el('span', {}, 'Versión'), el('span', { class: 'mono', title: g.configHash }, short(g.configHash, 12)),
           ),
           g.par && !g.par.matches ? el('div', { class: 'note' }, 'La hoja PAR es de otra versión. Ejecuta npm run sim.') : null,
-          el('div', { class: 'row' }, el('label', { class: 'mute' }, 'Mín. ', sel(g, 'minBet')), el('label', { class: 'mute' }, 'Máx. ', sel(g, 'maxBet')),
+          el('div', { class: 'row' }, el('label', { class: 'mute' }, 'Mín. ', sel(g, 'minBet')), g.engine === 'roulette' ? null : el('label', { class: 'mute' }, 'Máx. ', sel(g, 'maxBet')),
             el('a', { class: 'btn sm', href: `#par/${g.id}` }, 'Hoja PAR'), el('a', { class: 'btn sm', href: `/play/${g.id}`, target: '_blank', rel: 'noopener' }, 'Abrir ↗')),
         ));
     })),

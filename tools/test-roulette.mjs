@@ -80,17 +80,19 @@ test('la API registra y reproduce un giro, incluso después de reiniciar', async
     await start();
     const config = await request(`/api/games/${gameId}`);
     assert.equal(config.maxWin, 500);
+    assert.equal(config.maxBet, null);
     assert.deepEqual(config.roulette.boost, { count: 3, values: [50, 100, 250, 500] });
     const keys = new Set(Object.keys(config.roulette.bets));
     assert.ok(config.roulette.calls.every((c) => Object.keys(c.stakes).every((id) => keys.has(id))));
     assert.match(await (await fetch(`${base}/play/${gameId}`)).text(), /roulette\.js/);
     const player = await request('/api/auth/register', { username: 'roulette_test', password: 'roulette-player-test' });
-    const requestBody = { gameId, requestId: 'test-roulette-round-1', bets: [{ id: 'straight:0', amount: 1 }, { id: 'red', amount: 2 }] };
+    const requestBody = { gameId, requestId: 'test-roulette-round-1', bets: [{ id: 'straight:0', amount: 1 }, { id: 'red', amount: 102 }] };
     await request('/api/spin', requestBody, 402);
     await request('/admin/api/login', { username: 'admin', password: 'roulette-test-password' });
     await request(`/admin/api/players/${player.id}/credit`, { amount: 2000, note: 'Saldo de prueba' });
     await request('/api/spin', { ...requestBody, bets: [{ id: 'invalid', amount: 1 }] }, 400);
-    await request('/api/spin', { ...requestBody, bets: [{ id: 'red', amount: 101 }] }, 400);
+    await request('/api/spin', { ...requestBody, bets: [{ id: 'red', amount: 2001 }] }, 402);
+    await request('/api/spin', { ...requestBody, bets: [{ id: 'red', amount: 0.19 }] }, 400);
     await request('/api/spin', { ...requestBody, bets: [{ id: 'red', amount: 0.00001 }] }, 400);
     await request('/api/spin', { ...requestBody, bets: [{ id: 'red', amount: 1 }, { id: 'red', amount: 1 }] }, 400);
     const [round, retry] = await Promise.all([
@@ -98,7 +100,7 @@ test('la API registra y reproduce un giro, incluso después de reiniciar', async
       request('/api/spin', { ...requestBody, bets: [...requestBody.bets].reverse() }),
     ]);
     assert.deepEqual(retry, round);
-    assert.equal(round.bet, 3);
+    assert.equal(round.bet, 103);
     assert.equal(round.balance, 2000 - round.bet + round.win);
     await request('/api/spin', { ...requestBody, bets: [{ id: 'red', amount: 1 }] }, 409);
     const verified = await request(`/api/rounds/${round.roundId}/verify`);
@@ -107,6 +109,7 @@ test('la API registra y reproduce un giro, incluso después de reiniciar', async
     const history = await request(`/api/history?game=${gameId}`);
     assert.equal(history.length, 1);
     assert.equal(history[0].number, round.result.number);
+    await request('/api/spin', { gameId: 'koi-dorado', bet: 101 }, 400);
     const slot = await request('/api/spin', { gameId: 'koi-dorado', bet: 1 });
     assert.equal(slot.result.engine, 'lines');
     assert.equal((await request(`/api/rounds/${slot.roundId}/verify`)).ok, true);
