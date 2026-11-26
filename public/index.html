@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0a1a">
+  <title>VLT Royale</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/lobby.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="/"><span class="brand-mark">♛</span><span class="brand-name" data-site>VLT Royale</span></a>
+    <div class="top-right" id="account"></div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Sala VLT · Juegos originales</p>
+        <h1>Gira, cae, multiplica.</h1>
+        <p class="lead">Diez máquinas pensadas para el móvil, con cascadas, respins y giros gratis. Cada resultado sale del servidor con su semilla y queda en un libro mayor encadenado por hash: puedes verificar cualquier jugada.</p>
+        <div class="hero-cta">
+          <a class="btn btn-gold" href="#juegos">Ver juegos</a>
+          <button class="btn btn-ghost" id="heroDemo" type="button">Probar en demo</button>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="orb o1">🐉</div><div class="orb o2">🎏</div><div class="orb o3">🐼</div><div class="orb o4">🌞</div><div class="orb o5">💎</div>
+      </div>
+    </section>
+
+    <section id="juegos" class="games-section">
+      <div class="section-head">
+        <h2>Juegos</h2>
+        <div class="chips" id="chips" role="tablist">
+          <button class="chip on" data-f="all" type="button">Todos</button>
+          <button class="chip" data-f="lines" type="button">3×3 Respin</button>
+          <button class="chip" data-f="ways" type="button">Ways + Cascadas</button>
+          <button class="chip" data-f="anywhere" type="button">Paga en cualquier lugar</button>
+        </div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section class="trust">
+      <div class="trust-item"><span class="ti">🎲</span><h3>RNG en el servidor</h3><p>HMAC-DRBG con semilla de 256 bits por ronda. El navegador solo dibuja el resultado.</p></div>
+      <div class="trust-item"><span class="ti">📐</span><h3>RTP fijo y publicado</h3><p>Cada juego tiene una hoja PAR simulada. El resultado no depende de tu historial ni de la caja del día.</p></div>
+      <div class="trust-item"><span class="ti">🔗</span><h3>Libro mayor encadenado</h3><p>Cada ronda guarda semilla, versión de la matemática y hash del resultado, encadenada a la anterior.</p></div>
+      <div class="trust-item"><span class="ti">✅</span><h3>Verifica tus jugadas</h3><p>Desde el historial del juego, el servidor reproduce la ronda con su semilla y compara el resultado.</p></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p><strong>+18</strong> · Juega con responsabilidad. Los juegos de azar pueden crear adicción.</p>
+    <p class="muted">Entorno de demostración. Los créditos demo no tienen valor monetario.</p>
+  </footer>
+
+  <dialog id="authDlg" class="dlg">
+    <form method="dialog" class="dlg-close"><button aria-label="Cerrar">✕</button></form>
+    <div class="tabs"><button class="tab on" data-tab="login" type="button">Entrar</button><button class="tab" data-tab="register" type="button">Crear cuenta</button></div>
+    <form id="authForm" class="auth-form">
+      <label>Usuario<input name="username" autocomplete="username" required minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]+"></label>
+      <label>Contraseña<input name="password" type="password" autocomplete="current-password" required minlength="8"></label>
+      <p class="form-err" id="authErr"></p>
+      <button class="btn btn-gold wide" type="submit" id="authSubmit">Entrar</button>
+    </form>
+    <div class="or"><span>o</span></div>
+    <button class="btn btn-ghost wide" id="demoBtn" type="button">Jugar en demo (2.000 créditos)</button>
+  </dialog>
+
+  <script type="module" src="/js/lobby.js"></script>
+</body>
+</html>

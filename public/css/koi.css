@@ -1,0 +1,125 @@
+/* Koi has its own scene, cabinet, symbols and controls. Shared sheets stay usable. */
+.koi-game { --display: Georgia, 'Times New Roman', serif; --ui: 'Segoe UI', system-ui, sans-serif; --accent: #f3d38c; --ink: #fff4d7; background: #061c1c; }
+.koi-game .stage { background: linear-gradient(#031919a6, #031919d9), url('/assets/koi/scene.png') center 45% / cover; }
+.koi-game .stage::before { opacity: .16; background: radial-gradient(ellipse at 50% 20%, #d5ac5a55, transparent 65%); }
+.koi-game .machine { width: min(100%, 510px); height: 100dvh; max-height: 1000px; border-radius: 0; background: #092c29; box-shadow: 0 0 100px #020f0f; isolation: isolate; }
+.koi-game .machine::before { content: ''; position: absolute; z-index: -1; inset: 0; background: linear-gradient(180deg, transparent 20%, #092c2966 34%, #05201fea 73%, #041a19 100%), url('/assets/koi/scene.png') center top / 100% auto no-repeat; }
+.koi-game .m-top { height: 48px; flex: 0 0 48px; padding: 8px 15px 0; background: linear-gradient(#031b1bd9, transparent); }
+.koi-game .studio-mark { font: 700 15px var(--ui); letter-spacing: .16em; color: #f3d38c; }
+.studio-mark span { margin-left: 6px; font-size: 9px; letter-spacing: .23em; color: #e7e1c7a8; }
+.koi-game .icon-btn { width: 36px; height: 36px; border: 1px solid #d9b96833; border-radius: 50%; background: #061b1a55; color: #f4d899; font: 30px Georgia, serif; }
+.koi-game .icon-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.koi-hero { position: relative; flex: 1 1 210px; min-height: 135px; max-height: 295px; }
+.koi-brand { position: absolute; left: 0; right: 0; bottom: 4px; text-align: center; filter: drop-shadow(0 3px 7px #001917); }
+.koi-eyebrow { font-size: 8px; letter-spacing: .3em; color: #f5e8bf; font-weight: 600; }
+.koi-brand h1 { margin: 2px 0; color: #ffdf91; font: bold clamp(32px, 9vw, 48px)/1.08 Georgia, serif; letter-spacing: -.045em; text-shadow: 0 2px #68411c, 0 4px 15px #001d18; }
+.koi-subtitle { font: italic 12px Georgia, serif; color: #f1ead6d9; }
+.koi-seal { position: absolute; right: 20px; top: 24%; width: 68px; height: 68px; border: 1px solid #e8c077bb; border-radius: 50%; display: flex; align-items: center; flex-direction: column; justify-content: center; background: radial-gradient(#164b38f2, #052b24e6); box-shadow: 0 0 0 3px #0f312a, 0 0 0 4px #ba915d66, 0 4px 12px #031a1b; color: #ffdf91; transform: rotate(8deg); }
+.koi-seal span { font-size: 7px; letter-spacing: .15em; }
+.koi-seal strong { font: bold 29px/1.1 Georgia, serif; }
+.koi-seal small { font-size: 5px; letter-spacing: .08em; }
+.koi-game .m-banner { min-height: 40px; flex: 0 0 40px; padding: 0 12px; background: linear-gradient(90deg, transparent, #001e1dd9 20% 80%, transparent); }
+.koi-status { display: grid; position: relative; text-align: center; gap: 3px; }
+.koi-status strong { font: 600 11px var(--ui); color: #f5dc9a; letter-spacing: .06em; }
+.koi-status > span:last-child { font: 9px var(--ui); color: #c1d7c7; }
+.status-light { position: absolute; left: -15px; top: 4px; width: 4px; height: 4px; border-radius: 50%; background: #d6e8ab; box-shadow: 0 0 8px #deed95; }
+.koi-game .board-wrap { flex: 0 1 440px; min-height: 150px; padding: 8px 16px; }
+.koi-game .board { border-radius: 9px; background: linear-gradient(90deg, #fff0c7, #f7dfad 32%, #fff2d0 33%, #f2d39a 66%, #ffedc2 67%, #efcf94); box-shadow: 0 0 0 2px #7d4b25, 0 0 0 5px #e7c17a, 0 0 0 7px #463820, 0 0 0 9px #ae8950, 0 12px 24px #001312cc, inset 0 5px 20px #85532355; }
+.koi-game .board::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 6; border-radius: inherit; box-shadow: inset 0 8px 13px #4a240e33, inset 0 -6px 10px #4a240e22; background: linear-gradient(90deg, transparent 32.9%, #b9894933 33%, transparent 33.4%, transparent 66.3%, #b9894933 66.6%, transparent 67%); }
+.koi-game .cell { padding: 2px; }
+.koi-game .koi-tile { background: transparent; border-radius: 7px; box-shadow: none; }
+.koi-symbol { display: block; width: 100%; height: 100%; background-image: url('/assets/koi/symbols.png'); background-size: 300% 300%; background-repeat: no-repeat; filter: drop-shadow(0 3px 2px #79451533); }
+.koi-game .t-wild { background: radial-gradient(ellipse, #fce5a9bb, transparent 70%); }
+.koi-game .tile .lab { bottom: 5%; background: linear-gradient(#a56b26, #69401e); color: #ffe6a7; border: 1px solid #dfbb6c; font: bold calc(var(--cell) * .095) Georgia, serif; letter-spacing: .15em; padding: 1px 6px; border-radius: 3px; }
+.koi-game .t-blank { background: radial-gradient(ellipse, #0a4b4238, transparent); }
+.koi-game .cell.locked .tile { box-shadow: inset 0 0 0 2px #f8ce71, 0 0 15px #e4b85866; background: #ffedac77; }
+.koi-game .cell.locked::after { content: '◆'; position: absolute; top: 5%; right: 7%; font-size: 9px; color: #98702b; }
+.koi-game .cell.hit .tile { animation: koi-hit .65s ease-in-out infinite alternate; }
+@keyframes koi-hit { to { transform: scale(1.06); background: #fff5bbaa; filter: brightness(1.12); box-shadow: inset 0 0 0 2px #c69b42; } }
+.koi-reel-window { position: absolute; top: 0; height: 100%; overflow: hidden; z-index: 4; }
+.koi-reel-belt { filter: blur(1.6px); }
+.koi-reel-symbol { padding: 2px; }
+.koi-game .paylines polyline { stroke: #fffbd1; stroke-width: 3; filter: drop-shadow(0 0 4px #ae7213); }
+.koi-game .m-win { flex: 0 0 44px; min-height: 44px; gap: 12px; padding: 6px 0 0; }
+.koi-game .m-win .lbl { font-size: 8px; letter-spacing: .16em; color: #b3c6b9; opacity: 1; }
+.koi-game .m-win .val { font: 600 29px Georgia, serif; color: #ffe0a2; text-shadow: 0 2px 8px #f2ca5522; }
+.koi-game .m-info { flex: 0 0 47px; padding: 0 30px; gap: 20px; }
+.koi-game .info-box { padding: 5px; background: transparent; border-top: 1px solid #cfac5d33; border-radius: 0; }
+.koi-game .info-box .lbl { font-size: 8px; font-weight: 500; letter-spacing: .12em; opacity: 1; color: #b0c6b9; }
+.koi-game .info-box .val { font: 600 18px var(--ui); font-variant-numeric: tabular-nums; color: #fff3d5; }
+.koi-game .m-controls { flex: 0 0 95px; padding: 4px 25px; grid-template-columns: 1fr 1fr 94px 1fr 1fr; gap: 9px; background: linear-gradient(transparent, #001b1a66); }
+.koi-game .ctl { height: 45px; border-radius: 50%; width: 45px; justify-self: center; background: transparent; box-shadow: none; color: #dac38d; }
+.koi-game .ctl span { font-size: 22px; font-weight: 400; }
+.koi-game .ctl small { font-size: 7px; letter-spacing: .1em; font-weight: 500; }
+.koi-game .bet-adjust { width: 34px; height: 34px; border: 1px solid #b08c4c66; background: #10372f; }
+.koi-game .spin { width: 80px; height: 80px; justify-self: center; background: radial-gradient(circle at 40% 30%, #fff1bb, #edc56c 46%, #aa702d 92%); border: 1px solid #ffecb0; box-shadow: 0 0 0 4px #0e332c, 0 0 0 5px #967640, 0 0 0 8px #092720, 0 0 0 9px #9e7e4680, inset 0 -4px 4px #8c5c2c66, 0 8px 22px #00100d; }
+.koi-game .spin-icon { width: 43px; height: 43px; fill: none; stroke: #385532; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.koi-game .spin.busy .spin-icon { animation: rot 1.4s linear infinite; }
+.koi-game .spin-auto { font: bold 27px var(--ui); }
+.koi-game .m-sub { flex: 0 0 auto; justify-content: center; gap: 12px; padding: 4px 14px max(10px, env(safe-area-inset-bottom)); }
+.koi-game .pill { padding: 4px 8px; border-radius: 4px; font-size: 9px; font-weight: 500; color: #b4cbbd; border: 1px solid #b4cbbd33; background: transparent; }
+.koi-game .pill.on { color: #ffdf91; border-color: #dfbd75; }
+.koi-game .rtp-note { font-size: 8px; font-weight: 400; opacity: 1; color: #a3bbae; }
+.age-note { color: #9eb8a9; font-size: 8px; border: 1px solid #b4cbbd33; border-radius: 50%; padding: 3px; }
+.koi-game button { transition: filter .18s, transform .18s, background .18s; }
+.koi-game button:hover:not(:disabled) { filter: brightness(1.17); }
+.koi-game button:active:not(:disabled) { transform: translateY(1px); }
+.koi-game :focus-visible { outline: 2px solid #ffdf91; outline-offset: 4px; }
+.koi-game button:disabled { opacity: .35; cursor: default; }
+.koi-game .sheet { color: #f5edda; background: #0b302c; border: 1px solid #a98b4d66; --cell: 56px; }
+.koi-game .sheet-head h2 { font-size: 25px; }
+.koi-game .stab { font-weight: 500; border-radius: 5px; }
+.koi-game .stab.on { background: #d6b775; color: #17372c; }
+.koi-game .pt-row { grid-template-columns: 56px 1fr auto; gap: 8px; }
+.koi-game .pt-name, .koi-game .pt-pays { font-size: 12px; font-weight: 500; }
+.koi-game .overlay { background: radial-gradient(ellipse at 50% 40%, #154e3add, #021c1bf5); backdrop-filter: blur(6px); }
+.koi-game .ov-card, .koi-game .gate { gap: 17px; }
+.koi-game .ov-title { font: bold clamp(32px, 7vw, 46px)/1.08 Georgia, serif; text-shadow: 0 3px 12px #021b1b; max-width: 10ch; }
+.koi-game .ov-glyph { width: 150px; height: 150px; font-size: initial; }
+.koi-game .ov-num { font: bold clamp(40px, 10vw, 64px) Georgia, serif; color: #ffe3a0; }
+.koi-game .ov-sub, .koi-game .gate p { font-size: 13px; font-weight: 400; line-height: 1.6; color: #d9e6ce; max-width: 29ch; }
+.koi-game .ov-btn { border-radius: 6px; font: 600 14px var(--ui); letter-spacing: .03em; background: linear-gradient(#f7dfa2, #c89b4d); box-shadow: 0 3px 0 #7c5d2d; }
+.koi-game .ghost-btn { border-radius: 6px; font-size: 14px; font-weight: 500; }
+.koi-game .ov-kicker { font: 500 11px var(--ui); letter-spacing: .15em; }
+.koi-game .particle { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fce1a0; background: radial-gradient(circle at 30% 30%, #fff1b3, #d3a449 60%, #946a29); }
+.koi-game .float-win { color: #fff5bf; font: bold 42px Georgia, serif; text-shadow: 0 2px 4px #5c330b, 0 0 20px #815a16; }
+.koi-game .toasts { width: min(90vw, 400px); }
+.koi-game .toast { background: #153f35; color: #f4dfb1; border: 1px solid #aa925c66; border-radius: 6px; font: 500 13px var(--ui); }
+.koi-game .toast-error { background: #572f28; }
+.koi-feature .board { box-shadow: 0 0 0 2px #7d4b25, 0 0 0 5px #ffe0a1, 0 0 0 9px #aa883f, 0 0 35px #e3ba5755; }
+.koi-feature .status-light { animation: koi-glow 1s ease-in-out infinite alternate; }
+.koi-full .koi-seal { animation: koi-glow .6s ease-in-out infinite alternate; }
+@keyframes koi-glow { to { filter: brightness(1.5); box-shadow: 0 0 26px #eac56c88; } }
+@media (min-width: 800px) and (min-height: 600px) {
+  .koi-game .machine { width: min(1120px, 94vw); height: min(860px, 94dvh); display: grid; grid-template-columns: 44% 56%; grid-template-rows: 48px 42px minmax(190px, 1fr) 44px 50px 100px 35px; border: 1px solid #c49b5155; border-radius: 14px; }
+  .koi-game .machine::before { background: linear-gradient(90deg, transparent 25%, #072b27bb 48%, #082a27f5 65%), url('/assets/koi/scene.png') left 24% / 60% auto no-repeat, #082a27; }
+  .koi-game .m-top { grid-column: 1 / -1; }
+  .koi-hero { grid-column: 1; grid-row: 2 / -1; min-height: 0; max-height: none; }
+  .koi-brand { bottom: 15%; padding: 0 18px; }
+  .koi-brand h1 { font-size: clamp(42px, 5vw, 64px); }
+  .koi-eyebrow { font-size: 9px; }
+  .koi-subtitle { font-size: 15px; }
+  .koi-seal { right: 9%; top: 14%; width: 82px; height: 82px; }
+  .koi-seal strong { font-size: 34px; }
+  .koi-game .m-banner, .koi-game .board-wrap, .koi-game .m-win, .koi-game .m-info, .koi-game .m-controls, .koi-game .m-sub { grid-column: 2; }
+  .koi-game .board-wrap { margin: 0 24px; min-height: 0; }
+  .koi-game .m-info { margin: 0 40px; }
+  .koi-game .m-controls { padding-left: 45px; padding-right: 45px; }
+}
+@media (max-height: 740px) and (max-width: 799px) {
+  .koi-hero { min-height: 95px; flex-basis: 125px; }
+  .koi-game .m-top { height: 40px; flex-basis: 40px; }
+  .koi-game .m-banner { min-height: 34px; flex-basis: 34px; }
+  .koi-game .m-controls { flex-basis: 81px; grid-template-columns: 1fr 1fr 76px 1fr 1fr; }
+  .koi-game .spin { width: 64px; height: 64px; }
+  .koi-game .spin-icon { width: 35px; height: 35px; }
+  .koi-brand h1 { font-size: 32px; }
+  .koi-seal { width: 50px; height: 50px; top: 0; right: 16px; }
+  .koi-seal strong { font-size: 22px; }
+  .koi-seal small { font-size: 4px; }
+  .koi-game .m-win { flex-basis: 35px; min-height: 35px; }
+  .koi-game .m-win .val { font-size: 24px; }
+  .koi-game .m-info { flex-basis: 42px; }
+}
+@media (max-height: 540px) { .koi-game { overflow-y: auto; } .koi-game .stage { position: relative; min-height: 580px; } .koi-game .machine { height: 580px; flex-shrink: 0; } }
+@media (prefers-reduced-motion: reduce) { .koi-game *, .koi-game *::after { animation: none !important; transition: none !important; } .koi-reel-belt { filter: none; } }

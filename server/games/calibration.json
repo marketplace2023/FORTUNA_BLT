@@ -1,0 +1,52 @@
+{
+  "dragon-jade": {
+    "scale": 0.5658223507962733,
+    "target": 96.5,
+    "calibratedAt": "2026-11-26T14:30:10.877Z"
+  },
+  "faraon-dorado": {
+    "scale": 1.6233879619478855,
+    "target": 96.5,
+    "calibratedAt": "2026-11-26T14:34:17.430Z"
+  },
+  "fiesta-dulce": {
+    "scale": 2.215237243726741,
+    "target": 96.2,
+    "calibratedAt": "2026-11-26T14:35:03.029Z"
+  },
+  "frutas-neon": {
+    "scale": 0.7227332750773429,
+    "target": 96,
+    "calibratedAt": "2026-11-26T14:29:48.722Z"
+  },
+  "koi-dorado": {
+    "scale": 0.5564230128485933,
+    "target": 96.5,
+    "calibratedAt": "2026-11-26T14:27:32.851Z"
+  },
+  "noche-catrinas": {
+    "scale": 0.998014150840728,
+    "target": 96.2,
+    "calibratedAt": "2026-11-26T14:30:35.475Z"
+  },
+  "oceano-perlas": {
+    "scale": 0.4373946412842237,
+    "target": 96.4,
+    "calibratedAt": "2026-11-26T14:29:40.726Z"
+  },
+  "panda-zen": {
+    "scale": 0.6061769744797423,
+    "target": 96.3,
+    "calibratedAt": "2026-11-26T14:28:17.865Z"
+  },
+  "samurai-viento": {
+    "scale": 1.3630959137770244,
+    "target": 96.3,
+    "calibratedAt": "2026-11-26T14:31:03.439Z"
+  },
+  "templo-jaguar": {
+    "scale": 0.2847976168909541,
+    "target": 96.7,
+    "calibratedAt": "2026-11-26T14:30:18.833Z"
+  }
+}

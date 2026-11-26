@@ -1,0 +1,104 @@
+{
+  "id": "frutas-neon",
+  "name": "Frutas Neón",
+  "engine": "lines",
+  "configHash": "027db9d280a947ed0a6e86a56d4d0f7e683bbf7172432003c1bee660cd63e4c4",
+  "scale": 0.7227332750773429,
+  "targetRtp": 96,
+  "spins": 5000000,
+  "rtp": 95.67030116033276,
+  "ci95": 1.568538322019919,
+  "sd": 17.89468527219385,
+  "volatility": "Muy alta",
+  "hitRate": 24.17658,
+  "featureEvery": 29,
+  "featureRtp": 71.50029352002453,
+  "baseRtp": 24.170007640308235,
+  "avgFeatureWin": 20.417921298524355,
+  "avgCascades": 0,
+  "maxWinX": 540,
+  "maxWinCap": 1500,
+  "cappedRounds": 0,
+  "distribution": [
+    {
+      "label": "0x",
+      "count": 3791171,
+      "pct": 75.82342
+    },
+    {
+      "label": "0–1x",
+      "count": 890964,
+      "pct": 17.819280000000003
+    },
+    {
+      "label": "1–2x",
+      "count": 151209,
+      "pct": 3.02418
+    },
+    {
+      "label": "2–5x",
+      "count": 98729,
+      "pct": 1.97458
+    },
+    {
+      "label": "5–10x",
+      "count": 44806,
+      "pct": 0.89612
+    },
+    {
+      "label": "10–20x",
+      "count": 11567,
+      "pct": 0.23134000000000002
+    },
+    {
+      "label": "20–50x",
+      "count": 5189,
+      "pct": 0.10378
+    },
+    {
+      "label": "50–100x",
+      "count": 257,
+      "pct": 0.0051400000000000005
+    },
+    {
+      "label": "100–500x",
+      "count": 802,
+      "pct": 0.01604
+    },
+    {
+      "label": "500–1000x",
+      "count": 5306,
+      "pct": 0.10611999999999999
+    },
+    {
+      "label": "1000x+",
+      "count": 0,
+      "pct": 0
+    }
+  ],
+  "paytable": {
+    "W": [
+      108
+    ],
+    "H1": [
+      43.4
+    ],
+    "H2": [
+      18.1
+    ],
+    "H3": [
+      8.67
+    ],
+    "L1": [
+      4.34
+    ],
+    "L2": [
+      2.89
+    ],
+    "L3": [
+      1.45
+    ]
+  },
+  "generatedAt": "2026-11-26T14:29:48.722Z",
+  "elapsedMs": 49087
+}

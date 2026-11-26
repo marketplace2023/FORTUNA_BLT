@@ -1,0 +1,15 @@
+{
+  "name": "vlt-suite",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sala de juegos VLT auditables: lobby, cliente de juego, servidor de resultados y panel de administración.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "sim": "node tools/simulate.js",
+    "calibrate": "node tools/simulate.js --calibrate",
+    "verify": "node tools/verify-ledger.js"
+  }
+}

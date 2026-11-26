@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#11151c">
+  <meta name="description" content="Frutas Neón. Cinco líneas, frutas cromadas y rodillos que se transforman en comodines.">
+  <title>Frutas Neón · VLT Originals</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/assets/neon/arcade.png" as="image">
+  <link rel="preload" href="/assets/neon/symbols-v2.png" as="image">
+  <link rel="stylesheet" href="/css/game.css">
+  <link rel="stylesheet" href="/css/neon.css">
+</head>
+<body class="neon-game">
+  <main class="stage" id="stage">
+    <div class="machine" id="machine">
+      <header class="m-top">
+        <a class="icon-btn" href="/" aria-label="Volver al lobby">‹</a>
+        <div class="neon-brand"><span>VLT ORIGINALS / ARCADE SERIES</span><h1 id="title">Frutas Neón</h1></div>
+        <button class="icon-btn" id="soundBtn" type="button" aria-label="Activar o desactivar sonido" aria-pressed="true"></button>
+      </header>
+      <div class="m-banner" id="banner" role="status" aria-live="polite"></div>
+      <section class="board-wrap" id="boardWrap" aria-label="Tres rodillos con tres símbolos cada uno">
+        <span class="line-index" aria-hidden="true">5<br>LÍNEAS</span>
+        <div class="board" id="board"><svg class="paylines" id="paylines" aria-hidden="true"></svg></div>
+        <div class="float-win" id="floatWin" aria-hidden="true"></div>
+        <div class="fs-counter" id="fsCounter" hidden></div>
+      </section>
+      <aside class="neon-feature-card" aria-label="Función de rodillos salvajes">
+        <span class="feature-eyebrow">LA DESCARGA</span>
+        <div class="neon-emblem" aria-hidden="true"></div>
+        <h2>TODO EL<br>RODILLO.<br><em>TODO WILD.</em></h2>
+        <p>Una descarga puede convertir hasta tres rodillos enteros en comodines.</p>
+        <div class="neon-meter" aria-label="Rodillos transformados"><span data-reel="0">01</span><span data-reel="1">02</span><span data-reel="2">03</span></div>
+        <div class="feature-note"><strong>×5</strong><span>Un mismo símbolo en toda<br>la pantalla multiplica el premio.</span></div>
+      </aside>
+      <div class="m-win" id="winbar" aria-live="polite"><span class="lbl">Último premio</span><span class="val" id="winVal">0,00</span></div>
+      <div class="m-info">
+        <div class="info-box"><span class="lbl">Créditos <span id="creditMode"></span></span><span class="val" id="balVal">—</span></div>
+        <div class="info-box"><span class="lbl">Apuesta total</span><span class="val" id="betVal">—</span></div>
+      </div>
+      <div class="m-controls">
+        <button class="ctl" id="menuBtn" type="button" aria-label="Pagos, reglas e historial"><span>☰</span><small>Menú</small></button>
+        <button class="ctl bet-adjust" id="betDown" type="button" aria-label="Bajar apuesta"><span>−</span></button>
+        <button class="spin" id="spinBtn" type="button" aria-label="Girar"><svg class="spin-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M37 16a15 15 0 1 0 1 15M37 7v11H26"/></svg><span class="spin-auto" id="spinAuto"></span></button>
+        <button class="ctl bet-adjust" id="betUp" type="button" aria-label="Subir apuesta"><span>+</span></button>
+        <button class="ctl" id="autoBtn" type="button" aria-label="Juego automático"><span>▷</span><small>Auto</small></button>
+      </div>
+      <footer class="m-sub"><button class="pill" id="turboBtn" type="button" aria-pressed="false">Turbo</button><span class="rtp-note" id="rtpNote"></span><span class="age-note">18+</span></footer>
+      <div class="overlay" id="overlay" hidden></div>
+    </div>
+  </main>
+  <dialog class="sheet" id="menuDlg" aria-label="Información del juego">
+    <div class="sheet-head"><h2>Frutas Neón</h2><form method="dialog"><button class="x" aria-label="Cerrar">×</button></form></div>
+    <div class="sheet-tabs"><button class="stab on" data-tab="pay" type="button">Pagos</button><button class="stab" data-tab="rules" type="button">Reglas</button><button class="stab" data-tab="hist" type="button">Historial</button></div>
+    <div class="sheet-body" id="menuBody"></div>
+  </dialog>
+  <dialog class="sheet small" id="autoDlg" aria-label="Juego automático">
+    <div class="sheet-head"><h2>Giros automáticos</h2><form method="dialog"><button class="x" aria-label="Cerrar">×</button></form></div>
+    <div class="auto-grid" id="autoGrid"></div>
+    <label class="check"><input type="checkbox" id="autoStopFeature" checked> Parar al activar rodillos salvajes</label>
+  </dialog>
+  <script type="module" src="/js/game.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#122033">
+  <meta name="description" content="Faraón Dorado. Premios en cualquier posición, caídas y soles multiplicadores en un templo del antiguo Egipto.">
+  <title>Faraón Dorado · VLT Originals</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/assets/pharaoh/temple.png" as="image">
+  <link rel="preload" href="/assets/pharaoh/symbols.png" as="image">
+  <link rel="stylesheet" href="/css/game.css">
+  <link rel="stylesheet" href="/css/pharaoh.css">
+</head>
+<body class="pharaoh-game">
+  <main class="stage" id="stage">
+    <div class="machine" id="machine">
+      <header class="m-top">
+        <a class="icon-btn" href="/" aria-label="Volver al lobby">‹</a>
+        <span class="pharaoh-studio">VLT <span>ORIGINALS</span></span>
+        <button class="icon-btn" id="soundBtn" type="button" aria-label="Activar o desactivar sonido" aria-pressed="true"></button>
+      </header>
+      <section class="pharaoh-hero" aria-label="El templo del sol en el antiguo Egipto">
+        <div class="pharaoh-brand"><span>EL TESORO DEL SOL</span><h1 id="title">Faraón Dorado</h1><p>El poder está en los soles.</p></div>
+        <div class="pharaoh-emblem" aria-hidden="true"></div>
+        <div class="pharaoh-legend"><strong>8+ iguales</strong><p>Pagan en cualquier posición.<br>Los símbolos caen. Los soles se suman.</p><hr><span class="legend-urn" aria-hidden="true"></span><p><strong>4 urnas</strong><br>activan 10 giros gratis.</p></div>
+      </section>
+      <div class="m-banner" id="banner" role="status" aria-live="polite"></div>
+      <section class="board-wrap" id="boardWrap" aria-label="Tablero de seis columnas y cinco filas">
+        <div class="board" id="board"><svg class="paylines" id="paylines" aria-hidden="true"></svg></div>
+        <div class="float-win" id="floatWin" aria-hidden="true"></div>
+        <div class="fs-counter" id="fsCounter" hidden></div>
+      </section>
+      <div class="m-win" id="winbar" aria-live="polite"><span class="lbl">Premio de la ronda</span><span class="val" id="winVal">0,00</span></div>
+      <div class="m-info">
+        <div class="info-box"><span class="lbl">Créditos <span id="creditMode"></span></span><span class="val" id="balVal">—</span></div>
+        <div class="info-box"><span class="lbl">Apuesta total</span><span class="val" id="betVal">—</span></div>
+      </div>
+      <div class="m-controls">
+        <button class="ctl" id="menuBtn" type="button" aria-label="Pagos, reglas e historial"><span>☰</span><small>Menú</small></button>
+        <button class="ctl bet-adjust" id="betDown" type="button" aria-label="Bajar apuesta"><span>−</span></button>
+        <button class="spin" id="spinBtn" type="button" aria-label="Girar"><svg class="spin-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M37 16a15 15 0 1 0 1 15M37 7v11H26"/></svg><span class="spin-auto" id="spinAuto"></span></button>
+        <button class="ctl bet-adjust" id="betUp" type="button" aria-label="Subir apuesta"><span>+</span></button>
+        <button class="ctl" id="autoBtn" type="button" aria-label="Juego automático"><span>▷</span><small>Auto</small></button>
+      </div>
+      <footer class="m-sub"><button class="pill" id="turboBtn" type="button" aria-pressed="false">Turbo</button><span class="rtp-note" id="rtpNote"></span><span class="age-note">18+</span></footer>
+      <div class="overlay" id="overlay" hidden></div>
+    </div>
+  </main>
+  <dialog class="sheet" id="menuDlg" aria-label="Información del juego">
+    <div class="sheet-head"><h2>El templo del sol</h2><form method="dialog"><button class="x" aria-label="Cerrar">×</button></form></div>
+    <div class="sheet-tabs"><button class="stab on" data-tab="pay" type="button">Pagos</button><button class="stab" data-tab="rules" type="button">Reglas</button><button class="stab" data-tab="hist" type="button">Historial</button></div>
+    <div class="sheet-body" id="menuBody"></div>
+  </dialog>
+  <dialog class="sheet small" id="autoDlg" aria-label="Juego automático">
+    <div class="sheet-head"><h2>Giros automáticos</h2><form method="dialog"><button class="x" aria-label="Cerrar">×</button></form></div>
+    <div class="auto-grid" id="autoGrid"></div>
+    <label class="check"><input type="checkbox" id="autoStopFeature" checked> Parar al activar giros gratis</label>
+  </dialog>
+  <script type="module" src="/js/game.js"></script>
+</body>
+</html>
