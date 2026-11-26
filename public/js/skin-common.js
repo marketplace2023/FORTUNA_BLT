@@ -1,7 +1,7 @@
 import { el } from './api.js';
 
 /** Cosmetic reel motion shared by skins. Final symbols always come from the server. */
-export function createReelPresentation({ tile, prefix, symbols, speed = 460, padding = 32, maxCell = 145 }) {
+export function createReelPresentation({ tile, prefix, symbols, speed = 460, padding = 32, maxCell = 145, spinPause = 380 }) {
   let reels = [];
   function dispose() { reels.forEach(r => { r.animation.cancel(); r.window.remove(); }); reels = []; }
   function stopReel(c) { if (reels[c]) { reels[c].animation.cancel(); reels[c].window.remove(); } }
@@ -16,7 +16,7 @@ export function createReelPresentation({ tile, prefix, symbols, speed = 460, pad
       const animation = belt.animate([{ transform: `translateY(${-8 * state.cell}px)` }, { transform: 'translateY(0)' }], { duration: timing(speed), iterations: Infinity, easing: 'linear' });
       reels.push({ window, animation });
     }
-    await new Promise(resolve => setTimeout(resolve, timing(380)));
+    await new Promise(resolve => setTimeout(resolve, timing(spinPause)));
   }
   function resize(board, state, place) {
     dispose();

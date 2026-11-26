@@ -101,6 +101,21 @@ main { padding: 0 clamp(16px, 4vw, 40px); max-width: 1280px; margin: 0 auto; }
 .ocean-card { background: #19455b; border-color: #b2d9d566; }
 .ocean-card .mini, .ocean-card .big { display: none; }
 .ocean-card .cover .title { font-family: 'Palatino Linotype', Georgia, serif; font-weight: 500; color: #effff2; bottom: 17px; text-shadow: 0 2px 8px #103548; }
+.samurai-card { background: #344132; border-color: #afb99a66; }
+.samurai-card .mini, .samurai-card .big { display: none; }
+.samurai-card .cover .title { font-family: 'Yu Mincho', Georgia, serif; font-weight: 600; color: #fff0cf; bottom: 17px; text-shadow: 0 2px 8px #22331f; }
+.jaguar-card { background: #29482f; border-color: #b8b57a77; }
+.jaguar-card .mini, .jaguar-card .big { display: none; }
+.jaguar-card .cover .title { font-family: Georgia, serif; font-weight: 500; color: #fbe1a7; bottom: 17px; text-shadow: 0 2px 8px #172f1c; }
+.sweet-card { background: #f4e4d4; border-color: #b46b7c99; }
+.sweet-card .mini, .sweet-card .big { display: none; }
+.sweet-card .cover .title { font-family: 'Arial Rounded MT Bold', 'Trebuchet MS', sans-serif; font-weight: 900; color: #84384f; bottom: 17px; text-shadow: 0 1px 8px #fff9ee; }
+.sweet-card .card-tag, .sweet-card .badge { color: #654742; }
+.sweet-card .badge { background: #a6466410; }
+.sweet-card .badge.rtp { color: #3c6946; background: #5e8c6518; }
+.panda-card { background: #213c2f; border-color: #a7b28a88; }
+.panda-card .mini, .panda-card .big { display: none; }
+.panda-card .cover .title { font-family: Georgia, serif; color: #eee5c3; bottom: 17px; text-shadow: 0 2px 8px #12251e; }
 
 .trust { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 56px 0 24px; }
 .trust-item { padding: 20px; border-radius: 18px; background: rgba(255, 255, 255, .035); border: 1px solid var(--line); }

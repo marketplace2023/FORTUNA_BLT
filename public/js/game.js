@@ -3,7 +3,7 @@ import { Sound } from './sound.js';
 
 const $ = (s) => document.querySelector(s);
 const gameId = location.pathname.split('/').filter(Boolean).pop();
-const skinModules = { 'koi-dorado': './koi.js', 'frutas-neon': './neon.js', 'dragon-jade': './dragon.js', 'faraon-dorado': './pharaoh.js', 'noche-catrinas': './catrina.js', 'oceano-perlas': './ocean.js' };
+const skinModules = { 'koi-dorado': './koi.js', 'frutas-neon': './neon.js', 'dragon-jade': './dragon.js', 'faraon-dorado': './pharaoh.js', 'noche-catrinas': './catrina.js', 'oceano-perlas': './ocean.js', 'samurai-viento': './samurai.js', 'templo-jaguar': './jaguar.js', 'fiesta-dulce': './sweet.js', 'panda-zen': './panda.js' };
 const Skin = skinModules[gameId] ? await import(skinModules[gameId]) : null;
 Sound.koi = gameId === 'koi-dorado';
 Sound.neon = gameId === 'frutas-neon';
@@ -11,6 +11,10 @@ Sound.dragon = gameId === 'dragon-jade';
 Sound.pharaoh = gameId === 'faraon-dorado';
 Sound.catrina = gameId === 'noche-catrinas';
 Sound.ocean = gameId === 'oceano-perlas';
+Sound.samurai = gameId === 'samurai-viento';
+Sound.jaguar = gameId === 'templo-jaguar';
+Sound.sweet = gameId === 'fiesta-dulce';
+Sound.panda = gameId === 'panda-zen';
 
 const S = {
   info: null, me: null, betIdx: 0, busy: false, turbo: false, auto: 0, stopOnFeature: true,
@@ -171,6 +175,7 @@ async function dropIn(grid, { locked } = {}) {
 
 async function skinDropIn(grid, locked) {
   clearBoard();
+  const reveal = { delay: 120, stagger: 170, duration: 330, travel: 1.4, ...Skin.reveal };
   const lockSet = new Set((locked || []).map(([c, r]) => `${c},${r}`));
   S.cells = grid.map((col, c) => col.map((sym, r) => {
     const n = makeCell(sym, c, r);
@@ -179,12 +184,12 @@ async function skinDropIn(grid, locked) {
     return n;
   }));
   await Promise.all(S.cells.map(async (col, c) => {
-    await wait(T(120 + c * 170));
+    await wait(T(reveal.delay + c * reveal.stagger));
     Skin.stopReel(c);
     Sound.stop();
     await Promise.all(col.map(n => {
       n.style.visibility = '';
-      return anim(n, [{ transform: `translateY(${-S.cell * 1.4}px)`, filter: 'blur(3px)' }, { transform: 'translateY(5px)', filter: 'blur(0)', offset: .8 }, { transform: 'translateY(0)', filter: 'blur(0)' }], { duration: T(330), easing: 'cubic-bezier(.18,.7,.3,1)' });
+      return anim(n, [{ transform: `translateY(${-S.cell * reveal.travel}px)`, filter: 'blur(3px)' }, { transform: 'translateY(5px)', filter: 'blur(0)', offset: .8 }, { transform: 'translateY(0)', filter: 'blur(0)' }], { duration: T(reveal.duration), easing: 'cubic-bezier(.18,.7,.3,1)' });
     }));
   }));
   Skin.dispose();
@@ -203,7 +208,7 @@ async function showWins(frame, amount) {
   if (S.info.engine === 'lines') drawLines(frame.wins);
   if (amount > 0) floatWin(amount);
   Sound.win(frame.wins.length);
-  await wait(T(950));
+  await wait(T(Skin?.winPause ?? 950));
   clearMarks();
 }
 
@@ -391,6 +396,7 @@ async function playLines(r, b) {
     await intro('Respin de la suerte', tgt.g, `Solo caen ${tgt.n} y comodines. Lo que cae, se queda.`, 1400);
     setBanner('respin');
     await dropIn(r.frames[0].grid, { locked: r.frames[0].locked });
+    if (Skin?.respinFrame) await Skin.respinFrame(r.frames[0], S, f, { wait, T });
     for (let i = 1; i < r.frames.length; i++) {
       const fr = r.frames[i];
       setBanner('respin', { n: i });
@@ -407,6 +413,7 @@ async function playLines(r, b) {
       await Promise.all(jobs);
       const lock = new Set(fr.locked.map(([c, rr]) => `${c},${rr}`));
       S.cells.forEach((col, c) => col.forEach((n, rr) => n.classList.toggle('locked', lock.has(`${c},${rr}`))));
+      if (Skin?.respinFrame) await Skin.respinFrame(fr, S, f, { wait, T });
       if (fr.changed.some(([c, rr]) => fr.grid[c][rr] !== 'X')) Sound.lock();
     }
     S.grid = r.frames.at(-1).grid;

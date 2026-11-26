@@ -19,6 +19,10 @@ const dragon = gameId === 'dragon-jade';
 const pharaoh = gameId === 'faraon-dorado';
 const catrina = gameId === 'noche-catrinas';
 const ocean = gameId === 'oceano-perlas';
+const samurai = gameId === 'samurai-viento';
+const jaguar = gameId === 'templo-jaguar';
+const sweet = gameId === 'fiesta-dulce';
+const panda = gameId === 'panda-zen';
 const clients = {
   'koi-dorado': { prefix: 'koi', cells: 9 },
   'frutas-neon': { prefix: 'neon', cells: 9 },
@@ -26,11 +30,15 @@ const clients = {
   'faraon-dorado': { prefix: 'pharaoh', cells: 30 },
   'noche-catrinas': { prefix: 'catrina', cells: 24, active: '.catrina-candle.on strong' },
   'oceano-perlas': { prefix: 'ocean', cells: 25, active: '.ocean-pearl.on strong' },
+  'samurai-viento': { prefix: 'samurai', cells: 15, active: '.samurai-stroke.on strong' },
+  'templo-jaguar': { prefix: 'jaguar', cells: 30, active: '.jaguar-stair.on strong' },
+  'fiesta-dulce': { prefix: 'sweet', cells: 30 },
+  'panda-zen': { prefix: 'panda', cells: 9 },
 };
 const client = clients[gameId];
 assert(client);
-const ways = dragon || catrina || ocean;
-const cascading = ways || pharaoh;
+const ways = dragon || catrina || ocean || samurai || jaguar;
+const cascading = ways || pharaoh || sweet;
 const cellCount = client.cells;
 const reelSelector = `.${client.prefix}-reel-window`;
 const activeRungSelector = client.active;
@@ -51,13 +59,15 @@ try {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
   const page = await context.newPage();
   page.on('pageerror', e => errors.push(e.message));
-  page.on('response', r => { if (r.status() >= 400 && /\/assets\/(koi|neon|dragon|pharaoh|catrina|ocean)\//.test(r.url())) errors.push(`Asset ${r.status()}: ${r.url()}`); });
+  page.on('response', r => { if (r.status() >= 400 && /\/assets\/(koi|neon|dragon|pharaoh|catrina|ocean|samurai|jaguar|sweet|panda)\//.test(r.url())) errors.push(`Asset ${r.status()}: ${r.url()}`); });
   await page.goto(`${origin}/play/${gameId}`);
   await page.getByRole('button', { name: 'Jugar demo', exact: true }).click();
   await page.waitForSelector('#overlay[hidden]', { state: 'attached' });
   await page.waitForFunction(() => document.querySelector('#balVal').textContent === '2000,00' || /2\D000,00/.test(document.querySelector('#balVal').textContent));
   await page.locator('.toast').waitFor({ state: 'detached' });
   if (ocean) assert.deepEqual(await page.locator('.ocean-pearl strong').allTextContents(), ['×1', '×1', '×2', '×3', '×5', '×8']);
+  if (samurai) assert.deepEqual(await page.locator('.samurai-stroke strong').allTextContents(), ['×1', '×2', '×3']);
+  if (jaguar) assert.deepEqual(await page.locator('.jaguar-stair strong').allTextContents(), Array.from({ length: 10 }, (_, i) => `×${i + 1}`));
   await page.screenshot({ path: path.join(output, 'desktop.png') });
 
   for (const [width, height] of [[390, 844], [320, 568], [768, 1024], [844, 390], [1366, 768]]) {
@@ -73,17 +83,35 @@ try {
     assert(geometry.board.bottom <= geometry.wrap.bottom + 1, `Board height clipped at ${width}`);
     assert(geometry.spin.bottom <= geometry.machine.bottom, `Spin clipped at ${width}`);
     if (height >= 540) assert(geometry.machine.bottom <= height + 1, `Machine clipped at ${width}`);
+    if (jaguar) {
+      const stairs = await page.locator('.jaguar-stair').evaluateAll(nodes => nodes.map(n => ({ height: n.getBoundingClientRect().height, bottom: n.getBoundingClientRect().bottom })));
+      for (let i = 1; i < stairs.length; i++) assert(stairs[i].height > stairs[i - 1].height, 'Stair heights must visibly ascend');
+      const bannerBottom = await page.locator('#banner').evaluate(n => n.getBoundingClientRect().bottom);
+      assert(stairs.every(s => s.bottom <= bannerBottom + 1), 'Stairs must stay within the banner');
+    }
     await page.screenshot({ path: path.join(output, `${width}x${height}.png`), fullPage: true });
   }
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole('button', { name: 'Pagos, reglas e historial' }).click();
-  assert.equal(await page.locator('.pt-row').count(), pharaoh ? 11 : ways ? 10 : 7);
+  assert.equal(await page.locator('.pt-row').count(), (pharaoh || sweet) ? 11 : ways ? 10 : 7);
   await page.getByRole('button', { name: 'Reglas', exact: true }).click();
-  assert.match(await page.locator('#menuBody').textContent(), pharaoh ? /cualquier posición/ : ways ? /formas de ganar/ : /mismo símbolo/);
+  assert.match(await page.locator('#menuBody').textContent(), (pharaoh || sweet) ? /cualquier posición/ : ways ? /formas de ganar/ : /mismo símbolo/);
   await page.getByRole('button', { name: 'Cerrar', exact: true }).first().click();
-  await page.getByRole('button', { name: 'Turbo', exact: true }).click();
+  if (!samurai) await page.getByRole('button', { name: 'Turbo', exact: true }).click();
+  if (samurai) {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.evaluate(() => {
+      window.__revealDurations = [];
+      window.__originalAnimate = Element.prototype.animate;
+      Element.prototype.animate = function(frames, options) {
+        if (this.classList.contains('cell')) window.__revealDurations.push(options.duration);
+        return window.__originalAnimate.call(this, frames, options);
+      };
+      window.__overlayDismiss = setInterval(() => { const o = document.querySelector('#overlay'); if (!o.hidden && !o.querySelector('.gate')) o.click(); }, 35);
+    });
+  }
 
-  if (cascading) await page.emulateMedia({ reducedMotion: 'reduce' });
+  if (cascading && !samurai) await page.emulateMedia({ reducedMotion: 'reduce' });
 
   // A real round must debit exactly one bet, reconcile the balance and replay.
   const me = await (await context.request.get(`${origin}/api/me`)).json();
@@ -96,13 +124,42 @@ try {
   assert.equal(history.length, 1, 'Double click must create one round');
   const verification = await (await context.request.get(`${origin}/api/rounds/${round.roundId}/verify`)).json();
   assert(verification.ok);
+  if (samurai) {
+    const durations = await page.evaluate(() => {
+      Element.prototype.animate = window.__originalAnimate;
+      clearInterval(window.__overlayDismiss);
+      return window.__revealDurations.slice(0, 15);
+    });
+    assert.equal(durations.length, 15);
+    assert(durations.every(ms => ms === 230), 'Normal-mode reel reveal must use the shorter 230 ms animation');
+    await page.getByRole('button', { name: 'Turbo', exact: true }).click();
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+  }
 
   // Find real engine outputs, then intercept only in this browser for deterministic UI coverage.
   const game = loadGames().get(gameId);
   const cases = {};
-  const required = ocean ? ['loss', 'cascade', 'chain', 'power8', 'free', 'retrigger'] : catrina ? ['loss', 'cascade', 'chain', 'power16', 'free', 'retrigger'] : pharaoh ? ['loss', 'suns-no-win', 'win', 'chain', 'multiplier', 'free', 'carry', 'retrigger'] : dragon ? ['loss', 'cascade', 'chain', 'free', 'retrigger'] : neon ? ['loss', 'win', 'wild1', 'wild2', 'wild3'] : ['loss', 'win', 'respin', 'full'];
+  const required = sweet ? ['loss', 'win', 'chain', 'free', 'carry', 'retrigger', 'bonbons-no-win'] : jaguar ? ['loss', 'cascade', 'chain', 'power6', 'free', 'retrigger'] : samurai ? ['loss', 'cascade', 'chain', 'free', 'retrigger', 'power12'] : ocean ? ['loss', 'cascade', 'chain', 'power8', 'free', 'retrigger'] : catrina ? ['loss', 'cascade', 'chain', 'power16', 'free', 'retrigger'] : pharaoh ? ['loss', 'suns-no-win', 'win', 'chain', 'multiplier', 'free', 'carry', 'retrigger'] : dragon ? ['loss', 'cascade', 'chain', 'free', 'retrigger'] : neon ? ['loss', 'win', 'wild1', 'wild2', 'wild3'] : ['loss', 'win', 'respin', 'full'];
   for (let i = 0; i < 20000 && !required.every(k => cases[k]); i++) {
-    const r = game.play(new Drbg(sha256(`${ocean ? 'ocean' : catrina ? 'catrina' : pharaoh ? 'pharaoh' : 'koi'}-ui-${i}`)));
+    const r = game.play(new Drbg(sha256(`${panda ? 'panda' : sweet ? 'sweet' : jaguar ? 'jaguar' : samurai ? 'samurai' : ocean ? 'ocean' : catrina ? 'catrina' : pharaoh ? 'pharaoh' : 'koi'}-ui-${i}`)));
+    if (jaguar) {
+      if (r.free) {
+        if (r.free.spins.some(s => s.retrigger)) cases.retrigger ??= r;
+        else cases.free ??= r;
+      } else {
+        cases[r.base.cascades >= 3 ? 'chain' : r.win > 0 ? 'cascade' : 'loss'] ??= r;
+        if (r.base.frames.some(f => f.mult === 6 && f.wins.length)) cases.power6 ??= r;
+      }
+      continue;
+    }
+    if (samurai) {
+      if (r.free) {
+        cases.free ??= r;
+        if (r.free.spins.some(s => s.retrigger)) cases.retrigger ??= r;
+        if (r.free.spins.some(s => s.frames.some(f => f.mult === 12 && f.wins.length))) cases.power12 ??= r;
+      } else cases[r.base.cascades >= 3 ? 'chain' : r.win > 0 ? 'cascade' : 'loss'] ??= r;
+      continue;
+    }
     if (catrina || ocean) {
       if (r.free) {
         cases.free ??= r;
@@ -112,6 +169,17 @@ try {
         const power = ocean ? 8 : 16;
         if (r.base.frames.some(f => f.mult === power && f.wins.length)) cases[`power${power}`] ??= r;
       }
+      continue;
+    }
+    if (sweet) {
+      assert.equal(r.base.mSum, 0, 'Base must never contain multiplier bonbons');
+      assert(r.base.frames.every(f => f.grid.flat().every(s => !/^M\d+$/.test(s))));
+      if (r.free) {
+        cases.free ??= r;
+        if (r.free.spins.some(s => s.retrigger)) cases.retrigger ??= r;
+        if (r.free.spins.some(s => s.raw > 0 && s.mSum === 0 && s.applied > 1)) cases.carry ??= r;
+        if (r.free.spins.some(s => s.raw === 0 && s.mSum > 0)) cases['bonbons-no-win'] ??= r;
+      } else cases[r.base.cascades >= 3 ? 'chain' : r.win > 0 ? 'win' : 'loss'] ??= r;
       continue;
     }
     if (pharaoh) {
@@ -130,22 +198,33 @@ try {
   }
   assert(required.every(k => cases[k]));
   let fixture;
-  if (pharaoh) await page.evaluate(() => {
+  if (panda) await page.evaluate(() => {
+    window.__pandaStates = [];
+    new MutationObserver(() => {
+      const b = document.querySelector('.panda-status');
+      const nodes = [...document.querySelectorAll('.cell')].sort((a,b) => parseFloat(a.style.left)-parseFloat(b.style.left) || parseFloat(a.style.top)-parseFloat(b.style.top));
+      if (b && b.dataset.mode === 'respin') window.__pandaStates.push({step:Number(b.dataset.step), locked:Number(b.dataset.locked), dots:document.querySelectorAll('.panda-lock-map i.on').length, cells:nodes.filter(n=>n.classList.contains('locked')).length, grid:JSON.stringify(nodes.map(n=>n._sym))});
+    }).observe(document.querySelector('#banner'), { childList:true, subtree:true });
+  });
+  if (pharaoh || sweet) await page.evaluate(selector => {
     window.__solarBanks = [];
     window.__solarFrames = [];
     new MutationObserver(() => {
-      const bank = document.querySelector('.pharaoh-bank');
-      if (bank) window.__solarBanks.push({ mode: bank.dataset.mode, phase: bank.dataset.phase, value: Number(bank.dataset.mult) });
+      const bank = document.querySelector(selector);
       const cells = [...document.querySelectorAll('.cell')].sort((a, b) => parseFloat(a.style.left) - parseFloat(b.style.left) || parseFloat(a.style.top) - parseFloat(b.style.top));
-      if (cells.length === 30) window.__solarFrames.push(cells.map(n => n._sym));
+      const grid = cells.map(n => n._sym);
+      if (bank) window.__solarBanks.push({ mode: bank.dataset.mode, phase: bank.dataset.phase, value: Number(bank.dataset.mult), grid: JSON.stringify(grid) });
+      if (cells.length === 30) window.__solarFrames.push(grid);
     }).observe(document.querySelector('#banner'), { childList: true, subtree: true });
     window.__overlayDismiss = setInterval(() => { const o = document.querySelector('#overlay'); if (!o.hidden && !o.querySelector('.gate')) o.click(); }, 35);
-  });
+  }, sweet ? '.sweet-bank' : '.pharaoh-bank');
   if (ways) await page.evaluate(({ selector, count }) => {
     window.__ladderSteps = [];
     window.__freeSteps = [];
     window.__dragonFrames = [];
     window.__oceanSteps = [];
+    window.__samuraiSteps = [];
+    window.__jaguarSteps = [];
     new MutationObserver(() => {
       const active = document.querySelector(selector);
       if (active) (document.querySelector('.machine.free') ? window.__freeSteps : window.__ladderSteps).push(active.textContent);
@@ -155,6 +234,10 @@ try {
         window.__dragonFrames.push(grid);
         const tide = document.querySelector('.ocean-tide');
         if (tide && active) window.__oceanSteps.push({ step: Number(tide.dataset.step), index: Number(active.parentElement.dataset.step), mult: Number(tide.dataset.mult), mode: tide.dataset.mode, grid });
+        const wind = document.querySelector('.samurai-wind');
+        if (wind && active) window.__samuraiSteps.push({ step: Number(wind.dataset.step), mult: Number(wind.dataset.mult), mode: wind.dataset.mode, grid });
+        const ascent = document.querySelector('.jaguar-ascent');
+        if (ascent && active) window.__jaguarSteps.push({ step: Number(ascent.dataset.step), index: Number(active.parentElement.dataset.step), mult: Number(ascent.dataset.mult), mode: ascent.dataset.mode, grid });
       }
     }).observe(document.querySelector('#banner'), { childList: true, subtree: true });
     window.__overlayDismiss = setInterval(() => { const o = document.querySelector('#overlay'); if (!o.hidden && !o.querySelector('.gate')) o.click(); }, 35);
@@ -162,8 +245,9 @@ try {
   await page.route('**/api/spin', route => route.fulfill({ json: { ...round, result: fixture, win: fixture.win * round.bet, balance: 2000 } }));
   for (const kind of required) {
     fixture = cases[kind];
-    if (ways) await page.evaluate(() => { window.__dragonFrames = []; window.__oceanSteps = []; });
-    if (pharaoh) await page.evaluate(() => { window.__solarBanks = []; window.__solarFrames = []; });
+    if (panda) await page.evaluate(() => { window.__pandaStates = []; });
+    if (ways) await page.evaluate(() => { window.__dragonFrames = []; window.__oceanSteps = []; window.__samuraiSteps = []; window.__jaguarSteps = []; });
+    if (pharaoh || sweet) await page.evaluate(selector => { window.__solarBanks = []; window.__solarFrames = []; });
     await page.getByRole('button', { name: 'Girar', exact: true }).click();
     await page.waitForSelector('#spinBtn[aria-busy="true"]');
     if (!neon && !cascading && (kind === 'respin' || kind === 'full')) {
@@ -174,6 +258,8 @@ try {
       await page.waitForSelector('.machine.free');
       if (catrina) assert((await page.locator('.catrina-candle strong').allTextContents()).includes('×64'), 'Bonus must expose the ×64 top rung');
       if (ocean) assert.deepEqual(await page.locator('.ocean-pearl strong').allTextContents(), ['×2', '×3', '×5', '×8', '×13', '×21', '×34']);
+      if (samurai) assert.deepEqual(await page.locator('.samurai-stroke strong').allTextContents(), ['×3', '×6', '×9', '×12']);
+      if (jaguar) assert.deepEqual(await page.locator('.jaguar-stair strong').allTextContents(), Array.from({ length: 10 }, (_, i) => `×${(i + 1) * 2}`));
       await page.screenshot({ path: path.join(output, 'free-active.png') });
     }
     await page.waitForSelector('#spinBtn[aria-busy="false"]', { timeout: 90000 });
@@ -199,6 +285,27 @@ try {
         assert.equal(await page.locator('.pharaoh-bank').getAttribute('data-mult'), '0', 'Bonus bank must reset on exit');
       }
     }
+    if (sweet) {
+      assert.equal(await page.locator('.machine.free').count(), 0);
+      assert.equal(await page.locator('.sweet-flight').count(), 0);
+      assert.equal(await page.locator('.sweet-bank').getAttribute('data-mode'), 'base');
+      assert.equal(await page.locator('.sweet-bank').getAttribute('data-mult'), '0');
+      assert.equal(await page.locator('.sweet-total').textContent(), 'BONUS');
+      const observed = await page.evaluate(() => ({ banks: window.__solarBanks, frames: window.__solarFrames.map(f => JSON.stringify(f)) }));
+      assert(observed.banks.filter(b => b.mode === 'base').every(b => b.value === 0), 'Base accumulator must stay inactive');
+      if (kind === 'chain') for (const fr of fixture.base.frames) assert(observed.frames.includes(JSON.stringify(fr.grid.flat())));
+      if (fixture.free) {
+        const banks = observed.banks.filter(b => b.mode === 'free');
+        for (let j = 1; j < banks.length; j++) assert(banks[j].value >= banks[j - 1].value, 'Bonus accumulator must never decrease');
+        for (const sp of fixture.free.spins.filter(s => s.applied > 1)) assert(banks.some(b => b.phase === 'applied' && b.value === sp.applied && b.grid === JSON.stringify(sp.frames.at(-1).grid.flat())), 'Applied accumulator must match the server and its grid');
+        let previous = 0;
+        for (const sp of fixture.free.spins) {
+          assert.equal(sp.globalMult, previous + (sp.raw > 0 ? sp.mSum : 0));
+          if (!sp.raw && sp.mSum > 0) assert(banks.some(b => b.phase === 'settled' && b.value === previous && b.grid === JSON.stringify(sp.frames.at(-1).grid.flat())), 'Bonbons without a win must not increase the bonus accumulator');
+          previous = sp.globalMult;
+        }
+      }
+    }
     if (ways) {
       assert.equal(await page.locator('.machine.free').count(), 0, 'Must leave free-spin state');
       assert.equal(await page.locator(activeRungSelector).textContent(), '×1', 'Base ladder must reset');
@@ -212,6 +319,24 @@ try {
         assert(steps.some(s => s.step === 0 && s.index === 0 && s.mult === 1));
         assert(steps.some(s => s.step === 1 && s.index === 1 && s.mult === 1), 'First cascade must advance to the second ×1 pearl');
       }
+      if (samurai && kind === 'power12') {
+        const states = await page.evaluate(() => window.__samuraiSteps);
+        const winningFrames = fixture.free.spins.flatMap(s => s.frames).filter(f => f.mult === 12 && f.wins.length);
+        assert(winningFrames.length > 0);
+        for (const fr of winningFrames) assert(states.some(s => s.mode === 'free' && s.mult === 12 && s.step === fr.step && JSON.stringify(s.grid) === JSON.stringify(fr.grid.flat())), 'A winning ×12 frame must be presented with its actual multiplier');
+      }
+      if (jaguar) {
+        const states = await page.evaluate(() => window.__jaguarSteps);
+        const check = (fr, mode) => assert(states.some(s => s.mode === mode && s.step === fr.step && s.index === Math.min(fr.step, 9) && s.mult === fr.mult && JSON.stringify(s.grid) === JSON.stringify(fr.grid.flat())), 'Linear step, index, multiplier and grid must match the server frame');
+        if (kind === 'chain' || kind === 'power6') fixture.base.frames.forEach(fr => check(fr, 'base'));
+        if (fixture.free) fixture.free.spins.forEach(sp => sp.frames.forEach(fr => check(fr, 'free')));
+      }
+    }
+    if (panda && fixture.feature) {
+      const states = await page.evaluate(() => window.__pandaStates);
+      for (const fr of fixture.frames) assert(states.some(s=>s.step===fr.respin && s.locked===fr.locked.length && s.dots===fr.locked.length && s.cells===fr.locked.length && s.grid===JSON.stringify(fr.grid.flat())), 'Every respin grid, locked cell and map position count must match the server');
+      assert.equal(await page.locator('.panda-status').getAttribute('data-mode'),'base');
+      assert.equal(await page.locator('.cell.locked').count(),0);
     }
     if (neon) {
       assert.equal(await page.locator('.neon-wild-column').count(), fixture.feature?.reels.length || 0);
@@ -222,9 +347,9 @@ try {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   if (ways) {
     const observed = await page.evaluate(() => ({ base: window.__ladderSteps, free: window.__freeSteps }));
-    assert(observed.base.includes(ocean ? '×3' : '×4'), 'Cascade ladder must progress');
-    assert(observed.free.includes('×2'), 'Free-spin ladder starts at 2');
-    assert(observed.free.some(v => (ocean ? ['×3', '×5', '×8', '×13', '×21', '×34'] : ['×4', '×6', '×8', '×10']).includes(v)), 'Free multiplier must increase');
+    assert(observed.base.includes(ocean || samurai ? '×3' : '×4'), 'Cascade ladder must progress');
+    assert(observed.free.includes(samurai ? '×3' : '×2'), 'Free-spin ladder must start at its configured multiplier');
+    assert(observed.free.some(v => (samurai ? ['×6', '×9', '×12'] : ocean ? ['×3', '×5', '×8', '×13', '×21', '×34'] : ['×4', '×6', '×8', '×10']).includes(v)), 'Free multiplier must increase');
     if (catrina) assert(observed.base.includes('×16'), 'Base chain must reach an actual ×16 winning frame');
     if (ocean) assert(observed.base.includes('×8'), 'Base chain must reach an actual ×8 winning frame');
   }
@@ -255,13 +380,13 @@ try {
   assert.equal(await page.locator('#balVal').textContent(), new Intl.NumberFormat('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(reconciled.balance));
   await page.unroute('**/api/spin');
 
-  // Another game must still use its original page and renderer.
-  await page.goto(`${origin}/play/panda-zen`);
+  // Another illustrated client must remain functional.
+  await page.goto(`${origin}/play/${panda ? 'koi-dorado' : 'panda-zen'}`);
   await page.waitForFunction(() => document.querySelectorAll('.cell').length === 9);
-  assert.equal(await page.locator('.koi-game').count(), 0);
-  assert.equal(await page.locator('.tile .g').count(), 9);
+  assert.equal(await page.locator(panda ? '.koi-game' : '.panda-game').count(), 1);
+  assert.equal(await page.locator('.tile .g').count(), 0);
   assert.deepEqual(errors, []);
-  console.log(`PASS ${gameId}: responsive layouts, art loading, rules, live wallet, single debit, replay, ${required.join('/')}, exact final grid, autoplay stop, reduced motion, sound persistence, error recovery, lost-response wallet reconciliation and Panda regression.`);
+  console.log(`PASS ${gameId}: responsive layouts, art loading, rules, live wallet, single debit, replay, ${required.join('/')}, exact final grid, autoplay stop, reduced motion, sound persistence, error recovery, lost-response wallet reconciliation and alternate-client regression.`);
   console.log(`QA screenshots: ${output}`);
 } finally {
   await browser?.close();

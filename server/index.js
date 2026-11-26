@@ -502,6 +502,10 @@ function serveStatic(req, res, pathname) {
   else if (/^\/play\/faraon-dorado\/?$/.test(pathname)) file = 'pharaoh.html';
   else if (/^\/play\/noche-catrinas\/?$/.test(pathname)) file = 'catrina.html';
   else if (/^\/play\/oceano-perlas\/?$/.test(pathname)) file = 'ocean.html';
+  else if (/^\/play\/samurai-viento\/?$/.test(pathname)) file = 'samurai.html';
+  else if (/^\/play\/templo-jaguar\/?$/.test(pathname)) file = 'jaguar.html';
+  else if (/^\/play\/fiesta-dulce\/?$/.test(pathname)) file = 'sweet.html';
+  else if (/^\/play\/panda-zen\/?$/.test(pathname)) file = 'panda.html';
   else if (/^\/play\/[\w-]+\/?$/.test(pathname)) file = 'play.html';
   else if (pathname === '/admin' || pathname === '/admin/') file = 'admin/index.html';
   else file = decodeURIComponent(pathname).replace(/^\/+/, '');

@@ -5,12 +5,16 @@ let games = [];
 let filter = 'all';
 let mode = 'login';
 const illustratedCovers = {
+  'panda-zen': { className: 'panda-card', background: "linear-gradient(0deg, #1c382b, transparent 75%), url('/assets/panda/garden.png') left top / cover" },
   'koi-dorado': { className: 'koi-card', background: "linear-gradient(0deg, #052a27 0%, transparent 60%), url('/assets/koi/scene.png') center 15% / cover" },
   'frutas-neon': { className: 'neon-card', background: "linear-gradient(0deg, #0c1723, transparent 70%), url('/assets/neon/arcade.png') center / cover" },
   'dragon-jade': { className: 'dragon-card', background: "linear-gradient(0deg, #203d2e, transparent 75%), url('/assets/dragon/sanctuary.png') 85% top / cover" },
   'faraon-dorado': { className: 'pharaoh-card', background: "linear-gradient(0deg, #102238, transparent 75%), url('/assets/pharaoh/temple.png') left top / cover" },
   'noche-catrinas': { className: 'catrina-card', background: "linear-gradient(0deg, #341e32, transparent 75%), url('/assets/catrina/plaza.png') 10% top / cover" },
   'oceano-perlas': { className: 'ocean-card', background: "linear-gradient(0deg, #12394f, transparent 75%), url('/assets/ocean/kingdom.png') right top / cover" },
+  'samurai-viento': { className: 'samurai-card', background: "linear-gradient(0deg, #2b372a, transparent 75%), url('/assets/samurai/pass.png') 10% top / cover" },
+  'templo-jaguar': { className: 'jaguar-card', background: "linear-gradient(0deg, #1d3525, transparent 75%), url('/assets/jaguar/temple.png') 10% top / cover" },
+  'fiesta-dulce': { className: 'sweet-card', background: "linear-gradient(0deg, #f4e3d1, transparent 70%), url('/assets/sweet/patisserie.png') right top / cover" },
 };
 
 const $ = (s) => document.querySelector(s);
