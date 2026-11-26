@@ -55,7 +55,9 @@ function renderGrid() {
   for (const g of games.filter((x) => filter === 'all' || x.engine === filter)) {
     const t = g.theme;
     const [a, b, c, d] = g.cover;
-    const cover = illustratedCovers[g.id];
+    const cover = g.engine === 'roulette' && t.art
+      ? { className: 'roulette-card', background: `linear-gradient(0deg, ${t.bg1}, transparent 75%), url("${t.art}") center / cover` }
+      : illustratedCovers[g.id];
     const coverBackground = cover?.background || `radial-gradient(120% 90% at 50% 20%, ${t.bg2}, ${t.bg1})`;
     grid.append(
       el('a', { class: `card${cover ? ` ${cover.className}` : ''}`, href: `/play/${g.id}`, onclick: (e) => go(e, g) },
@@ -71,7 +73,7 @@ function renderGrid() {
         el('div', { class: 'card-body' },
           el('span', { class: 'card-tag' }, g.tag),
           el('div', { class: 'badges' },
-            el('span', { class: 'badge rtp' }, `RTP ${g.rtp.toFixed(2)}%`),
+            el('span', { class: 'badge rtp' }, `RTP ${g.rtp.toFixed(2)}${g.maxRtp > g.rtp + 1e-9 ? `–${g.maxRtp.toFixed(2)}` : ''}%`),
             g.volatility ? el('span', { class: 'badge' }, `Vol. ${g.volatility}`) : null,
             el('span', { class: 'badge' }, `Máx ${g.maxWin.toLocaleString('es')}x`),
           ),

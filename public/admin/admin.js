@@ -175,7 +175,7 @@ function roundsTable(list) {
     { onRow: (r) => roundDetail(r.roundId) },
   );
 }
-const featName = (f) => ({ free: 'giros gratis', respinLock: 'respin', wildReels: 'rodillos wild' }[f] || f);
+const featName = (f) => ({ free: 'giros gratis', respinLock: 'respin', wildReels: 'rodillos wild', rouletteBoost: 'número multiplicado' }[f] || f);
 
 // ───────────── Detalle de ronda (game recall) ─────────────
 async function roundDetail(id) {
@@ -216,6 +216,14 @@ function miniGrid(grid, game, wins) {
   return g;
 }
 function framesOf(res, game) {
+  if (res.engine === 'roulette') {
+    const color = { red: 'rojo', black: 'negro', green: 'verde' }[res.color];
+    return [el('div', { style: { width: '100%' } },
+      el('p', {}, el('strong', {}, `${res.number} · ${color}`),
+        res.boosts.length ? ` · Multiplicadores: ${res.boosts.map(({ number, mult }) => `${number} ×${mult}`).join(' / ')}` : ''),
+      table(['Posición', 'Apuesta', 'Pago'], res.bets.map((b) => ({ cells: [b.label, money(b.units / 10000), money(b.win / 10000)] }))),
+    )];
+  }
   const out = [];
   const add = (fr, cap) => out.push(el('div', {}, miniGrid(fr.grid, game, fr.wins), el('div', { class: 'frame-cap' }, cap)));
   const capOf = (fr, i) => `${i === 0 ? 'Giro' : `Cascada ${i}`}${fr.mult ? ` · x${fr.mult}` : ''}${fr.win ? ` · ${fr.win.toFixed(2)}x` : ''}`;
@@ -325,8 +333,8 @@ async function games() {
         el('div', { class: 'game-top', style: { background: `linear-gradient(135deg, ${g.theme.bg2}, ${g.theme.bg1})` } }, el('span', { class: 'gl' }, g.cover[0]), el('div', {}, el('h3', {}, g.name), el('small', {}, g.tag)), sw),
         el('div', { class: 'game-b' },
           el('div', { class: 'kv' },
-            el('span', {}, 'RTP objetivo'), el('span', {}, pct(g.targetRtp)),
-            el('span', {}, 'RTP medido (PAR)'), el('span', {}, g.par ? `${pct(g.par.rtp)} ± ${g.par.ci95.toFixed(2)}` : 'sin PAR'),
+            g.par?.exact ? null : [el('span', {}, 'RTP objetivo'), el('span', {}, pct(g.targetRtp))],
+            el('span', {}, g.par?.exact ? 'RTP exacto (PAR)' : 'RTP medido (PAR)'), el('span', {}, g.par?.exact ? (g.par.maxRtp > g.par.rtp + 1e-9 ? `${pct(g.par.rtp)}–${pct(g.par.maxRtp)}` : pct(g.par.rtp)) : g.par ? `${pct(g.par.rtp)} ± ${g.par.ci95.toFixed(2)}` : 'sin PAR'),
             el('span', {}, 'Frecuencia de premio'), el('span', {}, g.par ? pct(g.par.hitRate, 1) : '—'),
             el('span', {}, 'Función cada'), el('span', {}, g.par?.featureEvery ? `1 / ${g.par.featureEvery.toLocaleString('es')}` : '—'),
             el('span', {}, 'Volatilidad'), el('span', {}, g.par?.volatility || '—'),
@@ -344,14 +352,29 @@ async function games() {
 // ───────────── Hoja PAR ─────────────
 async function par(id) {
   if (!id) {
-    view.replaceChildren(el('h1', { class: 'vt' }, 'Matemática (PAR)'), card('Hojas PAR', 'Resultado de la simulación de cada juego. Regenerar: npm run sim', el('div', { class: 'card-b flush' }, table(
+    view.replaceChildren(el('h1', { class: 'vt' }, 'Matemática (PAR)'), card('Hojas PAR', 'Simulaciones de slots y cálculo exacto de ruletas', el('div', { class: 'card-b flush' }, table(
       ['Juego', 'Motor', { label: 'Giros simulados', num: true }, { label: 'RTP', num: true }, { label: 'IC 95%', num: true }, { label: 'Frec. premio', num: true }, { label: 'Función cada', num: true }, 'Volatilidad', 'Versión'],
-      GAMES.map((g) => ({ data: g, cells: [g.name, g.engine, g.par ? g.par.spins.toLocaleString('es') : '—', g.par ? pct(g.par.rtp, 3) : '—', g.par ? `±${g.par.ci95.toFixed(2)}` : '—', g.par ? pct(g.par.hitRate, 1) : '—', g.par?.featureEvery ? `1/${g.par.featureEvery}` : '—', g.par?.volatility || '—', g.par ? el('span', { class: `chip ${g.par.matches ? 'good' : 'bad'}` }, g.par.matches ? 'vigente' : 'desactualizada') : '—'] })),
+      GAMES.map((g) => ({ data: g, cells: [g.name, g.engine, g.par?.exact ? 'Exacta' : g.par?.spins.toLocaleString('es') ?? '—', g.par?.maxRtp > g.par?.rtp + 1e-9 ? `${pct(g.par.rtp, 3)}–${pct(g.par.maxRtp, 3)}` : pct(g.par?.rtp, 3), g.par?.ci95 == null ? '—' : `±${g.par.ci95.toFixed(2)}`, pct(g.par?.hitRate, 1), g.par?.featureEvery ? `1/${g.par.featureEvery}` : '—', g.par?.volatility || '—', g.par ? el('span', { class: `chip ${g.par.matches ? 'good' : 'bad'}` }, g.par.matches ? 'vigente' : 'desactualizada') : '—'] })),
       { onRow: (g) => { location.hash = `par/${g.id}`; } },
     ))));
     return;
   }
   const p = await api(`/admin/api/par/${id}`);
+  if (p.exact) {
+    view.replaceChildren(
+      el('h1', { class: 'vt' }, `Hoja PAR · ${p.name}`, el('a', { class: 'btn sm', href: '#par' }, '← Todas')),
+      card('RTP exacto por apuesta', 'Pagos brutos con devolución de la ficha incluida', el('div', { class: 'card-b flush' }, table(
+        ['Apuesta', 'Pago base', 'Frecuencia de premio', 'RTP'],
+        p.rows.map((row) => ({ cells: [row.label, `×${row.payout}`, pct(row.hitRate, 3), pct(row.rtp, 4)] })),
+      ))),
+      p.boost ? card('Multiplicadores del pleno', `${p.boost.count} números distintos por giro`, el('div', { class: 'card-b flush' }, table(
+        ['Pago bruto', 'Peso'],
+        Object.entries(p.boost.weights).map(([x, weight]) => ({ cells: [`×${x}`, weight] })),
+      ))) : null,
+      card('Identidad', null, el('div', { class: 'card-b kv' }, 'Hash de configuración', el('span', { class: 'mono' }, p.configHash))),
+    );
+    return;
+  }
   const maxPct = Math.max(...p.distribution.map((d) => d.pct));
   view.replaceChildren(
     el('h1', { class: 'vt' }, `Hoja PAR · ${p.name}`, el('a', { class: 'btn sm', href: '#par' }, '← Todas')),

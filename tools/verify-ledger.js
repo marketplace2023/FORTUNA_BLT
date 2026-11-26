@@ -11,7 +11,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { Ledger } from '../server/ledger.js';
-import { buildGame, ROOT } from '../server/games/index.js';
+import { buildGame, settleRound, ROOT } from '../server/games/index.js';
 import { Drbg } from '../server/rng.js';
 import { canonical, sha256, toCredits } from '../server/util.js';
 
@@ -38,9 +38,12 @@ for (const e of ledger.entries) {
   rounds++;
   const g = gameFor(e.cfg);
   if (!g || g.configHash !== e.cfg) { bad++; console.log(`✗ ${e.roundId}: versión de matemática ${e.cfg.slice(0, 12)} no archivada`); continue; }
-  const res = g.play(new Drbg(e.seed));
-  const win = Math.floor(res.win * e.bet + 1e-6);
-  if (sha256(canonical(res)) !== e.rh || win !== e.win) { bad++; console.log(`✗ ${e.roundId}: el resultado reproducido no coincide`); }
+  let matches = false;
+  try {
+    const { result, win } = settleRound(g, new Drbg(e.seed), e.bet, e.stakes);
+    matches = sha256(canonical(result)) === e.rh && win === e.win && result.number === e.number;
+  } catch { /* Un asiento inválido se informa junto con las discrepancias. */ }
+  if (!matches) { bad++; console.log(`✗ ${e.roundId}: el resultado reproducido no coincide`); }
   const b = (bal.get(e.playerId) || 0) - e.bet + e.win;
   bal.set(e.playerId, b);
   if (b !== e.bal) { balBad++; console.log(`✗ ${e.roundId}: saldo ${toCredits(b)} ≠ registrado ${toCredits(e.bal)}`); }

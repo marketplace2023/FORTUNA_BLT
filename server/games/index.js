@@ -7,6 +7,7 @@ import { canonical, sha256, sig3 } from '../util.js';
 import { playLines } from '../engine/lines.js';
 import { playWays } from '../engine/ways.js';
 import { playAnywhere } from '../engine/anywhere.js';
+import { createRoulettePlay, publicRoulette, rouletteMath, roulettePar } from '../engine/roulette.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(here, '..', '..');
@@ -49,6 +50,10 @@ export function readPar(id) {
  * `math` es exactamente lo que define el resultado; su hash identifica la versión.
  */
 export function buildGame(def, scale = 1) {
+  if (def.engine === 'roulette') {
+    const math = rouletteMath(def);
+    return { def, math, configHash: sha256(canonical(math)), scale: 1, play: createRoulettePlay(math), par: roulettePar(math) };
+  }
   const strips = {};
   for (const [mode, reels] of Object.entries(def.reels)) {
     strips[mode] = reels.map((w, i) => buildStrip(def.id, `${mode}${i}`, w, def.stack || 1));
@@ -108,6 +113,16 @@ const waysCount = (d) => (d.engine === 'ways' ? d.rows ** d.cols : null);
 /** Información pública que necesita el cliente: nada de tiras ni pesos. */
 export function publicInfo(game, settings) {
   const d = game.def;
+  if (d.engine === 'roulette') {
+    const chips = BETS.filter((b) => b <= settings.maxBet);
+    return {
+      id: d.id, name: d.name, engine: d.engine, tag: d.tag, blurb: d.blurb, theme: d.theme, cover: d.cover,
+      configHash: game.configHash, rtp: game.par.rtp, maxRtp: game.par.maxRtp, rtpSource: 'exact',
+      maxWin: game.par.maxWin, minBet: settings.minBet, maxBet: settings.maxBet,
+      chips, defaultChip: chips.includes(1) ? 1 : chips[0],
+      roulette: publicRoulette(game.math),
+    };
+  }
   const par = readPar(d.id);
   const unit = 1 / d.payDiv;
   const paytable = Object.entries(game.math.pay).map(([sym, arr]) => {
@@ -145,4 +160,15 @@ export function publicInfo(game, settings) {
     bets: BETS.filter((b) => b >= settings.minBet && b <= settings.maxBet),
     defaultBet: BETS.filter((b) => b >= settings.minBet && b <= settings.maxBet).find((b) => b >= 1) ?? settings.minBet,
   };
+}
+
+/** Liquida una ronda o reproduce un asiento registrado, en unidades del libro. */
+export function settleRound(game, rng, bet, stakes) {
+  if (game.def.engine === 'roulette') {
+    if (!stakes?.length || stakes.reduce((total, s) => total + s.units, 0) !== bet) throw new Error('Apuesta de ruleta incoherente');
+    const result = game.play(rng, stakes);
+    return { result, win: result.paid };
+  }
+  const result = game.play(rng);
+  return { result, win: Math.floor(result.win * bet + 1e-6) };
 }

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es" data-type="software">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071d23">
+  <meta name="page-type" content="software">
+  <meta name="site-kind" content="gaming">
+  <meta name="description" content="Ruleta europea VLT con mesa, pista y resultados verificables.">
+  <meta property="og:title" content="Ruleta · VLT Royale">
+  <meta property="og:description" content="Ruleta europea VLT con mesa, pista y resultados verificables.">
+  <title>Ruleta · VLT Royale</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/roulette.css">
+</head>
+<body>
+  <a class="skip" href="#board">Saltar a las apuestas</a>
+  <main class="game" id="game" data-enter>
+    <header class="top">
+      <a class="icon lobby-link" href="/" aria-label="Volver al lobby">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>
+      </a>
+      <span class="studio">VLT <span>Originals</span></span>
+      <div class="top-tools">
+        <button class="icon" id="menuBtn" type="button" aria-label="Menú de la ruleta" aria-haspopup="dialog" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <button class="icon" id="soundBtn" type="button" aria-label="Sonido"></button>
+      </div>
+    </header>
+
+    <div class="table-layout">
+      <section class="stage" aria-label="Rueda de ruleta">
+        <div class="wheel"><canvas id="wheel" width="600" height="600" aria-hidden="true"></canvas></div>
+        <div class="game-heading">
+          <p class="eyebrow">Ruleta europea</p>
+          <h1 id="title">Ruleta</h1>
+          <div class="heading-detail"><strong id="maxWin"></strong><span id="rtp"></span></div>
+        </div>
+        <div class="result-band" role="status">
+          <b id="resultNumber" class="pocket" hidden></b>
+          <div><strong id="resultTitle">La mesa está abierta</strong><span id="resultDetail">Coloca una ficha para empezar</span></div>
+        </div>
+        <div class="boosts" id="boosts" aria-label="Multiplicadores del giro" hidden></div>
+      </section>
+
+      <section class="betting" id="board" aria-label="Apuestas" tabindex="-1">
+        <div class="board-head">
+          <div class="mode" role="group" aria-label="Vista de apuestas">
+            <button type="button" data-mode="table" aria-pressed="true">Mesa</button>
+            <button type="button" data-mode="inside" aria-pressed="false">Combinadas</button>
+            <button type="button" data-mode="track" aria-pressed="false">Pista</button>
+          </div>
+          <div class="recent" id="recent" hidden><span>Últimos</span><div id="recentNumbers" aria-label="Últimos números"></div></div>
+        </div>
+
+        <div class="board-surface">
+          <div class="classic" id="classic">
+            <div class="numbers" id="numbers" role="group" aria-label="Plenos y columnas"></div>
+            <div class="outside-table">
+              <div class="dozens" id="dozens" role="group" aria-label="Docenas"></div>
+              <div class="outsides" id="outsides" role="group" aria-label="Suertes sencillas"></div>
+            </div>
+          </div>
+          <div id="inside" hidden>
+            <div class="inside-controls">
+              <label for="insideType">Tipo de apuesta</label>
+              <select id="insideType"></select>
+              <span id="insidePayout"></span>
+            </div>
+            <div id="groups" class="groups"></div>
+            <div class="pages" id="insidePages" hidden>
+              <button id="insidePrev" type="button" aria-label="Combinaciones anteriores">‹</button>
+              <span id="insidePage" role="status"></span>
+              <button id="insideNext" type="button" aria-label="Combinaciones siguientes">›</button>
+            </div>
+          </div>
+          <div id="track" hidden>
+            <div class="track-pockets" id="trackPockets" role="group" aria-label="Plenos en el orden de la rueda"></div>
+            <div class="calls" id="calls" role="group" aria-label="Apuestas de vecindad"></div>
+          </div>
+        </div>
+
+        <div class="chip-bar">
+          <div><strong>Fichas</strong><small id="limits"></small></div>
+          <div class="chips" id="chips" role="group" aria-label="Valor de ficha"></div>
+        </div>
+        <p class="message" id="message" role="status"></p>
+        <div class="actions">
+          <button type="button" id="undo" disabled>↶ <span>Deshacer</span></button>
+          <button type="button" id="double" disabled>×2 <span>Doblar</span></button>
+          <button type="button" id="repeat" disabled>↻ <span>Repetir</span></button>
+          <button type="button" id="clear" disabled>× <span>Limpiar</span></button>
+        </div>
+        <div class="settle">
+          <div class="amount"><span id="creditLabel">Créditos</span><strong id="balance">—</strong></div>
+          <div class="amount"><span>Apuesta total</span><strong id="total">0,00</strong></div>
+          <button type="button" class="spin" id="spin" disabled>Girar</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <dialog id="dialog" aria-labelledby="dialogTitle">
+    <header><h2 id="dialogTitle"></h2><form method="dialog"><button type="submit" aria-label="Cerrar">×</button></form></header>
+    <div id="dialogBody"></div>
+  </dialog>
+  <script type="module" src="/js/roulette.js"></script>
+</body>
+</html>

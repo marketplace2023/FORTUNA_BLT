@@ -38,6 +38,7 @@ export class Store {
     this.balances = new Map();
     this.meters = { real: newMeter(), demo: newMeter(), games: {}, players: {}, days: {} };
     this.rounds = new Map();
+    this.rouletteRequests = new Map();
     for (const e of this.ledger.entries) this.apply(e);
   }
 
@@ -51,6 +52,7 @@ export class Store {
       addRound((this.meters.players[e.playerId] ||= newMeter()), e);
       if (!e.demo) addRound((this.meters.days[e.ts.slice(0, 10)] ||= newMeter()), e);
       this.rounds.set(e.roundId, e);
+      if (e.requestId) this.rouletteRequests.set(`${e.playerId}:${e.requestId}`, e);
     } else if (e.type === 'credit') {
       this.balances.set(e.playerId, (this.balances.get(e.playerId) || 0) + e.amount);
     }

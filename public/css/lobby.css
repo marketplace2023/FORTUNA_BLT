@@ -116,6 +116,9 @@ main { padding: 0 clamp(16px, 4vw, 40px); max-width: 1280px; margin: 0 auto; }
 .panda-card { background: #213c2f; border-color: #a7b28a88; }
 .panda-card .mini, .panda-card .big { display: none; }
 .panda-card .cover .title { font-family: Georgia, serif; color: #eee5c3; bottom: 17px; text-shadow: 0 2px 8px #12251e; }
+.roulette-card { background: #102d32; border-color: #d3ab6166; }
+.roulette-card .mini, .roulette-card .big { display: none; }
+.roulette-card .cover .title { font-family: Georgia, serif; color: #ffe6af; bottom: 17px; text-shadow: 0 2px 8px #071d23; }
 
 .trust { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 56px 0 24px; }
 .trust-item { padding: 20px; border-radius: 18px; background: rgba(255, 255, 255, .035); border: 1px solid var(--line); }

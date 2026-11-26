@@ -29,10 +29,17 @@ async function main() {
   const only = opt('--game', null);
 
   const { CATALOG } = await import('../server/games/catalog.js');
-  const { readCalibration, CALIBRATION_FILE, PAR_DIR } = await import('../server/games/index.js');
+  const { buildGame, readCalibration, CALIBRATION_FILE, PAR_DIR } = await import('../server/games/index.js');
   const cal = readCalibration();
-  const defs = CATALOG.filter((d) => !only || d.id === only);
-  if (!defs.length) { console.error('Juego no encontrado:', only); process.exit(1); }
+  const selected = CATALOG.filter((d) => !only || d.id === only);
+  if (!selected.length) { console.error('Juego no encontrado:', only); process.exit(1); }
+  for (const d of selected.filter((d) => d.engine === 'roulette')) {
+    const { par } = buildGame(d);
+    console.log(`✓ ${d.id} · PAR exacta, calculada por tipo de apuesta`);
+    console.table(par.rows.map(({ label, payout, rtp }) => ({ Apuesta: label, Pago: `×${payout}`, RTP: `${rtp.toFixed(4)}%` })));
+  }
+  const defs = selected.filter((d) => d.engine !== 'roulette');
+  if (!defs.length) return;
 
   fs.mkdirSync(PAR_DIR, { recursive: true });
   const queue = [...defs];
