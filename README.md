@@ -1,6 +1,6 @@
 # VLT Royale — sala de juegos VLT auditables
 
-Sitio con 10 tragamonedas originales y un hipódromo virtual de carreras individuales, servidor de resultados auditable y panel de administración. Node 20+, **sin dependencias de ejecución**.
+Sitio con 10 tragamonedas originales, una ruleta europea y un hipódromo virtual de carreras individuales, servidor de resultados auditable y panel de administración. Node 20+, **sin dependencias de ejecución**.
 
 ```bash
 npm start            # http://localhost:3000  ·  panel en /admin
@@ -26,6 +26,10 @@ Variables de entorno: `PORT`, `DATA_DIR` (por defecto `./data`), `SITE_NAME`, `A
 | Fiesta Dulce | 6×5, paga en cualquier lugar (8+), multiplicadores en FS | 95,80 % ± 1,19 | Alta |
 
 Temas, símbolos, tablas de pago y tiras son originales. Las mecánicas (cascadas, ways, respin, pago en cualquier lugar) son genéricas del género.
+
+## Ruleta del Eclipse
+
+**Ruleta del Eclipse** se juega en `/play/ruleta-eclipse`. Tiene rueda de un cero, apuestas internas, externas y de vecindad. Tres números distintos reciben un multiplicador por giro, aplicable solo a los plenos. El RTP exacto de cada apuesta es `36/37` (97,2973 %).
 
 ## Hipódromo Royale
 
@@ -54,10 +58,11 @@ Pruebas: `node tools/test-racing.mjs` (requiere Playwright y Microsoft Edge; ins
 npm run sim                              # hojas PAR (1M giros por juego) → par/*.json
 npm run sim -- --spins 10000000          # más precisión
 npm run sim -- --game dragon-jade
+npm run sim -- --game ruleta-eclipse  # PAR exacta por tipo de apuesta
 npm run calibrate -- --spins 5000000     # ajusta la escala de pagos al RTP objetivo
 ```
 
-Todas las ganancias son lineales en la tabla de pagos, así que la calibración escala la tabla y redondea cada pago a 3 cifras significativas. La escala queda en `server/games/calibration.json`, y la PAR final se mide con otra secuencia de semillas, con su intervalo de confianza del 95 %. Calibrar cambia `configHash`: es una versión nueva.
+En las tragamonedas, la calibración escala la tabla de pagos y redondea a 3 cifras significativas. La escala queda en `server/games/calibration.json`, y la PAR final se mide con otra secuencia de semillas, con su intervalo de confianza del 95 %. Calibrar cambia `configHash`: es una versión nueva. El panel calcula la PAR de cada ruleta directamente a partir de su configuración.
 
 ## Estructura
 
@@ -67,8 +72,8 @@ server/
   rng.js              HMAC-DRBG
   ledger.js           libro mayor con cadena de hash
   store.js            estado + saldos/contadores derivados del libro
-  engine/             motores: lines (3×3), ways (cascadas), anywhere (paga en cualquier lugar)
-  games/catalog.js    los 10 juegos (temas, símbolos, pagos, tiras, funciones)
+  engine/             motores: lines, ways, anywhere y roulette
+  games/catalog.js    catálogo de juegos (temas, pagos y reglas)
   games/index.js      construcción de tiras, calibración, hash de versión
 tools/
   simulate.js         simulador PAR / calibración (multihilo)
@@ -87,6 +92,12 @@ docs/                 documentación de la API de codejackpot (referencia)
 1. Añade una entrada en `server/games/catalog.js` con un motor existente (`lines`, `ways`, `anywhere`).
 2. `npm run calibrate -- --game <id> --spins 5000000`
 3. Reinicia el servidor. El juego aparece en el lobby y en el panel.
+
+Para añadir una ruleta europea, registra una entrada con `engine: 'roulette'`, un `id` propio, tema y portada. Usa `EUROPEAN_WHEEL` y `EUROPEAN_PAYOUTS` para la mesa clásica, o declara tus pagos brutos y un `boost` con la cantidad de números y los pesos por multiplicador. El cliente compartido de `/play/<id>` toma la rueda, las apuestas, los límites y el arte de la entrada del catálogo.
+
+Para girar vía API, envía `{ gameId, requestId, bets: [{ id, amount }] }` a `POST /api/spin`. Los identificadores de apuesta salen de `GET /api/games/<id>`, en `roulette.bets`. Envía un importe en créditos por posición y conserva el mismo `requestId` y las mismas apuestas al reintentar. El servidor valida el total contra el mínimo, el máximo y el saldo. El asiento guarda apuestas en unidades enteras, resultado y semilla para su reproducción.
+
+`node --test tools/test-roulette.mjs` comprueba pagos, reutilización del motor, idempotencia y auditoría con un libro temporal.
 
 ## Lo que falta para una certificación real (GLI-11 / GLI-19)
 

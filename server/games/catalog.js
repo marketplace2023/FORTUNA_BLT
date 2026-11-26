@@ -1,3 +1,5 @@
+import { EUROPEAN_PAYOUTS, EUROPEAN_WHEEL } from '../engine/roulette.js';
+
 /**
  * Catálogo de juegos. Temas, símbolos, tablas de pago y tiras son originales.
  *
@@ -27,6 +29,20 @@ const same = (n, w) => Array.from({ length: n }, () => ({ ...w }));
 const waysReels = (n, w) => Array.from({ length: n }, (_, i) => (i === 0 ? { ...w, W: 0 } : { ...w }));
 
 export const CATALOG = [
+  {
+    id: 'ruleta-eclipse',
+    name: 'Ruleta del Eclipse',
+    engine: 'roulette',
+    tag: 'Europea · Plenos hasta ×500',
+    blurb: 'Tres números reciben un multiplicador en cada giro. Si aciertas uno al pleno, paga hasta ×500.',
+    theme: { bg1: '#071d23', bg2: '#0f4647', accent: '#efbd67', ink: '#fff2d2', art: '/assets/eclipse/observatorio.webp' },
+    cover: ['🌘'],
+    roulette: {
+      wheel: EUROPEAN_WHEEL,
+      payouts: { ...EUROPEAN_PAYOUTS, straight: 30 },
+      boost: { count: 3, weights: { 50: 59, 100: 27, 250: 9, 500: 5 } },
+    },
+  },
   RACING_DEF,
   // ───────────────────────────── 3×3 RESPIN ─────────────────────────────
   {

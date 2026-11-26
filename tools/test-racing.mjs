@@ -139,9 +139,10 @@ try {
   await page.goto(`${origin}/admin#rounds`);await page.locator('.filters label').filter({hasText:/^Tipo/}).locator('select').selectOption('1');await page.waitForSelector('tbody tr');
   await page.locator('tbody tr').filter({hasText:receipt.roundId}).click();
   await page.waitForSelector('#modal[open]');assert.equal(await page.locator('#modal ol li').count(),8);
-  await page.goto(origin);await page.waitForSelector('.racing-card');assert.equal(await page.locator('#grid .card').count(),11);
+  await page.goto(origin);await page.waitForSelector('.racing-card');assert.equal(await page.locator('#grid .card').count(),12);
+  await page.getByRole('button',{name:'Ruletas',exact:true}).click();assert.equal(await page.locator('#grid .roulette-card').count(),1);
   await page.getByRole('button',{name:'Hipódromo',exact:true}).click();assert.equal(await page.locator('#grid .card').count(),1);
   for (const [id,count] of [['koi-dorado',9],['panda-zen',9],['fiesta-dulce',30]]) {await page.goto(`${origin}/play/${id}`);await page.waitForFunction(n=>document.querySelectorAll('.cell').length===n,count);}
   assert.deepEqual(errors,[]);
-  console.log('PASS racing UI/API: responsive, selection, gross/net quote, single debit, duplicate token, invalid wager, player isolation, lost response, reload recovery, skip, exact arrival, audit, rebuilt store, eleven lobby entries and slot regression.');
+  console.log('PASS racing UI/API: responsive, selection, gross/net quote, single debit, duplicate token, invalid wager, player isolation, lost response, reload recovery, skip, exact arrival, audit, rebuilt store, lobby filters and slot regression.');
 } finally {await browser?.close();server.kill();await delay(300);await rm(dir,{recursive:true,force:true});}

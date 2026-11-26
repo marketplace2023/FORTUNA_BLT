@@ -4,8 +4,9 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { Store } from './store.js';
 import { Sessions, RateLimit, hashPassword, checkPassword } from './auth.js';
-import { loadGames, buildGame, publicInfo, readPar, ROOT } from './games/index.js';
+import { loadGames, buildGame, publicInfo, readPar, settleRound, ROOT } from './games/index.js';
 import { CATALOG, BETS } from './games/catalog.js';
+import { normalizeRouletteBets } from './engine/roulette.js';
 import { Drbg, newSeed } from './rng.js';
 import { UNIT, toUnits, toCredits, canonical, sha256, randomId } from './util.js';
 import { RACING_ID, raceCard } from './games/racing.js';
@@ -135,17 +136,24 @@ function gameForHash(gameId, hash) {
 function replay(e) {
   const g = gameForHash(e.gameId, e.cfg);
   if (!g) return { ok: false, reason: 'No se encontró la versión de matemática de esta ronda' };
-  const result = g.play(new Drbg(e.seed), e.input);
+  let settled;
+  try { settled = settleRound(g, new Drbg(e.seed), e.bet, e.stakes ?? e.input); }
+  catch { return { ok: false, reason: 'No se pudieron reproducir las apuestas registradas' }; }
+  const { result, win } = settled;
   const rh = sha256(canonical(result));
-  const win = Math.floor(result.win * e.bet + 1e-6);
-  const ok = rh === e.rh && win === e.win && g.configHash === e.cfg;
+  const ok = rh === e.rh && win === e.win && g.configHash === e.cfg && result.number === e.number;
   return { ok, reason: ok ? 'Resultado idéntico al registrado' : 'El resultado NO coincide', resultHash: rh, recordedHash: e.rh, win, recordedWin: e.win, result };
 }
 
 const roundView = (e) => ({
   roundId: e.roundId, seq: e.seq, ts: e.ts, playerId: e.playerId, username: store.state.players[e.playerId]?.username,
   demo: !!e.demo, gameId: e.gameId, bet: toCredits(e.bet), win: toCredits(e.win), balance: toCredits(e.bal),
-  feat: e.feat || null, cfg: e.cfg, seed: e.seed, rh: e.rh, hash: e.hash, prev: e.prev,
+  feat: e.feat || null, cfg: e.cfg, seed: e.seed, rh: e.rh, hash: e.hash, prev: e.prev, number: e.number, stakes: e.stakes,
+});
+
+const spinView = (e, result) => ({
+  roundId: e.roundId, seq: e.seq, hash: e.hash, configHash: e.cfg, seed: e.seed, resultHash: e.rh,
+  bet: toCredits(e.bet), win: toCredits(e.win), balance: toCredits(e.bal), result, ts: e.stakes ? e.ts : undefined,
 });
 
 // ───────────── API pública ─────────────
@@ -157,7 +165,7 @@ route('GET', '/api/games', () => {
     const s = store.gameSettings(def.id);
     if (!s.enabled) continue;
     const info = publicInfo(games.get(def.id), s);
-    list.push({ id: info.id, name: info.name, engine: info.engine, tag: info.tag, blurb: info.blurb, theme: info.theme, rtp: info.rtp, volatility: info.volatility, maxWin: info.maxWin, cover: Object.values(info.symbols).filter((x) => x.t !== 'blank' && x.t !== 'mult').slice(0, 4).map((x) => x.g) });
+    list.push({ id: info.id, name: info.name, engine: info.engine, tag: info.tag, blurb: info.blurb, theme: info.theme, rtp: info.rtp, maxRtp: info.maxRtp, volatility: info.volatility, maxWin: info.maxWin, cover: info.cover ?? Object.values(info.symbols).filter((x) => x.t !== 'blank' && x.t !== 'mult').slice(0, 4).map((x) => x.g) });
   }
   return list;
 });
@@ -219,28 +227,48 @@ route('GET', '/api/me', (req) => {
 
 route('POST', '/api/spin', async (req, _p, body) => {
   const p = requirePlayer(req);
+  if (!body || typeof body !== 'object' || Array.isArray(body)) fail(400, 'Apuesta inválida');
   const g = games.get(String(body.gameId));
   if (!g) fail(404, 'Juego no encontrado');
   if (g.def.engine === 'race') fail(400, 'Elige un caballo desde el hipódromo');
   const s = store.gameSettings(g.def.id);
+  let stakes, requestId, bet;
+  if (g.def.engine === 'roulette') {
+    requestId = body.requestId;
+    if (typeof requestId !== 'string' || !/^[a-zA-Z0-9-]{16,80}$/.test(requestId)) fail(400, 'Identificador de giro inválido');
+    const previous = store.rouletteRequests.get(`${p.id}:${requestId}`);
+    if (previous && previous.gameId !== g.def.id) fail(409, 'El identificador ya corresponde a otro giro');
+    const version = previous ? gameForHash(previous.gameId, previous.cfg) : g;
+    if (!version) fail(500, 'No se pudo recuperar la versión de la ronda');
+    try { stakes = normalizeRouletteBets(version.math, body.bets); }
+    catch (err) { fail(400, err.message); }
+    if (previous) {
+      if (canonical(previous.stakes) !== canonical(stakes)) fail(409, 'El identificador ya corresponde a otra apuesta');
+      const r = replay(previous);
+      if (!r.ok) fail(500, 'No se pudo recuperar la ronda');
+      return spinView(previous, r.result);
+    }
+    bet = stakes.reduce((total, stake) => total + stake.units, 0);
+    if (bet < toUnits(s.minBet) || bet > toUnits(s.maxBet)) fail(400, 'El total supera los límites de la mesa');
+  } else {
+    const betC = Number(body.bet);
+    if (!BETS.includes(betC) || betC < s.minBet || betC > s.maxBet) fail(400, 'Apuesta no permitida');
+    bet = toUnits(betC);
+  }
   if (!s.enabled) fail(403, 'Juego deshabilitado');
-  const betC = Number(body.bet);
-  if (!BETS.includes(betC) || betC < s.minBet || betC > s.maxBet) fail(400, 'Apuesta no permitida');
-  const bet = toUnits(betC);
   const before = store.balance(p.id);
   if (before < bet) fail(402, 'Saldo insuficiente');
 
   const seed = newSeed();
-  const result = g.play(new Drbg(seed));
-  const win = Math.floor(result.win * bet + 1e-6);
+  const { result, win } = settleRound(g, new Drbg(seed), bet, stakes);
   const rh = sha256(canonical(result));
   const feat = result.free ? 'free' : result.feature ? result.feature.type : undefined;
   const roundId = 'R' + Date.now().toString(36).toUpperCase() + randomId(3).toUpperCase();
   const e = store.append({
     type: 'round', roundId, playerId: p.id, demo: p.demo ? true : undefined, gameId: g.def.id, cfg: g.configHash,
-    bet, win, bal: before - bet + win, seed, rh, feat,
+    bet, win, bal: before - bet + win, seed, rh, feat, stakes, requestId, number: result.number,
   });
-  return { roundId, seq: e.seq, hash: e.hash, configHash: g.configHash, seed, resultHash: rh, bet: betC, win: toCredits(win), balance: toCredits(e.bal), result };
+  return spinView(e, result);
 });
 
 function raceReceipt(e) {
@@ -366,7 +394,7 @@ route('GET', '/admin/api/dashboard', (req) => {
   const perGame = CATALOG.map((d) => {
     const m = store.meters.games[d.id];
     const par = readPar(d.id);
-    return { id: d.id, name: d.name, enabled: store.gameSettings(d.id).enabled, theoreticalRtp: par?.rtp ?? d.targetRtp, real: m ? meterView(m.real) : null, demo: m ? meterView(m.demo) : null };
+    return { id: d.id, name: d.name, enabled: store.gameSettings(d.id).enabled, theoreticalRtp: games.get(d.id).par?.rtp ?? par?.rtp ?? d.targetRtp, real: m ? meterView(m.real) : null, demo: m ? meterView(m.demo) : null };
   });
   const recent = [];
   for (let i = store.ledger.entries.length - 1; i >= 0 && recent.length < 12; i--) {
@@ -479,9 +507,9 @@ route('GET', '/admin/api/games', (req) => {
     const par = readPar(d.id);
     return {
       id: d.id, name: d.name, engine: d.engine, tag: d.tag, theme: d.theme, ...s,
-      configHash: g.configHash, scale: g.scale, targetRtp: d.targetRtp, maxWin: d.maxWin,
-      par: par ? { rtp: par.rtp, ci95: par.ci95, hitRate: par.hitRate, featureEvery: par.featureEvery, volatility: par.volatility, spins: par.spins, generatedAt: par.generatedAt, matches: par.configHash === g.configHash } : null,
-      cover: Object.values(d.symbols).filter((x) => x.t !== 'blank').slice(0, 3).map((x) => x.g),
+      configHash: g.configHash, scale: g.scale, targetRtp: g.par?.rtp ?? d.targetRtp, maxWin: g.par?.maxWin ?? d.maxWin,
+      par: g.par ? { exact: true, rtp: g.par.rtp, maxRtp: g.par.maxRtp, matches: true } : par ? { rtp: par.rtp, ci95: par.ci95, hitRate: par.hitRate, featureEvery: par.featureEvery, volatility: par.volatility, spins: par.spins, generatedAt: par.generatedAt, matches: par.configHash === g.configHash } : null,
+      cover: d.cover ?? Object.values(d.symbols).filter((x) => x.t !== 'blank').slice(0, 3).map((x) => x.g),
     };
   });
 });
@@ -491,10 +519,12 @@ route('POST', '/admin/api/games/:id', async (req, { id }, body) => {
   if (!games.has(id)) fail(404, 'Juego no encontrado');
   const s = store.gameSettings(id);
   const before = { ...s };
-  if (body.enabled !== undefined) s.enabled = !!body.enabled;
-  if (body.minBet !== undefined) { if (!BETS.includes(Number(body.minBet))) fail(400, 'Apuesta mínima inválida'); s.minBet = Number(body.minBet); }
-  if (body.maxBet !== undefined) { if (!BETS.includes(Number(body.maxBet))) fail(400, 'Apuesta máxima inválida'); s.maxBet = Number(body.maxBet); }
-  if (s.minBet > s.maxBet) { Object.assign(s, before); fail(400, 'La mínima no puede superar la máxima'); }
+  const next = { ...s };
+  if (body.enabled !== undefined) next.enabled = !!body.enabled;
+  if (body.minBet !== undefined) { if (!BETS.includes(Number(body.minBet))) fail(400, 'Apuesta mínima inválida'); next.minBet = Number(body.minBet); }
+  if (body.maxBet !== undefined) { if (!BETS.includes(Number(body.maxBet))) fail(400, 'Apuesta máxima inválida'); next.maxBet = Number(body.maxBet); }
+  if (next.minBet > next.maxBet) fail(400, 'La mínima no puede superar la máxima');
+  Object.assign(s, next);
   store.save();
   adminLog(a, 'game_settings', id, { before, after: { ...s } });
   return s;
@@ -502,9 +532,10 @@ route('POST', '/admin/api/games/:id', async (req, { id }, body) => {
 
 route('GET', '/admin/api/par/:id', (req, { id }) => {
   requireAdmin(req);
+  const g = games.get(id);
+  if (g?.par) return { ...g.par, exact: true, name: g.def.name, configHash: g.configHash, matches: true, boost: g.math.boost };
   const par = readPar(id);
   if (!par) fail(404, 'Sin hoja PAR. Ejecuta: npm run sim');
-  const g = games.get(id);
   return { ...par, currentConfigHash: g?.configHash, matches: par.configHash === g?.configHash, bets: BETS };
 });
 
@@ -561,6 +592,7 @@ function serveStatic(req, res, pathname) {
   else if (/^\/play\/templo-jaguar\/?$/.test(pathname)) file = 'jaguar.html';
   else if (/^\/play\/fiesta-dulce\/?$/.test(pathname)) file = 'sweet.html';
   else if (/^\/play\/panda-zen\/?$/.test(pathname)) file = 'panda.html';
+  else if (games.get(pathname.match(/^\/play\/([\w-]+)\/?$/)?.[1])?.def.engine === 'roulette') file = 'roulette.html';
   else if (/^\/play\/hipodromo-royale\/?$/.test(pathname)) file = 'racing.html';
   else if (/^\/play\/[\w-]+\/?$/.test(pathname)) file = 'play.html';
   else if (pathname === '/admin' || pathname === '/admin/') file = 'admin/index.html';
