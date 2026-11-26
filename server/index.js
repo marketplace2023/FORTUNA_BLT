@@ -249,7 +249,7 @@ route('POST', '/api/spin', async (req, _p, body) => {
       return spinView(previous, r.result);
     }
     bet = stakes.reduce((total, stake) => total + stake.units, 0);
-    if (bet < toUnits(s.minBet) || bet > toUnits(s.maxBet)) fail(400, 'El total supera los límites de la mesa');
+    if (bet < toUnits(s.minBet)) fail(400, 'El total es menor que la apuesta mínima');
   } else {
     const betC = Number(body.bet);
     if (!BETS.includes(betC) || betC < s.minBet || betC > s.maxBet) fail(400, 'Apuesta no permitida');
@@ -258,6 +258,9 @@ route('POST', '/api/spin', async (req, _p, body) => {
   if (!s.enabled) fail(403, 'Juego deshabilitado');
   const before = store.balance(p.id);
   if (before < bet) fail(402, 'Saldo insuficiente');
+  if (stakes && !Number.isSafeInteger(before - bet + bet * g.par.maxWin)) {
+    fail(400, 'El importe supera la precisión admitida para liquidar la ronda');
+  }
 
   const seed = newSeed();
   const { result, win } = settleRound(g, new Drbg(seed), bet, stakes);
@@ -506,7 +509,7 @@ route('GET', '/admin/api/games', (req) => {
     const s = store.gameSettings(d.id);
     const par = readPar(d.id);
     return {
-      id: d.id, name: d.name, engine: d.engine, tag: d.tag, theme: d.theme, ...s,
+      id: d.id, name: d.name, engine: d.engine, tag: d.tag, theme: d.theme, ...s, maxBet: d.engine === 'roulette' ? null : s.maxBet,
       configHash: g.configHash, scale: g.scale, targetRtp: g.par?.rtp ?? d.targetRtp, maxWin: g.par?.maxWin ?? d.maxWin,
       par: g.par ? { exact: true, rtp: g.par.rtp, maxRtp: g.par.maxRtp, matches: true } : par ? { rtp: par.rtp, ci95: par.ci95, hitRate: par.hitRate, featureEvery: par.featureEvery, volatility: par.volatility, spins: par.spins, generatedAt: par.generatedAt, matches: par.configHash === g.configHash } : null,
       cover: d.cover ?? Object.values(d.symbols).filter((x) => x.t !== 'blank').slice(0, 3).map((x) => x.g),
@@ -520,14 +523,19 @@ route('POST', '/admin/api/games/:id', async (req, { id }, body) => {
   const s = store.gameSettings(id);
   const before = { ...s };
   const next = { ...s };
+  const isRoulette = games.get(id).def.engine === 'roulette';
   if (body.enabled !== undefined) next.enabled = !!body.enabled;
   if (body.minBet !== undefined) { if (!BETS.includes(Number(body.minBet))) fail(400, 'Apuesta mínima inválida'); next.minBet = Number(body.minBet); }
-  if (body.maxBet !== undefined) { if (!BETS.includes(Number(body.maxBet))) fail(400, 'Apuesta máxima inválida'); next.maxBet = Number(body.maxBet); }
-  if (next.minBet > next.maxBet) fail(400, 'La mínima no puede superar la máxima');
+  if (body.maxBet !== undefined) {
+    if (isRoulette) fail(400, 'El máximo de la ruleta corresponde al saldo disponible');
+    if (!BETS.includes(Number(body.maxBet))) fail(400, 'Apuesta máxima inválida');
+    next.maxBet = Number(body.maxBet);
+  }
+  if (!isRoulette && next.minBet > next.maxBet) fail(400, 'La mínima no puede superar la máxima');
   Object.assign(s, next);
   store.save();
   adminLog(a, 'game_settings', id, { before, after: { ...s } });
-  return s;
+  return isRoulette ? { ...s, maxBet: null } : s;
 });
 
 route('GET', '/admin/api/par/:id', (req, { id }) => {

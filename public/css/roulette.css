@@ -81,6 +81,7 @@ a { color: inherit; }
   text-align: center;
 }
 .wheel {
+  position: relative;
   display: grid; place-items: center; min-width: 0; min-height: 0; width: 100%; height: 100%;
   container-type: size;
 }
@@ -104,6 +105,31 @@ h1 {
   box-shadow: inset 0 2px 6px #000a, 0 2px #030b0b; text-align: left; font-size: .9rem;
 }
 .result-band strong { color: #90eac0; letter-spacing: .035em; }
+.result-band[data-outcome], .result-flash { --result-color: #ffe099; }
+[data-outcome="loss"]:is(.result-band, .result-flash) { --result-color: #ffaaa0; }
+[data-outcome="even"]:is(.result-band, .result-flash) { --result-color: #abdfed; }
+.result-band[data-outcome] { border-color: var(--result-color); }
+.result-band[data-outcome] strong { color: var(--result-color); }
+.result-flash {
+  position: absolute; inset: 50% auto auto 50%; z-index: 1;
+  display: grid; gap: 2px; width: max-content; max-width: 94%; padding: clamp(4px, 1.5cqw, 11px) clamp(5px, 3cqw, 20px);
+  translate: -50% -50%; pointer-events: none; text-align: center;
+  border: 1px solid var(--result-color); border-radius: 8px;
+  background: linear-gradient(#26322a, #101b19 62%); color: var(--ink);
+  box-shadow: 0 4px 18px #000b; animation: result-reveal 2.2s ease-out both;
+}
+.result-flash[data-outcome="win"] { box-shadow: 0 0 26px #ffcf6880, 0 4px 18px #000b; }
+.result-flash strong {
+  color: var(--result-color); font: 800 clamp(.63rem, 6cqw, 2.2rem)/1 Impact, "Arial Narrow", system-ui, sans-serif;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.result-flash span { font-size: clamp(.57rem, 4cqw, 1rem); font-weight: 750; }
+@keyframes result-reveal {
+  from { opacity: 0; transform: translateY(8px) scale(.87); }
+  13% { opacity: 1; transform: scale(1.05); }
+  24%, 85% { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(-5px); }
+}
 .result-band strong, .result-band span { display: block; }
 .result-band span { color: var(--muted); font-size: .82em; }
 .pocket { display: inline-grid; place-items: center; flex: 0 0 auto; min-width: 29px; min-height: 29px; border: 1px solid var(--line); border-radius: 50%; font-variant-numeric: tabular-nums; background: var(--pocket, var(--felt)); }
@@ -165,17 +191,22 @@ h1 {
 .small-column { display: none; }
 .bet.is-winner { background: linear-gradient(#ffd37d, #b97831); color: #23170e; text-shadow: none; box-shadow: inset 0 0 0 2px #fff1c3; }
 .bet.has-stake:not(.is-winner) { box-shadow: inset 0 0 0 2px #ffe2a0; }
-.bet.has-stake > :first-child { visibility: hidden; }
+#chips button:enabled, .bet.has-stake:enabled { cursor: grab; touch-action: none; user-select: none; }
+#chips button:enabled:active, .bet.has-stake:enabled:active { cursor: grabbing; }
+.bet.drop-target { outline: 2px solid #fff2ae; outline-offset: -3px; z-index: 2; filter: brightness(1.3); }
+.stake-chip.dragged-chip {
+  --chip-size: clamp(30px, 6dvh, 48px);
+  position: fixed; inset: auto; translate: -50% -50%; z-index: 10; opacity: .92;
+}
 .stake-chip {
-  --chip-size: min(86cqw, 86cqh, 46px);
-  position: absolute; inset: 50% auto auto 50%; translate: -50% -50%;
+  --chip-size: min(40cqw, 48cqh, 32px);
+  position: absolute; right: clamp(1px, 4cqw, 4px); bottom: clamp(1px, 4cqh, 4px);
   display: grid; place-items: center; width: var(--chip-size); aspect-ratio: 1;
   font-size: clamp(6px, calc(var(--chip-size) * .34), 16px); font-weight: 800;
   line-height: 1; pointer-events: none;
 }
 .bet[data-mult]::after { content: attr(data-mult); display: block; color: #ffe6a5; font-size: clamp(.52rem, 1.3dvh, .66rem); line-height: 1; }
 .bet.is-winner[data-mult]::after { color: #40240d; }
-.bet.has-stake[data-mult]::after { display: none; }
 .diamond {
   display: inline-grid; place-items: center; vertical-align: middle; width: min(65%, 56px); height: clamp(12px, 3dvh, 25px);
   background: #f8dda9; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
@@ -348,6 +379,7 @@ meter { width: 100%; accent-color: var(--gold); }
   .recent .pocket:nth-child(n+5) { display: none; }
 }
 @media (max-height: 680px) and (orientation: portrait), (max-height: 400px) and (orientation: landscape) {
+  .bet.has-stake > :first-child, .bet.has-stake[data-mult]::after { position: relative; left: -12%; }
   .bet[data-mult]::after { font-size: .49rem; }
   .numbers .straight[data-mult] { font-size: clamp(.68rem, 1.8dvh, .86rem); }
 }

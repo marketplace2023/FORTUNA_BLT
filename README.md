@@ -95,7 +95,7 @@ docs/                 documentación de la API de codejackpot (referencia)
 
 Para añadir una ruleta europea, registra una entrada con `engine: 'roulette'`, un `id` propio, tema y portada. Usa `EUROPEAN_WHEEL` y `EUROPEAN_PAYOUTS` para la mesa clásica, o declara tus pagos brutos y un `boost` con la cantidad de números y los pesos por multiplicador. El cliente compartido de `/play/<id>` toma la rueda, las apuestas, los límites y el arte de la entrada del catálogo.
 
-Para girar vía API, envía `{ gameId, requestId, bets: [{ id, amount }] }` a `POST /api/spin`. Los identificadores de apuesta salen de `GET /api/games/<id>`, en `roulette.bets`. Envía un importe en créditos por posición y conserva el mismo `requestId` y las mismas apuestas al reintentar. El servidor valida el total contra el mínimo, el máximo y el saldo. El asiento guarda apuestas en unidades enteras, resultado y semilla para su reproducción.
+Para girar vía API, envía `{ gameId, requestId, bets: [{ id, amount }] }` a `POST /api/spin`. Los identificadores de apuesta salen de `GET /api/games/<id>`, en `roulette.bets`. Envía un importe en créditos por posición y conserva el mismo `requestId` y las mismas apuestas al reintentar. El servidor valida la apuesta mínima y el saldo disponible. Las fichas son denominaciones y se pueden acumular. El asiento guarda apuestas en unidades enteras, resultado y semilla para su reproducción.
 
 `node --test tools/test-roulette.mjs` comprueba pagos, reutilización del motor, idempotencia y auditoría con un libro temporal.
 

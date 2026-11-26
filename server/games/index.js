@@ -117,11 +117,11 @@ export function publicInfo(game, settings) {
   if (game.def.engine === 'race') return racingInfo(game, settings, BETS);
   const d = game.def;
   if (d.engine === 'roulette') {
-    const chips = BETS.filter((b) => b <= settings.maxBet);
+    const chips = BETS;
     return {
       id: d.id, name: d.name, engine: d.engine, tag: d.tag, blurb: d.blurb, theme: d.theme, cover: d.cover,
       configHash: game.configHash, rtp: game.par.rtp, maxRtp: game.par.maxRtp, rtpSource: 'exact',
-      maxWin: game.par.maxWin, minBet: settings.minBet, maxBet: settings.maxBet,
+      maxWin: game.par.maxWin, minBet: settings.minBet, maxBet: null,
       chips, defaultChip: chips.includes(1) ? 1 : chips[0],
       roulette: publicRoulette(game.math),
     };

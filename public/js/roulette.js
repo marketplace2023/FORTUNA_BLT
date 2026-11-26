@@ -32,7 +32,6 @@ function setMessage(message = '') { $('#message').textContent = message; }
 
 function validateTotal(bets) {
   const total = totalOf(bets);
-  if (total > units(info.maxBet)) return 'Se alcanzó el máximo de la mesa.';
   if (total > units(user.balance)) return 'Saldo insuficiente.';
   return '';
 }
@@ -49,12 +48,93 @@ function edit(next) {
   sync();
 }
 
-function addStakes(positions) {
+function addStakes(positions, chip = selectedChip) {
   const next = new Map(stakes);
   for (const [id, count] of Object.entries(positions)) {
-    next.set(id, (next.get(id) || 0) + selectedChip * count);
+    next.set(id, (next.get(id) || 0) + chip * count);
   }
   edit(next);
+}
+
+function bindChipDrag() {
+  const board = $('.board-surface');
+  const panel = $('#board');
+  let drag;
+  let suppressClick = false;
+
+  function destination(event) {
+    const target = document.elementFromPoint(event.clientX, event.clientY);
+    return { bet: target?.closest('.bet:not(:disabled)'), outside: !board.contains(target) };
+  }
+
+  function finish(event, dropped) {
+    if (drag?.pointer !== event.pointerId) return;
+    const { source, id, value, ghost, highlighted } = drag;
+    drag = null;
+    if (source.hasPointerCapture(event.pointerId)) source.releasePointerCapture(event.pointerId);
+    if (!ghost) return;
+    suppressClick = true;
+    ghost.remove();
+    highlighted?.classList.remove('drop-target');
+    if (!dropped || busy || pending) return;
+
+    const { bet, outside } = destination(event);
+    const target = bet?.dataset.bet;
+    if (!id) {
+      if (target) addStakes({ [target]: 1 }, value);
+      return;
+    }
+    if (id === target || (!target && !outside)) return;
+    const next = new Map(stakes);
+    next.delete(id);
+    if (target) next.set(target, (next.get(target) || 0) + value);
+    edit(next);
+  }
+
+  panel.addEventListener('pointerdown', (event) => {
+    suppressClick = false;
+    if (drag || busy || pending || !event.isPrimary || event.button !== 0) return;
+    const source = event.target.closest('#chips button, .bet.has-stake');
+    if (!source || source.disabled) return;
+    const id = source.dataset.bet;
+    const value = id ? stakes.get(id) : Number(source.dataset.units);
+    drag = { source, id, value, pointer: event.pointerId, x: event.clientX, y: event.clientY };
+    source.setPointerCapture(event.pointerId);
+  });
+  panel.addEventListener('pointermove', (event) => {
+    if (drag?.pointer !== event.pointerId) return;
+    if (!drag.ghost) {
+      if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < 6) return;
+      drag.ghost = el('span', { class: 'stake-chip dragged-chip', 'data-units': drag.value, 'aria-hidden': 'true' },
+        chipFormatter.format(drag.value / UNIT));
+      document.body.append(drag.ghost);
+    }
+    drag.ghost.style.left = `${event.clientX}px`;
+    drag.ghost.style.top = `${event.clientY}px`;
+    const { bet } = destination(event);
+    if (bet !== drag.highlighted) {
+      drag.highlighted?.classList.remove('drop-target');
+      bet?.classList.add('drop-target');
+      drag.highlighted = bet;
+    }
+  });
+  panel.addEventListener('pointerup', (event) => finish(event, true));
+  panel.addEventListener('pointercancel', (event) => finish(event, false));
+  panel.addEventListener('lostpointercapture', (event) => finish(event, false));
+  panel.addEventListener('click', (event) => {
+    if (!suppressClick || !event.detail) return;
+    suppressClick = false;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }, true);
+  panel.addEventListener('keydown', (event) => {
+    if (event.key !== 'Delete' || busy || pending) return;
+    const id = event.target.closest('.bet.has-stake')?.dataset.bet;
+    if (!id) return;
+    const next = new Map(stakes);
+    next.delete(id);
+    edit(next);
+  });
 }
 
 function sync() {
@@ -84,7 +164,7 @@ function sync() {
   $('#total').textContent = money(total);
   $('#balance').textContent = money(units(user.balance));
   $('#undo').disabled = locked || !undoStack.length;
-  $('#double').disabled = locked || !stakes.size || total * 2 > Math.min(units(info.maxBet), units(user.balance));
+  $('#double').disabled = locked || !stakes.size || total * 2 > units(user.balance);
   $('#repeat').disabled = locked || !previous.size;
   $('#clear').disabled = locked || !stakes.size;
   $('#spin').disabled = busy || (!pending && (!total || total < units(info.minBet) || Boolean(validateTotal(stakes))));
@@ -137,7 +217,7 @@ function buildTable() {
     onclick: () => { selectedChip = units(value); sync(); },
   }, String(value).replace('.', ',')));
   $('#chips').style.setProperty('--chip-count', info.chips.length);
-  $('#limits').textContent = `${money(units(info.minBet))}–${money(units(info.maxBet))}`;
+  $('#limits').textContent = `Mín. ${money(units(info.minBet))}`;
   renderInside();
 }
 
@@ -174,6 +254,13 @@ function refreshRecent() {
   $('#recent').hidden = !history.length;
 }
 
+let resultFlashTimer;
+
+function hideResultFlash() {
+  clearTimeout(resultFlashTimer);
+  $('#resultFlash').hidden = true;
+}
+
 function presentation(round) {
   const { result } = round;
   const pocket = $('#resultNumber');
@@ -181,9 +268,19 @@ function presentation(round) {
   pocket.className = `pocket ${result.color}`;
   pocket.textContent = result.number;
   pocket.setAttribute('aria-label', `${result.number}, ${COLORS[result.color]}`);
-  const payout = units(round.win) - units(round.bet);
-  $('#resultTitle').textContent = payout > 0 ? `+${money(payout)} créditos netos` : payout === 0 ? 'Apuesta recuperada' : 'Giro finalizado';
+  const net = units(round.win) - units(round.bet);
+  const outcome = net > 0 ? 'win' : net < 0 ? 'loss' : 'even';
+  const title = { win: '¡Ganaste!', loss: 'Perdiste', even: 'Apuesta recuperada' }[outcome];
+  const amount = `${net > 0 ? '+' : net < 0 ? '−' : ''}${money(Math.abs(net))} créditos`;
+  $('#resultTitle').textContent = net ? `${title} ${amount} netos` : title;
   $('#resultDetail').textContent = `${result.number} · ${COLORS[result.color]} · Pago ${money(units(round.win))}`;
+  $('.result-band').dataset.outcome = outcome;
+  const flash = $('#resultFlash');
+  flash.dataset.outcome = outcome;
+  flash.firstElementChild.textContent = title;
+  flash.lastElementChild.textContent = net ? amount : `Pago ${money(units(round.win))}`;
+  flash.hidden = false;
+  resultFlashTimer = setTimeout(hideResultFlash, 2200);
   const boosts = $('#boosts');
   boosts.hidden = !result.boosts.length;
   boosts.replaceChildren(...result.boosts.map(({ number, mult }) =>
@@ -233,6 +330,8 @@ async function spin() {
       if (current?.id === user.id) user.balance = current.balance;
     }
     savePending(null);
+    hideResultFlash();
+    delete $('.result-band').dataset.outcome;
     $('#resultTitle').textContent = 'La rueda está girando';
     $('#resultDetail').textContent = '';
     $('#resultNumber').hidden = true;
@@ -244,7 +343,7 @@ async function spin() {
       history = [{ roundId: round.roundId, ts: round.ts, number: round.result.number, bet: round.bet, win: round.win },
         ...history.filter((h) => h.roundId !== round.roundId)].slice(0, 50);
       refreshRecent();
-      if (round.win > 0) [329.63, 440, 587.33].forEach((f, i) => Sound.pluck(f, .11 * i, .028));
+      if (round.win > round.bet) [329.63, 440, 587.33].forEach((f, i) => Sound.pluck(f, .11 * i, .028));
     }
   }
   busy = false;
@@ -262,7 +361,8 @@ function showRules() {
   for (const b of Object.values(rules.bets)) if (!types.has(b.kind)) types.set(b.kind, b.payout);
   const names = { straight: 'Pleno', ...INSIDE, column: 'Columna', dozen: 'Docena', outside: 'Suerte sencilla' };
   showDialog('Reglas y pagos',
-    el('p', {}, 'Elige una ficha y colócala en la mesa. Combinadas cubre varios números con una ficha. En Pista, las apuestas de vecindad colocan varias fichas en una sola acción.'),
+    el('p', {}, 'Arrastra una ficha a una casilla o elige su valor y toca la casilla. Para retirar el importe de una casilla, arrastra su ficha fuera del tablero o selecciona la casilla con el teclado y pulsa Supr.'),
+    el('p', {}, 'Combinadas cubre varios números con una ficha. En Pista, las apuestas de vecindad colocan varias fichas en una sola acción.'),
     el('p', {}, 'Los pagos incluyen la ficha ganadora. El 0 pierde en rojo, negro, par, impar, bajo y alto.'),
     rules.boost ? el('p', {}, `En cada giro se marcan ${rules.boost.count} números con pagos de ${rules.boost.values.map((x) => `×${x}`).join(', ')}. El multiplicador reemplaza el pago base si aciertas ese número con un pleno.`) : null,
     el('table', {}, el('thead', {}, el('tr', {}, el('th', { scope: 'col' }, 'Apuesta'), el('th', { scope: 'col' }, 'Pago base'))),
@@ -342,6 +442,7 @@ async function init() {
   wheel = createWheel($('#wheel'), rules);
   selectedChip = units(info.defaultChip);
   buildTable();
+  bindChipDrag();
   if (pending) setMessage('Hay un giro pendiente de confirmar.');
   history = await api(`/api/history?game=${encodeURIComponent(gameId)}`).catch(() => []);
   if (history[0]?.stakes) previous = new Map(history[0].stakes.map(({ id, units: value }) => [id, value]));
