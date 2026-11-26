@@ -224,6 +224,16 @@ function framesOf(res, game) {
       table(['Posición', 'Apuesta', 'Pago'], res.bets.map((b) => ({ cells: [b.label, money(b.units / 10000), money(b.win / 10000)] }))),
     )];
   }
+  if (res.engine === 'race') {
+    return el('div', { class: 'note' },
+      el('strong', {}, `${res.card.distance} m · Pista ${res.card.surface}`),
+      el('p', {}, `Caballo elegido: ${res.card.horses.find(h => h.id === res.selected).name}`),
+      el('ol', {}, res.order.map(id => {
+        const h = res.card.horses.find(h => h.id === id);
+        return el('li', {}, `#${id} ${h.name} · cuota ${h.odds.toFixed(2)} · ${(res.runners.find(r => r.id === id).finishMs / 1000).toFixed(3)} s`);
+      })),
+    );
+  }
   const out = [];
   const add = (fr, cap) => out.push(el('div', {}, miniGrid(fr.grid, game, fr.wins), el('div', { class: 'frame-cap' }, cap)));
   const capOf = (fr, i) => `${i === 0 ? 'Giro' : `Cascada ${i}`}${fr.mult ? ` · x${fr.mult}` : ''}${fr.win ? ` · ${fr.win.toFixed(2)}x` : ''}`;

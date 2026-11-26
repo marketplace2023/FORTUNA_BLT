@@ -8,6 +8,7 @@ import { playLines } from '../engine/lines.js';
 import { playWays } from '../engine/ways.js';
 import { playAnywhere } from '../engine/anywhere.js';
 import { createRoulettePlay, publicRoulette, rouletteMath, roulettePar } from '../engine/roulette.js';
+import { buildRacing, racingInfo } from './racing.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(here, '..', '..');
@@ -54,6 +55,7 @@ export function buildGame(def, scale = 1) {
     const math = rouletteMath(def);
     return { def, math, configHash: sha256(canonical(math)), scale: 1, play: createRoulettePlay(math), par: roulettePar(math) };
   }
+  if (def.engine === 'race') return buildRacing(def);
   const strips = {};
   for (const [mode, reels] of Object.entries(def.reels)) {
     strips[mode] = reels.map((w, i) => buildStrip(def.id, `${mode}${i}`, w, def.stack || 1));
@@ -112,6 +114,7 @@ const waysCount = (d) => (d.engine === 'ways' ? d.rows ** d.cols : null);
 
 /** Información pública que necesita el cliente: nada de tiras ni pesos. */
 export function publicInfo(game, settings) {
+  if (game.def.engine === 'race') return racingInfo(game, settings, BETS);
   const d = game.def;
   if (d.engine === 'roulette') {
     const chips = BETS.filter((b) => b <= settings.maxBet);
@@ -163,12 +166,13 @@ export function publicInfo(game, settings) {
 }
 
 /** Liquida una ronda o reproduce un asiento registrado, en unidades del libro. */
-export function settleRound(game, rng, bet, stakes) {
+export function settleRound(game, rng, bet, input) {
   if (game.def.engine === 'roulette') {
+    const stakes = input;
     if (!stakes?.length || stakes.reduce((total, s) => total + s.units, 0) !== bet) throw new Error('Apuesta de ruleta incoherente');
     const result = game.play(rng, stakes);
     return { result, win: result.paid };
   }
-  const result = game.play(rng);
+  const result = game.play(rng, input);
   return { result, win: Math.floor(result.win * bet + 1e-6) };
 }

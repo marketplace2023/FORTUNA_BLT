@@ -40,7 +40,7 @@ for (const e of ledger.entries) {
   if (!g || g.configHash !== e.cfg) { bad++; console.log(`✗ ${e.roundId}: versión de matemática ${e.cfg.slice(0, 12)} no archivada`); continue; }
   let matches = false;
   try {
-    const { result, win } = settleRound(g, new Drbg(e.seed), e.bet, e.stakes);
+    const { result, win } = settleRound(g, new Drbg(e.seed), e.bet, e.stakes ?? e.input);
     matches = sha256(canonical(result)) === e.rh && win === e.win && result.number === e.number;
   } catch { /* Un asiento inválido se informa junto con las discrepancias. */ }
   if (!matches) { bad++; console.log(`✗ ${e.roundId}: el resultado reproducido no coincide`); }

@@ -119,6 +119,10 @@ main { padding: 0 clamp(16px, 4vw, 40px); max-width: 1280px; margin: 0 auto; }
 .roulette-card { background: #102d32; border-color: #d3ab6166; }
 .roulette-card .mini, .roulette-card .big { display: none; }
 .roulette-card .cover .title { font-family: Georgia, serif; color: #ffe6af; bottom: 17px; text-shadow: 0 2px 8px #071d23; }
+.racing-card { background: #193624; border-color: #b2b28566; }
+.racing-card .mini, .racing-card .big { display: none; }
+.racing-card .cover::before { content: ''; position: absolute; width: 110%; height: 85%; left: -2%; top: 6%; background: url('/assets/racing/gallop.png') 0 0 / 400% 200% no-repeat; }
+.racing-card .cover .title { font-family: Georgia, serif; font-style: italic; color: #f2e4be; bottom: 17px; text-shadow: 0 2px 8px #12251e; }
 
 .trust { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 56px 0 24px; }
 .trust-item { padding: 20px; border-radius: 18px; background: rgba(255, 255, 255, .035); border: 1px solid var(--line); }

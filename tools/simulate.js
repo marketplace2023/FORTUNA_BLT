@@ -31,6 +31,7 @@ async function main() {
   const { CATALOG } = await import('../server/games/catalog.js');
   const { buildGame, readCalibration, CALIBRATION_FILE, PAR_DIR } = await import('../server/games/index.js');
   const cal = readCalibration();
+  if (only === 'hipodromo-royale') { console.error('Usa node tools/test-racing.mjs para validar el modelo de carreras. Las cuotas se derivan de probabilidades exactas.'); process.exit(1); }
   const selected = CATALOG.filter((d) => !only || d.id === only);
   if (!selected.length) { console.error('Juego no encontrado:', only); process.exit(1); }
   for (const d of selected.filter((d) => d.engine === 'roulette')) {
@@ -38,7 +39,7 @@ async function main() {
     console.log(`✓ ${d.id} · PAR exacta, calculada por tipo de apuesta`);
     console.table(par.rows.map(({ label, payout, rtp }) => ({ Apuesta: label, Pago: `×${payout}`, RTP: `${rtp.toFixed(4)}%` })));
   }
-  const defs = selected.filter((d) => d.engine !== 'roulette');
+  const defs = selected.filter((d) => d.engine !== 'roulette' && d.engine !== 'race');
   if (!defs.length) return;
 
   fs.mkdirSync(PAR_DIR, { recursive: true });

@@ -13,6 +13,7 @@ import { EUROPEAN_PAYOUTS, EUROPEAN_WHEEL } from '../engine/roulette.js';
  *  - anywhere: pago × apuesta total
  */
 
+import { RACING_DEF } from './racing.js';
 export const BETS = [0.2, 0.4, 1, 2, 4, 10, 20, 40, 100];
 
 const LINES_3X3 = [
@@ -42,6 +43,7 @@ export const CATALOG = [
       boost: { count: 3, weights: { 50: 59, 100: 27, 250: 9, 500: 5 } },
     },
   },
+  RACING_DEF,
   // ───────────────────────────── 3×3 RESPIN ─────────────────────────────
   {
     id: 'koi-dorado',
