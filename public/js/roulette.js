@@ -71,6 +71,7 @@ function sync() {
     else delete b.dataset.mult;
     b.lastElementChild.hidden = !value;
     b.lastElementChild.textContent = value ? chipFormatter.format(value / UNIT) : '';
+    b.lastElementChild.dataset.units = value || '';
     const label = def.kind === 'straight' ? `${def.label}, ${COLORS[rules.colors[def.numbers[0]]]}` : def.label;
     b.setAttribute('aria-label', `${label}${value ? `, apostado ${money(value)}` : ''}${boost ? `, multiplicador ${boost.mult}` : ''}`);
   }
@@ -87,7 +88,8 @@ function sync() {
   $('#repeat').disabled = locked || !previous.size;
   $('#clear').disabled = locked || !stakes.size;
   $('#spin').disabled = busy || (!pending && (!total || total < units(info.minBet) || Boolean(validateTotal(stakes))));
-  $('#spin').textContent = busy ? 'Girando…' : pending ? 'Recuperar giro' : 'Girar';
+  $('#spin span').textContent = busy ? 'Girando…' : pending ? 'Recuperar giro' : 'Girar';
+  $('#spin').classList.toggle('is-spinning', busy);
 }
 
 function betButton(id, text, style = {}) {
