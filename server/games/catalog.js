@@ -11,6 +11,7 @@
  *  - anywhere: pago × apuesta total
  */
 
+import { RACING_DEF } from './racing.js';
 export const BETS = [0.2, 0.4, 1, 2, 4, 10, 20, 40, 100];
 
 const LINES_3X3 = [
@@ -26,6 +27,7 @@ const same = (n, w) => Array.from({ length: n }, () => ({ ...w }));
 const waysReels = (n, w) => Array.from({ length: n }, (_, i) => (i === 0 ? { ...w, W: 0 } : { ...w }));
 
 export const CATALOG = [
+  RACING_DEF,
   // ───────────────────────────── 3×3 RESPIN ─────────────────────────────
   {
     id: 'koi-dorado',

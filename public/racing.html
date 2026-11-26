@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10271f"><title>Hipódromo Royale · VLT</title>
+  <meta name="description" content="Tu propia carrera. Ocho caballos, cuotas fijas y apuestas a ganador.">
+  <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/racing.css">
+  <link rel="preload" href="/assets/racing/grounds.png" as="image"><link rel="preload" href="/assets/racing/gallop.png" as="image">
+</head>
+<body>
+  <header class="topbar"><a href="/" class="back" aria-label="Volver al lobby">←</a><a class="wordmark" href="/">VLT <span>RACING CLUB</span></a><div class="account"><span id="mode">INVITADO</span><strong id="balance">—</strong><small>CRÉDITOS</small></div></header>
+  <main>
+    <section class="heading"><div><p class="eyebrow">VIRTUAL THOROUGHBRED RACING</p><h1>Hipódromo <em>Royale</em></h1></div><div class="heading-note"><span class="live-dot"></span> Tu carrera. Tu elección.</div></section>
+    <div class="layout">
+      <div class="main-column">
+        <section class="broadcast" aria-label="Vista de la carrera">
+          <div class="broadcast-head"><span class="channel">ROYALE <b>SPORTS</b></span><span id="raceState" role="status" aria-live="polite">PREPARANDO LA PISTA</span><button id="sound" class="text-btn" aria-pressed="false" aria-label="Activar sonido">Sonido apagado</button></div>
+          <div class="viewport"><canvas id="track" role="img" aria-label="Hipódromo virtual de ocho participantes"></canvas><div class="race-bug"><span>ROYAL PARK</span><strong id="conditions">—</strong><small>CARRERA INDIVIDUAL · A GANADOR</small></div><div class="camera-caption" id="cameraLabel" aria-hidden="true"></div><div id="countdown" hidden></div><button id="skip" class="skip" hidden>Ver llegada</button><div class="distance"><span id="distanceLeft">ESPERANDO TU APUESTA</span><div><i id="progress"></i></div></div></div>
+          <div class="running-order" id="runningOrder" aria-label="Orden de los participantes"></div>
+          <nav class="camera-controls" aria-label="Cámaras de carrera"><span>REALIZACIÓN</span><button type="button" data-camera="auto" aria-pressed="true">Auto</button><button type="button" data-camera="side" aria-pressed="false">Lateral</button><button type="button" data-camera="front" aria-pressed="false">Frontal</button><button type="button" data-camera="finish" aria-pressed="false">Meta</button><button type="button" id="cinema">Ampliar ⤢</button></nav><div class="broadcast-foot"><span>SIMULACIÓN VIRTUAL</span><span>Reproducción acelerada · resultado del servidor</span></div>
+        </section>
+        <section id="result" class="result" hidden aria-live="polite"></section>
+        <section class="program" aria-labelledby="programTitle">
+          <div class="section-heading"><div><p class="eyebrow">CONOCE A LOS PARTICIPANTES</p><h2 id="programTitle">El programa de hoy</h2></div><button id="refresh" class="subtle">Cambiar carrera ↻</button></div>
+          <p class="program-hint">Elige un caballo. Abre su ficha para comparar sus cualidades.</p>
+          <div class="table-head"><span>PARTICIPANTE</span><span>PROBABILIDAD</span><span>CUOTA</span><span></span></div>
+          <div id="horses" class="horses" aria-label="Caballos disponibles"></div>
+          <p class="fine-print" id="expiry"></p>
+        </section>
+      </div>
+      <aside class="sidebar">
+        <section class="ticket" aria-labelledby="ticketTitle"><div class="ticket-head"><span class="eyebrow">TU SELECCIÓN</span><span>A GANADOR</span></div><h2 id="ticketTitle">Haz tu jugada.</h2><div id="selection" class="selection empty">Selecciona un caballo del programa.</div><label class="stake-label" for="stake">Importe de la apuesta <span>CRÉDITOS</span></label><select id="stake" disabled aria-label="Importe de la apuesta"></select><div class="ticket-values"><div><span>Cuota fija</span><strong id="ticketOdds">—</strong></div><div class="potential"><span>Retorno potencial</span><strong id="potential">—</strong></div><div><span>Beneficio si gana</span><strong id="profit">—</strong></div></div><p class="return-note">El retorno incluye el importe apostado.</p><button id="bet" class="primary" disabled>Elige un caballo</button><button id="demo" class="primary" hidden>Jugar demo · 2.000 créditos</button><a href="/?login" id="login" class="login" hidden>Entrar con mi cuenta</a><p id="ticketStatus" class="ticket-status" role="status" aria-live="polite"></p><p class="ticket-note">Una apuesta, una carrera individual.<br>Las cuotas quedan fijadas al confirmar.</p></section>
+        <section class="how"><p class="eyebrow">ANTES DE LA SALIDA</p><h3>La forma importa.</h3><p>Velocidad y salida para tomar posición. Resistencia para el remate. Jinete, forma y adaptación a la pista completan el pronóstico.</p><button id="rulesBtn" class="text-link">Cómo se calculan las cuotas ↗</button><button id="historyBtn" class="text-link">Mis carreras ↗</button></section>
+      </aside>
+    </div>
+    <footer><span>VLT ORIGINALS / RACING</span><p>18+ · Juega con responsabilidad. Ningún caballo tiene la victoria asegurada.</p></footer>
+  </main>
+  <dialog id="rules" class="dialog"><div class="dialog-heading"><h2>Las reglas de la pista</h2><form method="dialog"><button aria-label="Cerrar reglas">×</button></form></div><div class="rule-copy"><h3>Apuesta a ganador</h3><p>Ganas si tu caballo termina primero. El retorno total es apuesta × cuota; incluye tu apuesta. Si pierde, el retorno es cero.</p><h3>Factores que sí cuentan</h3><p>Velocidad, resistencia, salida, habilidad del jinete y forma del día determinan una valoración. La distancia y el estado de la pista favorecen a unos perfiles frente a otros. La valoración se transforma en un peso positivo: su proporción del total es la probabilidad exacta de ganar.</p><p>Los 2.000 metros dan más importancia a la resistencia; 1.200 y 1.600 metros favorecen más la velocidad. La adaptación combina superficie preferida y distancia preferida. Los atributos no son porcentajes de victoria.</p><h3>Cuotas fijas</h3><p>Cuota = 0,96 ÷ probabilidad, redondeada hacia abajo a dos decimales. El retorno teórico de cada elección es ligeramente inferior o igual al 96% por ese redondeo. Es un promedio matemático a largo plazo, no una promesa de recuperar dinero en una sesión.</p><h3>Una carrera por apuesta</h3><p>El servidor decide y liquida la carrera al aceptar la apuesta. La animación acelerada reproduce su orden de llegada; omitirla o cerrar la página no cambia el premio. No puedes cambiar de caballo después de confirmar.</p><p>El programa vence a los cinco minutos. Puedes cambiarlo sin apostar. El historial permite reproducir el resultado y verificarlo sin un nuevo cargo.</p></div></dialog>
+  <dialog id="history" class="dialog"><div class="dialog-heading"><h2>Mis carreras</h2><form method="dialog"><button aria-label="Cerrar historial">×</button></form></div><div id="historyList"></div></dialog>
+  <button id="mobileTicket" class="mobile-ticket" hidden>Ver mi boleto →</button>
+  <script type="module" src="/js/racing.js"></script>
+</body>
+</html>

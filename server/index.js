@@ -8,6 +8,7 @@ import { loadGames, buildGame, publicInfo, readPar, ROOT } from './games/index.j
 import { CATALOG, BETS } from './games/catalog.js';
 import { Drbg, newSeed } from './rng.js';
 import { UNIT, toUnits, toCredits, canonical, sha256, randomId } from './util.js';
+import { RACING_ID, raceCard } from './games/racing.js';
 
 const PORT = Number(process.env.PORT || 3000);
 const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, 'data');
@@ -21,6 +22,8 @@ const sessions = new Sessions(12 * 3600e3);
 const adminSessions = new Sessions(4 * 3600e3);
 const loginLimit = new RateLimit(10, 10 * 60e3);
 const demoLimit = new RateLimit(20, 60 * 60e3);
+const raceCardLimit = new RateLimit(120, 60e3);
+const offerSecret = crypto.randomBytes(32);
 
 // ───────────── Arranque: archivo de versiones de matemática y administrador inicial ─────────────
 function archiveConfigs() {
@@ -132,7 +135,7 @@ function gameForHash(gameId, hash) {
 function replay(e) {
   const g = gameForHash(e.gameId, e.cfg);
   if (!g) return { ok: false, reason: 'No se encontró la versión de matemática de esta ronda' };
-  const result = g.play(new Drbg(e.seed));
+  const result = g.play(new Drbg(e.seed), e.input);
   const rh = sha256(canonical(result));
   const win = Math.floor(result.win * e.bet + 1e-6);
   const ok = rh === e.rh && win === e.win && g.configHash === e.cfg;
@@ -218,6 +221,7 @@ route('POST', '/api/spin', async (req, _p, body) => {
   const p = requirePlayer(req);
   const g = games.get(String(body.gameId));
   if (!g) fail(404, 'Juego no encontrado');
+  if (g.def.engine === 'race') fail(400, 'Elige un caballo desde el hipódromo');
   const s = store.gameSettings(g.def.id);
   if (!s.enabled) fail(403, 'Juego deshabilitado');
   const betC = Number(body.bet);
@@ -237,6 +241,57 @@ route('POST', '/api/spin', async (req, _p, body) => {
     bet, win, bal: before - bet + win, seed, rh, feat,
   });
   return { roundId, seq: e.seq, hash: e.hash, configHash: g.configHash, seed, resultHash: rh, bet: betC, win: toCredits(win), balance: toCredits(e.bal), result };
+});
+
+function raceReceipt(e) {
+  const g = gameForHash(e.gameId, e.cfg);
+  return { roundId: e.roundId, configHash: e.cfg, seed: e.seed, resultHash: e.rh, bet: toCredits(e.bet), win: toCredits(e.win), balance: toCredits(store.balance(e.playerId)), result: g.play(new Drbg(e.seed), e.input) };
+}
+
+route('GET', '/api/racing/card', (req) => {
+  if (!raceCardLimit.allow(ip(req))) fail(429, 'Espera un momento antes de pedir otro programa');
+  const g = games.get(RACING_ID), s = store.gameSettings(RACING_ID);
+  if (!s.enabled) fail(403, 'Hipódromo deshabilitado');
+  const payload = { offerSeed: newSeed(), expiresAt: Date.now() + 300000, cfg: g.configHash };
+  const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const token = data + '.' + crypto.createHmac('sha256', offerSecret).update(data).digest('hex');
+  return { token, expiresAt: payload.expiresAt, configHash: g.configHash, ...raceCard(g.def, payload.offerSeed), bets: BETS.filter(b => b >= s.minBet && b <= s.maxBet) };
+});
+
+route('POST', '/api/racing/bet', (req, _params, body) => {
+  const p = requirePlayer(req);
+  const token = body.token;
+  if (typeof token !== 'string' || token.length > 2048) fail(400, 'Programa inválido');
+  const offerId = sha256(token);
+  const betC = Number(body.bet), horseId = Number(body.horseId);
+  const previous = store.raceOffers.get(`${p.id}|${offerId}`);
+  if (previous) {
+    if (betC !== toCredits(previous.bet) || horseId !== previous.input.horseId) fail(409, 'Este programa ya tiene una apuesta registrada');
+    return raceReceipt(previous);
+  }
+  const [data, signature, extra] = token.split('.');
+  const expected = crypto.createHmac('sha256', offerSecret).update(data).digest('hex');
+  if (extra || !signature || !/^[a-f0-9]{64}$/.test(signature) || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) fail(409, 'El programa venció. Actualiza la carrera');
+  let offer;
+  try { offer = JSON.parse(Buffer.from(data, 'base64url').toString('utf8')); } catch { fail(400, 'Programa inválido'); }
+  const g = games.get(RACING_ID), s = store.gameSettings(RACING_ID);
+  if (offer.expiresAt < Date.now() || offer.cfg !== g.configHash) fail(409, 'El programa venció. Actualiza la carrera');
+  if (!s.enabled) fail(403, 'Hipódromo deshabilitado');
+  if (typeof body.horseId !== 'number' || !Number.isInteger(horseId) || !g.def.model.horses.some(h => h.id === horseId)) fail(400, 'Caballo inválido');
+  if (typeof body.bet !== 'number' || !BETS.includes(betC) || betC < s.minBet || betC > s.maxBet) fail(400, 'Apuesta no permitida');
+  const bet = toUnits(betC), before = store.balance(p.id);
+  if (before < bet) fail(402, 'Saldo insuficiente');
+  const seed = newSeed(), input = { offerSeed: offer.offerSeed, offerId, horseId };
+  const result = g.play(new Drbg(seed), input);
+  const win = Math.floor(result.win * bet + 1e-6);
+  const e = store.append({ type: 'round', roundId: 'H' + Date.now().toString(36).toUpperCase() + randomId(3).toUpperCase(), playerId: p.id, demo: p.demo || undefined, gameId: RACING_ID, cfg: g.configHash, bet, win, bal: before - bet + win, seed, input, rh: sha256(canonical(result)) });
+  return raceReceipt(e);
+});
+
+route('GET', '/api/racing/rounds/:id', (req, { id }) => {
+  const p = requirePlayer(req), e = store.rounds.get(id);
+  if (!e || e.playerId !== p.id || e.gameId !== RACING_ID) fail(404, 'Carrera no encontrada');
+  return raceReceipt(e);
 });
 
 route('GET', '/api/history', (req) => {
@@ -506,6 +561,7 @@ function serveStatic(req, res, pathname) {
   else if (/^\/play\/templo-jaguar\/?$/.test(pathname)) file = 'jaguar.html';
   else if (/^\/play\/fiesta-dulce\/?$/.test(pathname)) file = 'sweet.html';
   else if (/^\/play\/panda-zen\/?$/.test(pathname)) file = 'panda.html';
+  else if (/^\/play\/hipodromo-royale\/?$/.test(pathname)) file = 'racing.html';
   else if (/^\/play\/[\w-]+\/?$/.test(pathname)) file = 'play.html';
   else if (pathname === '/admin' || pathname === '/admin/') file = 'admin/index.html';
   else file = decodeURIComponent(pathname).replace(/^\/+/, '');

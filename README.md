@@ -1,6 +1,6 @@
 # VLT Royale — sala de juegos VLT auditables
 
-Sitio con 10 tragamonedas originales (estilo móvil vertical), servidor de resultados auditable y panel de administración. Node 20+, **sin dependencias**.
+Sitio con 10 tragamonedas originales y un hipódromo virtual de carreras individuales, servidor de resultados auditable y panel de administración. Node 20+, **sin dependencias de ejecución**.
 
 ```bash
 npm start            # http://localhost:3000  ·  panel en /admin
@@ -10,7 +10,7 @@ En el primer arranque se crea el usuario `admin` con una contraseña aleatoria. 
 
 Variables de entorno: `PORT`, `DATA_DIR` (por defecto `./data`), `SITE_NAME`, `ADMIN_PASSWORD`.
 
-## Los 10 juegos
+## Las 10 tragamonedas
 
 | Juego | Mecánica | RTP (PAR, 5M giros) | Volatilidad |
 |---|---|---|---|
@@ -26,6 +26,14 @@ Variables de entorno: `PORT`, `DATA_DIR` (por defecto `./data`), `SITE_NAME`, `A
 | Fiesta Dulce | 6×5, paga en cualquier lugar (8+), multiplicadores en FS | 95,80 % ± 1,19 | Alta |
 
 Temas, símbolos, tablas de pago y tiras son originales. Las mecánicas (cascadas, ways, respin, pago en cualquier lugar) son genéricas del género.
+
+## Hipódromo Royale
+
+`http://localhost:3000/play/hipodromo-royale`: ocho caballos, apuesta a ganador y una carrera individual por apuesta. Velocidad, resistencia, salida, jinete, forma y adaptación a la pista determinan las probabilidades; las cuotas fijas corresponden a un retorno teórico inferior o igual al 96% por redondeo. No usa la PAR ni la calibración de las tragamonedas.
+
+Incluye pista 3D con cámaras de retransmisión (Canvas alternativo en dispositivos sin WebGL), boleto con retorno total y beneficio neto, historial, auditoría y protección contra cargos duplicados. [Modelo, API y arte](docs/hipodromo-royale.md).
+
+Pruebas: `node tools/test-racing.mjs` (requiere Playwright y Microsoft Edge; instalar herramienta con `npm install --no-save --package-lock=false playwright`). Usa un libro temporal y no modifica saldos locales.
 
 ## Por qué es auditable
 

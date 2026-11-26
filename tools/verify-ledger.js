@@ -38,7 +38,7 @@ for (const e of ledger.entries) {
   rounds++;
   const g = gameFor(e.cfg);
   if (!g || g.configHash !== e.cfg) { bad++; console.log(`✗ ${e.roundId}: versión de matemática ${e.cfg.slice(0, 12)} no archivada`); continue; }
-  const res = g.play(new Drbg(e.seed));
+  const res = g.play(new Drbg(e.seed), e.input);
   const win = Math.floor(res.win * e.bet + 1e-6);
   if (sha256(canonical(res)) !== e.rh || win !== e.win) { bad++; console.log(`✗ ${e.roundId}: el resultado reproducido no coincide`); }
   const b = (bal.get(e.playerId) || 0) - e.bet + e.win;

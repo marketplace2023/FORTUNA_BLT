@@ -7,6 +7,7 @@ import { canonical, sha256, sig3 } from '../util.js';
 import { playLines } from '../engine/lines.js';
 import { playWays } from '../engine/ways.js';
 import { playAnywhere } from '../engine/anywhere.js';
+import { buildRacing, racingInfo } from './racing.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(here, '..', '..');
@@ -49,6 +50,7 @@ export function readPar(id) {
  * `math` es exactamente lo que define el resultado; su hash identifica la versión.
  */
 export function buildGame(def, scale = 1) {
+  if (def.engine === 'race') return buildRacing(def);
   const strips = {};
   for (const [mode, reels] of Object.entries(def.reels)) {
     strips[mode] = reels.map((w, i) => buildStrip(def.id, `${mode}${i}`, w, def.stack || 1));
@@ -107,6 +109,7 @@ const waysCount = (d) => (d.engine === 'ways' ? d.rows ** d.cols : null);
 
 /** Información pública que necesita el cliente: nada de tiras ni pesos. */
 export function publicInfo(game, settings) {
+  if (game.def.engine === 'race') return racingInfo(game, settings, BETS);
   const d = game.def;
   const par = readPar(d.id);
   const unit = 1 / d.payDiv;

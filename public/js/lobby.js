@@ -5,6 +5,7 @@ let games = [];
 let filter = 'all';
 let mode = 'login';
 const illustratedCovers = {
+  'hipodromo-royale': { className: 'racing-card', background: "linear-gradient(0deg, #132d20, transparent 80%), url('/assets/racing/grounds.png') center / cover" },
   'panda-zen': { className: 'panda-card', background: "linear-gradient(0deg, #1c382b, transparent 75%), url('/assets/panda/garden.png') left top / cover" },
   'koi-dorado': { className: 'koi-card', background: "linear-gradient(0deg, #052a27 0%, transparent 60%), url('/assets/koi/scene.png') center 15% / cover" },
   'frutas-neon': { className: 'neon-card', background: "linear-gradient(0deg, #0c1723, transparent 70%), url('/assets/neon/arcade.png') center / cover" },
@@ -71,7 +72,7 @@ function renderGrid() {
         el('div', { class: 'card-body' },
           el('span', { class: 'card-tag' }, g.tag),
           el('div', { class: 'badges' },
-            el('span', { class: 'badge rtp' }, `RTP ${g.rtp.toFixed(2)}%`),
+            el('span', { class: 'badge rtp' }, g.engine === 'race' ? `Retorno teórico ≤${g.rtp.toFixed(0)}%` : `RTP ${g.rtp.toFixed(2)}%`),
             g.volatility ? el('span', { class: 'badge' }, `Vol. ${g.volatility}`) : null,
             el('span', { class: 'badge' }, `Máx ${g.maxWin.toLocaleString('es')}x`),
           ),

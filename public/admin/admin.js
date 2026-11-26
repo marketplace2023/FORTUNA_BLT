@@ -216,6 +216,16 @@ function miniGrid(grid, game, wins) {
   return g;
 }
 function framesOf(res, game) {
+  if (res.engine === 'race') {
+    return el('div', { class: 'note' },
+      el('strong', {}, `${res.card.distance} m · Pista ${res.card.surface}`),
+      el('p', {}, `Caballo elegido: ${res.card.horses.find(h => h.id === res.selected).name}`),
+      el('ol', {}, res.order.map(id => {
+        const h = res.card.horses.find(h => h.id === id);
+        return el('li', {}, `#${id} ${h.name} · cuota ${h.odds.toFixed(2)} · ${(res.runners.find(r => r.id === id).finishMs / 1000).toFixed(3)} s`);
+      })),
+    );
+  }
   const out = [];
   const add = (fr, cap) => out.push(el('div', {}, miniGrid(fr.grid, game, fr.wins), el('div', { class: 'frame-cap' }, cap)));
   const capOf = (fr, i) => `${i === 0 ? 'Giro' : `Cascada ${i}`}${fr.mult ? ` · x${fr.mult}` : ''}${fr.win ? ` · ${fr.win.toFixed(2)}x` : ''}`;

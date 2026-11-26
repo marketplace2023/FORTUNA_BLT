@@ -31,7 +31,8 @@ async function main() {
   const { CATALOG } = await import('../server/games/catalog.js');
   const { readCalibration, CALIBRATION_FILE, PAR_DIR } = await import('../server/games/index.js');
   const cal = readCalibration();
-  const defs = CATALOG.filter((d) => !only || d.id === only);
+  if (only === 'hipodromo-royale') { console.error('Usa node tools/test-racing.mjs para validar el modelo de carreras. Las cuotas se derivan de probabilidades exactas.'); process.exit(1); }
+  const defs = CATALOG.filter((d) => d.engine !== 'race' && (!only || d.id === only));
   if (!defs.length) { console.error('Juego no encontrado:', only); process.exit(1); }
 
   fs.mkdirSync(PAR_DIR, { recursive: true });
