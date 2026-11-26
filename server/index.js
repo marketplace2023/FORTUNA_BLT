@@ -600,6 +600,7 @@ function serveStatic(req, res, pathname) {
   else if (/^\/play\/templo-jaguar\/?$/.test(pathname)) file = 'jaguar.html';
   else if (/^\/play\/fiesta-dulce\/?$/.test(pathname)) file = 'sweet.html';
   else if (/^\/play\/panda-zen\/?$/.test(pathname)) file = 'panda.html';
+  else if (/^\/play\/fortunazoo\/?$/.test(pathname)) file = 'zoo.html';
   else if (games.get(pathname.match(/^\/play\/([\w-]+)\/?$/)?.[1])?.def.engine === 'roulette') file = 'roulette.html';
   else if (/^\/play\/hipodromo-royale\/?$/.test(pathname)) file = 'racing.html';
   else if (/^\/play\/[\w-]+\/?$/.test(pathname)) file = 'play.html';

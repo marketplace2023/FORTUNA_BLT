@@ -1,6 +1,6 @@
 # VLT Royale — sala de juegos VLT auditables
 
-Sitio con 10 tragamonedas originales, una ruleta europea y un hipódromo virtual de carreras individuales, servidor de resultados auditable y panel de administración. Node 20+, **sin dependencias de ejecución**.
+Sitio con 10 tragamonedas originales, una ruleta europea, FortunaZoo y un hipódromo virtual de carreras individuales, servidor de resultados auditable y panel de administración. Node 20+, **sin dependencias de ejecución**.
 
 ```bash
 npm start            # http://localhost:3000  ·  panel en /admin
@@ -30,6 +30,12 @@ Temas, símbolos, tablas de pago y tiras son originales. Las mecánicas (cascada
 ## Ruleta del Eclipse
 
 **Ruleta del Eclipse** se juega en `/play/ruleta-eclipse`. Tiene rueda de un cero, apuestas internas, externas y de vecindad. Tres números distintos reciben un multiplicador por giro, aplicable solo a los plenos. El RTP exacto de cada apuesta es `36/37` (97,2973 %).
+
+## FortunaZoo
+
+`/play/fortunazoo`: ruleta individual de 40 animales. Permite colocar fichas en varios animales; el ganador devuelve ×38,40 sobre su apuesta, incluida la cantidad apostada. Todos tienen la misma probabilidad (2,5%) y el retorno teórico es 96% antes del redondeo de unidades. Incluye arte original, historial, verificación, repetición y protección contra cargos duplicados.
+
+Pruebas: `node tools/test-zoo.mjs`. [Reglas, modelo y prompts](docs/fortunazoo.md).
 
 ## Hipódromo Royale
 

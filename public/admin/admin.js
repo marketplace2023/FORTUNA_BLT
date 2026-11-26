@@ -219,7 +219,7 @@ function framesOf(res, game) {
   if (res.engine === 'roulette') {
     const color = { red: 'rojo', black: 'negro', green: 'verde' }[res.color];
     return [el('div', { style: { width: '100%' } },
-      el('p', {}, el('strong', {}, `${res.number} · ${color}`),
+      el('p', {}, el('strong', {}, res.animal ? `${String(res.number).padStart(2, '0')} · ${res.animal.name}` : `${res.number} · ${color}`),
         res.boosts.length ? ` · Multiplicadores: ${res.boosts.map(({ number, mult }) => `${number} ×${mult}`).join(' / ')}` : ''),
       table(['Posición', 'Apuesta', 'Pago'], res.bets.map((b) => ({ cells: [b.label, money(b.units / 10000), money(b.win / 10000)] }))),
     )];

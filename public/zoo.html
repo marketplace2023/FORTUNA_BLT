@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#102c20"><title>FortunaZoo · VLT</title>
+  <meta name="description" content="Cuarenta animales, una ruleta y toda la fortuna de la selva.">
+  <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/zoo.css">
+  <link rel="preload" href="/assets/zoo/sanctuary-v2.png" as="image"><link rel="preload" href="/assets/zoo/animals-a-v2.png" as="image"><link rel="preload" href="/assets/zoo/animals-b-v2.png" as="image">
+</head>
+<body>
+  <header class="topbar"><a href="/" class="back" aria-label="Volver al lobby">←</a><a href="/" class="studio">VLT <span>ORIGINALS</span></a><div class="account"><span id="mode">INVITADO</span><strong id="balance">—</strong><small>CRÉDITOS</small></div><button id="sound" class="sound" aria-label="Activar sonido" aria-pressed="false">Sonido apagado</button></header>
+  <main class="layout">
+    <div class="main-column">
+      <section class="jungle-stage" aria-label="Ruleta FortunaZoo de cuarenta animales">
+        <div class="brand"><span>LA FORTUNA TIENE VIDA</span><h1>Fortuna<span>Zoo</span></h1><p>40 animales · Una selva de posibilidades</p></div>
+        <div class="wheel-status" id="wheelStatus" role="status" aria-live="polite">PREPARA TU JUGADA</div>
+        <div class="wheel-frame"><div class="pointer" aria-hidden="true"></div><canvas id="wheel" role="img" aria-label="Ruleta con cuarenta animales numerados del uno al cuarenta"></canvas><div class="hub" id="hub"><span class="hub-eyebrow">EL ESPÍRITU DE LA SELVA</span><div id="hubArt" class="hub-art"></div><strong id="hubTitle">Tu fortuna<br>está por llegar.</strong><small id="hubDetail">Elige tus animales y gira</small></div></div>
+        <div class="stage-caption"><span>GIRO INDIVIDUAL</span><button id="skip" hidden>Ver resultado →</button><span>RETORNO POR ACIERTO <b>×38,40</b></span></div>
+      </section>
+      <div class="recent-strip"><span>TUS ÚLTIMOS RESULTADOS</span><div id="recent"><small>Aquí aparecerán tus animales ganadores</small></div><button id="historyBtn">Historial ↗</button></div>
+      <section id="result" class="result" hidden aria-live="polite"></section>
+      <section class="betting-board" aria-labelledby="boardTitle">
+        <div class="board-heading"><div><p class="eyebrow">HAZ TU ELECCIÓN</p><h2 id="boardTitle">Los habitantes de la selva</h2></div><button id="clear" class="subtle">Limpiar mesa</button></div>
+        <p class="board-hint">Elige una ficha y toca un animal para apostar. Puedes elegir varios.</p>
+        <div class="chip-tray" id="chips" aria-label="Valor de las fichas"></div>
+        <div class="animal-grid" id="animals" aria-label="Tablero de cuarenta animales"></div>
+        <p class="board-note">Cada animal tiene un 2,5% de probabilidad. Solo paga el animal ganador.</p>
+      </section>
+    </div>
+    <aside class="sidebar"><section class="ticket" id="ticket" aria-labelledby="ticketTitle"><div class="ticket-heading"><span>TU BOLETO</span><span>FORTUNAZOO</span></div><h2 id="ticketTitle">Deja tu huella.</h2><p class="ticket-intro">Tus animales y sus apuestas, en un solo giro.</p><div id="basket" class="basket"><p class="empty">Añade una ficha a tu animal favorito.</p></div><div class="ticket-total"><span>Total apostado</span><strong id="total">0,00</strong></div><p class="payout-note">Por cada crédito en el animal ganador recibes <strong>38,40 créditos</strong>, incluida su apuesta.</p><button class="primary" id="spin" disabled>Coloca tus fichas</button><button class="primary" id="demo" hidden>Jugar demo · 2.000 créditos</button><a id="login" class="login" href="/?login" hidden>Entrar con mi cuenta</a><p id="message" class="message" role="status" aria-live="polite"></p><div class="ticket-foot"><span id="limits"></span><span>CUOTAS FIJAS</span></div></section><section class="guide"><p class="eyebrow">CADA GIRO, UNA NUEVA HISTORIA</p><h3>La selva decide.</h3><p>40 animales con la misma oportunidad. La rueda gira y el puntero revela tu resultado.</p><button id="rulesBtn">Reglas y premios ↗</button></section></aside>
+  </main>
+  <footer><span>FORTUNAZOO / VLT ORIGINALS</span><p>18+ · Juega con responsabilidad · Juego virtual</p></footer>
+  <button class="mobile-ticket" id="mobileTicket" hidden>Ver boleto · <span id="mobileTotal">0,00</span> →</button>
+  <dialog id="rules" class="dialog"><header><h2>Las reglas de FortunaZoo</h2><form method="dialog"><button aria-label="Cerrar reglas">×</button></form></header><div class="rules-copy"><h3>40 animales. La misma oportunidad.</h3><p>La rueda tiene 40 posiciones y cada animal ocupa una sola. La probabilidad de cualquier animal es 1 entre 40 (2,5%). El servidor elige el resultado de forma aleatoria antes de la animación.</p><h3>Coloca tus fichas</h3><p>Selecciona el valor de una ficha y toca un animal para añadirla. Puedes apostar a varios animales en el mismo giro. El total debe respetar los límites de la mesa; el botón de restar retira una ficha y la papelera del boleto retira esa apuesta completa.</p><h3>Retorno ×38,40</h3><p>Solo paga la apuesta colocada en el animal ganador: importe en ese animal ×38,40. Ese retorno incluye su apuesta. Por ejemplo, 1 crédito en un animal devuelve 38,40 si sale. Si apostaste a varios, las otras apuestas pierden. El beneficio neto es el retorno menos el total apostado en el giro.</p><p>El retorno teórico es 96% antes del redondeo a 1/10.000 de crédito. Es un promedio matemático a largo plazo, no una garantía de recuperar dinero en una sesión. Apostar a los 40 animales cubre todos los resultados, pero no garantiza beneficio.</p><h3>Un giro individual por apuesta</h3><p>No hay sorteos compartidos ni cuenta regresiva de otras personas. Al confirmar, la apuesta y el premio se registran juntos. Cerrar la página, omitir la animación o repetir una solicitud no cambia el resultado ni duplica el cargo.</p><p>Desde el historial puedes verificar y repetir la presentación de tus giros sin apostar de nuevo.</p></div></dialog>
+  <dialog id="history" class="dialog"><header><h2>Tu camino por la selva</h2><form method="dialog"><button aria-label="Cerrar historial">×</button></form></header><div id="historyList"></div></dialog>
+  <script type="module" src="/js/zoo.js"></script>
+</body>
+</html>

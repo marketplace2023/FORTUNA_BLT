@@ -9,6 +9,7 @@ import { playWays } from '../engine/ways.js';
 import { playAnywhere } from '../engine/anywhere.js';
 import { createRoulettePlay, publicRoulette, rouletteMath, roulettePar } from '../engine/roulette.js';
 import { buildRacing, racingInfo } from './racing.js';
+import { buildZoo, publicZoo } from './fortunazoo.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(here, '..', '..');
@@ -51,6 +52,7 @@ export function readPar(id) {
  * `math` es exactamente lo que define el resultado; su hash identifica la versión.
  */
 export function buildGame(def, scale = 1) {
+  if (def.zoo) return buildZoo(def);
   if (def.engine === 'roulette') {
     const math = rouletteMath(def);
     return { def, math, configHash: sha256(canonical(math)), scale: 1, play: createRoulettePlay(math), par: roulettePar(math) };
@@ -114,6 +116,7 @@ const waysCount = (d) => (d.engine === 'ways' ? d.rows ** d.cols : null);
 
 /** Información pública que necesita el cliente: nada de tiras ni pesos. */
 export function publicInfo(game, settings) {
+  if (game.def.zoo) return publicZoo(game, settings, BETS);
   if (game.def.engine === 'race') return racingInfo(game, settings, BETS);
   const d = game.def;
   if (d.engine === 'roulette') {

@@ -9,6 +9,7 @@ import { RACING_DEF, buildRacing, raceCard } from '../server/games/racing.js';
 import { Drbg } from '../server/rng.js';
 import { canonical, sha256 } from '../server/util.js';
 import { Store } from '../server/store.js';
+import { loadGames } from '../server/games/index.js';
 
 const root = path.resolve(import.meta.dirname, '..'), game = buildRacing(RACING_DEF);
 let minRtp = 100, maxOdds = 0;
@@ -139,8 +140,8 @@ try {
   await page.goto(`${origin}/admin#rounds`);await page.locator('.filters label').filter({hasText:/^Tipo/}).locator('select').selectOption('1');await page.waitForSelector('tbody tr');
   await page.locator('tbody tr').filter({hasText:receipt.roundId}).click();
   await page.waitForSelector('#modal[open]');assert.equal(await page.locator('#modal ol li').count(),8);
-  await page.goto(origin);await page.waitForSelector('.racing-card');assert.equal(await page.locator('#grid .card').count(),12);
-  await page.getByRole('button',{name:'Ruletas',exact:true}).click();assert.equal(await page.locator('#grid .roulette-card').count(),1);
+  await page.goto(origin);await page.waitForSelector('.racing-card');assert.equal(await page.locator('#grid .card').count(),loadGames().size);
+  await page.getByRole('button',{name:'Ruletas',exact:true}).click();assert.equal(await page.locator('#grid .roulette-card').count(),[...loadGames().values()].filter(g=>g.def.engine==='roulette').length);
   await page.getByRole('button',{name:'Hipódromo',exact:true}).click();assert.equal(await page.locator('#grid .card').count(),1);
   for (const [id,count] of [['koi-dorado',9],['panda-zen',9],['fiesta-dulce',30]]) {await page.goto(`${origin}/play/${id}`);await page.waitForFunction(n=>document.querySelectorAll('.cell').length===n,count);}
   assert.deepEqual(errors,[]);

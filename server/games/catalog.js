@@ -14,6 +14,7 @@ import { EUROPEAN_PAYOUTS, EUROPEAN_WHEEL } from '../engine/roulette.js';
  */
 
 import { RACING_DEF } from './racing.js';
+import { ZOO_DEF } from './fortunazoo.js';
 export const BETS = [0.2, 0.4, 1, 2, 4, 10, 20, 40, 100];
 
 const LINES_3X3 = [
@@ -29,6 +30,7 @@ const same = (n, w) => Array.from({ length: n }, () => ({ ...w }));
 const waysReels = (n, w) => Array.from({ length: n }, (_, i) => (i === 0 ? { ...w, W: 0 } : { ...w }));
 
 export const CATALOG = [
+  ZOO_DEF,
   {
     id: 'ruleta-eclipse',
     name: 'Ruleta del Eclipse',
