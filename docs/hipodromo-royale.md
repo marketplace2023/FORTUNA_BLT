@@ -74,7 +74,7 @@ Prompt del atlas (transparente):
 
 Se inspeccionaron doce momentos de `public/video/dashing_derby___product_video (1080p).mp4`, de 94 segundos, para estudiar encuadres de salida, seguimiento y llegada. El vídeo permanece como referencia local y no se utiliza en la carrera ni se recorta para simular premios.
 
-La capa 3D está en `public/js/race-track-3d.js`; `race-track.js` selecciona el motor visual y conserva `race-track-2d.js` como alternativa. La duración visual pasa a 24 segundos, con movimiento reducido y omisión disponibles. Las cuotas, probabilidades, semillas y liquidación no cambian.
+La capa 3D está en `public/js/race-track-3d.js` y dura 22 segundos. `race-track.js` selecciona el motor visual y conserva `race-track-2d.js` como alternativa de 13 segundos. El ciclo de galope 3D usa interpolación cúbica entre las poses y avanza con la distancia recorrida. Ambas vistas admiten movimiento reducido y omisión.
 
 El resultado incluye **Ver repetición**, que vuelve a presentar el recibo existente sin enviar otra apuesta ni modificar el saldo. La prueba de integración confirma que el historial no crece al repetir una carrera.
 

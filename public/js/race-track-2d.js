@@ -13,7 +13,7 @@ export class RaceTrack {
     this.width = r.width; this.height = r.height; this.canvas.width = Math.round(r.width * ratio); this.canvas.height = Math.round(r.height * ratio);
     this.ctx.setTransform(ratio, 0, 0, ratio, 0, 0); this.draw();
   }
-  setCard(card) { this.stop(); this.result = null; this.horses = card.horses; this.time = 0; this.draw(); }
+  setCard(card) { this.stop(); this.result = null; this.photo = null; this.horses = card.horses; this.time = 0; this.draw(); }
   choose(id) { this.selected = id; this.draw(); }
   progress(runner, time) {
     const t = Math.max(0, Math.min(1, time / runner.finishMs));
@@ -21,7 +21,7 @@ export class RaceTrack {
     return t + Math.sin(Math.PI * t) * runner.pace + Math.sin(2 * Math.PI * t) * runner.surge;
   }
   async play(result, { onProgress, reduced = false } = {}) {
-    this.stop(); this.result = result; this.horses = result.card.horses; this.selected = result.selected;
+    this.stop(); this.result = result; this.photo = null; this.horses = result.card.horses; this.selected = result.selected;
     this.duration = Math.max(...result.runners.map(r => r.finishMs));
     if (reduced) { this.time = this.duration; this.draw(); onProgress?.(1); return; }
     this.running = true;
@@ -29,7 +29,7 @@ export class RaceTrack {
       this.resolve = resolve;
       const start = performance.now();
       const tick = now => {
-        const p = Math.min(1, (now - start) / 14000);
+        const p = Math.min(1, (now - start) / 13000);
         this.time = this.duration * p; this.draw(); onProgress?.(p);
         if (p < 1 && this.running) this.raf = requestAnimationFrame(tick);
         else { this.running = false; this.resolve = null; resolve(); }
@@ -38,15 +38,70 @@ export class RaceTrack {
     });
   }
   stop() { cancelAnimationFrame(this.raf); this.running = false; if (this.resolve) { this.resolve(); this.resolve = null; } }
-  finish() { this.stop(); if (this.result) this.time = Math.max(...this.result.runners.map(r => r.finishMs)); this.draw(); }
+  finish() { this.stop(); this.photo = null; if (this.result) this.time = Math.max(...this.result.runners.map(r => r.finishMs)); this.draw(); }
+  photoFrame(time, horseId) {
+    this.time = time;
+    this.photo = { horseId };
+    this.draw();
+  }
+  drawBackdrop() {
+    const { ctx, width: w, height: h, background } = this;
+    if (!background.complete || !background.naturalWidth) return;
+    const scale = Math.max(w / background.width, h / background.height);
+    const width = background.width * scale, height = background.height * scale;
+    ctx.drawImage(background, (w - width) / 2, (h - height) / 2, width, height);
+  }
+  drawPhotoFinish() {
+    const { ctx, width: w, height: h, time, sprite } = this;
+    ctx.fillStyle = '#4e6743'; ctx.fillRect(0, 0, w, h);
+    this.drawBackdrop();
+    const turf = ctx.createLinearGradient(0, h * .38, 0, h * .83);
+    turf.addColorStop(0, '#57734600');
+    turf.addColorStop(.45, '#617f4e35');
+    turf.addColorStop(1, '#3a5837a0');
+    ctx.fillStyle = turf; ctx.fillRect(0, h * .38, w, h * .62);
+    const lineX = w / 2;
+    ctx.fillStyle = '#f4ead0'; ctx.fillRect(lineX - 2, h * .45, 4, h * .44);
+
+    const size = Math.min(w * .36, h * .47), spriteHeight = size * .74;
+    const speed = w * .00031;
+    let marked;
+    for (const [lane, horse] of this.horses.entries()) {
+      const runner = this.result.runners.find(runner => runner.id === horse.id);
+      const nose = lineX + (time - runner.finishMs) * speed;
+      const y = h * (.52 + lane * .032);
+      const x = nose - size * .955;
+      if (nose < 0 || x > w) continue;
+      ctx.fillStyle = '#10291955';
+      ctx.beginPath(); ctx.ellipse(x + size * .52, y, size * .32, size * .022, 0, 0, Math.PI * 2); ctx.fill();
+      if (sprite.complete && sprite.naturalWidth) {
+        const frame = Math.floor(time / 380 + horse.id) % 8;
+        const sw = sprite.naturalWidth / 4, sh = sprite.naturalHeight / 2;
+        // Crop the atlas padding so the finish stripe is aligned with the muzzle.
+        ctx.drawImage(sprite, frame % 4 * sw, (Math.floor(frame / 4) + .24) * sh, sw, sh * .55,
+          x, y - spriteHeight, size, spriteHeight);
+      }
+      if (horse.id === this.photo.horseId || !sprite.naturalWidth) {
+        const marker = { horse, x: x + size * .66, y: y - spriteHeight };
+        if (horse.id === this.photo.horseId) marked = marker;
+        else this.drawPhotoNumber(marker);
+      }
+    }
+    if (marked) this.drawPhotoNumber(marked);
+  }
+  drawPhotoNumber({ horse, x, y }) {
+    const ctx = this.ctx;
+    ctx.fillStyle = horse.color; ctx.strokeStyle = '#fff3d6'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(horse.id, x, y);
+  }
   draw() {
     const ctx = this.ctx, w = this.width, h = this.height;
     if (!w || !h) return;
     ctx.clearRect(0, 0, w, h);
-    if (this.background.complete && this.background.naturalWidth) {
-      const scale = Math.max(w / this.background.width, h / this.background.height);
-      ctx.drawImage(this.background, (w - this.background.width * scale) / 2, (h - this.background.height * scale) / 2, this.background.width * scale, this.background.height * scale);
-    }
+    if (this.photo) { this.drawPhotoFinish(); return; }
+    this.drawBackdrop();
     ctx.fillStyle = '#14261822'; ctx.fillRect(0, 0, w, h);
     const cx = w * .5, cy = h * .57, rx = w * .43, ry = h * .29, band = h * .105;
     const ellipse = (x, y, color) => { ctx.beginPath(); ctx.ellipse(cx, cy, x, y, 0, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill(); };
