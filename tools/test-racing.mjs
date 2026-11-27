@@ -124,8 +124,29 @@ try {
   assert.equal(receipt.balance,Math.round((before-receipt.bet+receipt.win)*10000)/10000);
   let history=await (await context.request.get(`${origin}/api/history?game=hipodromo-royale`)).json();assert.equal(history.length,1);
   assert.deepEqual(await page.locator('#runningOrder .runner-number').allTextContents(),receipt.result.order.map(String));
+  assert.deepEqual(await page.locator('.finish-order .runner-number').allTextContents(),receipt.result.order.map(String));
+  const silks=await page.locator('.finish-silks').evaluateAll(async images=>{
+    await Promise.all(images.map(image=>image.decode()));
+    return images.map(image=>image.src);
+  });
+  assert.equal(new Set(silks).size,8);
+  for(const [width,height] of [[390,844],[320,568],[480,320]]) {
+    await page.setViewportSize({width,height});
+    assert(await page.locator('.finish-order').evaluate(order=>order.scrollWidth===order.clientWidth));
+    if(width===390) await page.screenshot({path:path.join(output,'result-mobile.png'),fullPage:true});
+  }
+  await page.setViewportSize({width:1440,height:1000});
   assert((await page.locator('#result').textContent()).includes(receipt.result.card.horses.find(h=>h.id===receipt.result.order[0]).name));
   await page.getByRole('button',{name:'Verificar carrera',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.verification').textContent.includes('Verificada'));
+  await page.getByRole('button',{name:'Ver foto finish',exact:true}).click();
+  await page.waitForSelector('#photoFinish:not([hidden])');
+  assert.deepEqual(await page.locator('#photoPodium .runner-number').allTextContents(),receipt.result.order.slice(0,3).map(String));
+  await page.screenshot({path:path.join(output,'foto-finish.png'),fullPage:true});
+  await page.setViewportSize({width:390,height:844});
+  await page.screenshot({path:path.join(output,'foto-finish-mobile.png'),fullPage:true});
+  await page.setViewportSize({width:1440,height:1000});
+  await page.getByRole('button',{name:'Ver resultado',exact:true}).click();
+  await page.waitForSelector('#result:not([hidden])');
   await page.getByRole('button',{name:'Ver repetición',exact:true}).click();await page.waitForSelector('#result:not([hidden])');
   assert.equal((await (await context.request.get(`${origin}/api/history?game=hipodromo-royale`)).json()).length,1,'Visual replay must never charge another wager');
   await page.screenshot({path:path.join(output,'result.png'),fullPage:true});
@@ -163,9 +184,31 @@ try {
   // Normal motion: skip the actual animation without creating a second wager.
   await page.getByRole('button',{name:'Preparar otra carrera →',exact:true}).click();await page.waitForSelector('#result[hidden]',{state:'attached'});
   await page.emulateMedia({reducedMotion:'no-preference'});await page.getByRole('button',{name:'Elegir Esmeralda',exact:true}).click();
+  const animatedResponse=page.waitForResponse(r=>r.url().endsWith('/api/racing/bet')&&r.request().method()==='POST');
   await page.getByRole('button',{name:'Iniciar carrera',exact:true}).click();await page.waitForSelector('#skip:not([hidden])');
   await delay(1200);await page.screenshot({path:path.join(output,'racing.png'),fullPage:true});
+  await page.evaluate(async ()=>{
+    const podium=document.querySelector('#photoPodium');
+    window.photoReveals=[];
+    new MutationObserver(()=>{
+      const ids=Array.from(podium.querySelectorAll('.runner-number'),node=>Number(node.textContent));
+      if(ids.length)window.photoReveals.push(ids);
+    }).observe(podium,{childList:true});
+    const {RaceTrack}=await import('/js/race-track.js');
+    const photoFrame=RaceTrack.prototype.photoFrame;
+    window.photoRunout=[];
+    RaceTrack.prototype.photoFrame=function(time,id){
+      if(id===undefined && !document.querySelector('#photoFinish').hidden && podium.childElementCount===3) window.photoRunout.push(time);
+      return photoFrame.call(this,time,id);
+    };
+  });
   await page.getByRole('button',{name:'Ver llegada',exact:true}).click();await page.waitForSelector('#result:not([hidden])');
+  const {result:animatedResult}=await (await animatedResponse).json();
+  assert.deepEqual(await page.evaluate(()=>window.photoReveals),[1,2,3].map(count=>animatedResult.order.slice(0,count)));
+  const runout=await page.evaluate(()=>window.photoRunout);
+  const lastCrossing=Math.max(...animatedResult.runners.map(runner=>runner.finishMs));
+  assert(runout.length>1 && runout[0]<lastCrossing && runout.at(-1)>=lastCrossing*1.025-.001,
+    'Photo finish must keep the podium visible until the last horse has fully cleared the line');
   // Deterministic win/loss presentation from real engine fixtures, without writing them to the ledger.
   const uiContext=await browser.newContext({reducedMotion:'reduce',viewport:{width:390,height:844}});
   await uiContext.request.post(`${origin}/api/auth/demo`,{data:{}});

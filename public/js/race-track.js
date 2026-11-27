@@ -6,7 +6,12 @@ export class RaceTrack {
     try {
       this.impl = new RaceTrack3D(canvas, onOrder);
       this.ready = this.impl.ready.catch(() => this.fallback());
-      canvas.addEventListener('webglcontextlost', () => { this.fallback(); if(this.result) this.impl.play(this.result, {reduced:true}); });
+      canvas.addEventListener('webglcontextlost', () => {
+        this.fallback();
+        if (!this.result) return;
+        this.impl.play(this.result, { reduced: true });
+        if (this.photo) this.impl.photoFrame(this.photo.time, this.photo.id);
+      });
     } catch { this.fallback(); this.ready = Promise.resolve(); }
   }
   fallback() {
@@ -17,10 +22,11 @@ export class RaceTrack {
     if(this.card) this.impl.setCard(this.card); this.impl.choose(this.selected);
     document.querySelectorAll('[data-camera], #cinema').forEach(b=>b.hidden=true);
   }
-  setCard(card) { this.card=card; this.result=null; this.impl.setCard(card); }
+  setCard(card) { this.card=card; this.result=null; this.photo=null; this.impl.setCard(card); }
   choose(id) { this.selected=id; this.impl.choose(id); }
   setCamera(mode) { this.impl.setCamera?.(mode); }
-  async play(result, options) { this.result=result; await this.ready; return this.impl.play(result, options); }
+  async play(result, options) { this.result=result; this.photo=null; await this.ready; return this.impl.play(result, options); }
+  photoFrame(time, id) { this.photo = { time, id }; this.impl.photoFrame(time, id); }
   stop() { this.impl.stop(); }
-  finish() { this.impl.finish(); }
+  finish() { this.photo=null; this.impl.finish(); }
 }

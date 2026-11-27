@@ -8,6 +8,7 @@ const mat = (color, roughness = .8) => new T.MeshStandardMaterial({ color, rough
 const white = mat(0xe9e6d5, .55);
 const racePlaybackMs = 22000;
 const strideLength = 3.2;
+const finishX = 80;
 function mesh(g, m, parent, x = 0, y = 0, z = 0) { const o = new T.Mesh(g, m); o.position.set(x, y, z); o.castShadow = true; o.receiveShadow = true; parent.add(o); return o; }
 function box(parent, size, position, m) { return mesh(new T.BoxGeometry(...size), m, parent, ...position); }
 function texture(c) { const t = new T.CanvasTexture(c); t.colorSpace = T.SRGBColorSpace; return t; }
@@ -25,6 +26,7 @@ function grassTexture() {
 export class RaceTrack3D {
   constructor(canvas, onOrder) {
     this.canvas = canvas; this.onOrder = onOrder; this.horses = []; this.actors = []; this.time = 0; this.selected = null; this.running = false; this.cameraMode = 'auto';
+    this.photoPoint = new T.Vector3();
     this.renderer = new T.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.6)); this.renderer.shadowMap.enabled = true; this.renderer.shadowMap.type = T.PCFSoftShadowMap;
     this.renderer.outputColorSpace = T.SRGBColorSpace; this.renderer.toneMapping = T.ACESFilmicToneMapping; this.renderer.toneMappingExposure = 1.25;
@@ -51,12 +53,12 @@ export class RaceTrack3D {
       for (let i = 0; i < 114; i++) { matrix.makeTranslation(-169 + i * 3, .65, z); posts.setMatrixAt(i, matrix); }
       posts.castShadow = true; this.scene.add(posts); box(this.scene, [340, .10, .13], [0, .95, z], rail); box(this.scene, [340, .12, .16], [0, 1.3, z], rail);
     }
-    const finish = new T.Group(); finish.position.x = 80; this.scene.add(finish);
+    const finish = new T.Group(); finish.position.x = finishX; this.scene.add(finish);
     for (const z of [-13.2, 13.2]) { box(finish, [.45, 5, .45], [0, 2.5, z], white); box(finish, [.5, .65, .5], [0, 4.6, z], mat(0x294c35)); }
-    box(finish, [.4, .25, 27], [0, 5, 0], white);
+    this.finishBeam = box(finish, [.4, .25, 27], [0, 5, 0], white);
     const banner = new T.MeshBasicMaterial({ map: label('META', '#eee9d8', '#20412e'), side: T.DoubleSide });
     mesh(new T.PlaneGeometry(3.5, 1.2), banner, finish, 0, 4.2, 13.2).rotation.y = Math.PI / 2;
-    mesh(new T.PlaneGeometry(.14, 26), mat(0xf1ead0), this.scene, 80, .025, 0).rotation.x = -Math.PI / 2;
+    mesh(new T.PlaneGeometry(.14, 26), mat(0xf1ead0), this.scene, finishX, .025, 0).rotation.x = -Math.PI / 2;
     this.gates = new T.Group(); this.gates.position.x = -75; this.scene.add(this.gates);
     for (let i = 0; i <= 8; i++) { const z = -9.6 + i * 2.4; box(this.gates, [3.3, .12, .1], [-1, 2.6, z], white); box(this.gates, [.1, 2.6, .1], [-2.6, 1.3, z], white); }
     box(this.gates, [.16, .2, 19.2], [-2.6, 2.7, 0], white);
@@ -109,16 +111,17 @@ export class RaceTrack3D {
       const mixer = new T.AnimationMixer(model);
       mixer.clipAction(this.gallop).play();
       const icon = new T.Sprite(new T.SpriteMaterial({ map: label(String(horse.id), horse.color), depthTest: false, toneMapped: false })); icon.scale.set(.55, .28, 1); icon.position.set(.1, 2.75, 0); icon.renderOrder = 10; root.add(icon);
-      this.actors.push({ root, model, poseJockey, mixer, icon, horse });
+      this.actors.push({ root, model, poseJockey, mixer, icon, horse, bit: bit[0] });
     }); this.canvas.dataset.horses = String(this.actors.length); this.draw();
   }
   resize() { const r = this.canvas.getBoundingClientRect(); if (!r.width || !r.height) return; this.renderer.setSize(r.width, r.height, false); this.camera.aspect = r.width / r.height; this.camera.updateProjectionMatrix(); this.draw(); }
-  setCard(card) { this.stop(); this.result = null; this.time = 0; this.horses = card.horses; this.buildHorses(); this.draw(); }
+  setCard(card) { this.stop(); this.result = null; this.photo = null; this.time = 0; this.horses = card.horses; this.buildHorses(); this.draw(); }
   choose(id) { this.selected = id; this.draw(); }
   setCamera(mode) { this.cameraMode = ['auto', 'side', 'front', 'finish'].includes(mode) ? mode : 'auto'; this.draw(); }
   progress(runner, time) { const t = Math.max(0, Math.min(1, time / runner.finishMs)); return t + Math.sin(Math.PI * t) * runner.pace + Math.sin(2 * Math.PI * t) * runner.surge; }
   async play(result, { onProgress, reduced = false } = {}) {
     this.stop(); await this.ready; this.result = result; this.horses = result.card.horses; this.selected = result.selected; this.time = 0; this.duration = Math.max(...result.runners.map(r => r.finishMs));
+    this.photo = null;
     if (this.actors.length !== this.horses.length || this.horses.some((horse, i) => {
       const previous = this.actors[i].horse;
       return horse.id !== previous.id || horse.color !== previous.color;
@@ -131,7 +134,12 @@ export class RaceTrack3D {
     }; this.raf = requestAnimationFrame(tick); });
   }
   stop() { cancelAnimationFrame(this.raf); this.running = false; if (this.resolve) { this.resolve(); this.resolve = null; } }
-  finish() { this.stop(); if (this.result) this.time = Math.max(...this.result.runners.map(r => r.finishMs)); this.draw(); }
+  photoFrame(time, id) {
+    this.photo = { id };
+    this.time = time;
+    this.draw();
+  }
+  finish() { this.stop(); this.photo = null; if (this.result) this.time = this.duration; this.draw(); }
   draw() {
     if (!this.renderer || !this.camera) return;
     const states = this.horses.map((horse, index) => {
@@ -139,23 +147,33 @@ export class RaceTrack3D {
       const after = runner ? Math.max(0, (this.time - runner.finishMs) / this.duration) * 160 : 0;
       const gathering = 1 - .48 * T.MathUtils.smoothstep(p, 0, .18);
       const distance = p * 160 + after;
-      const x = !this.result && horse.id === this.selected ? -65 : -80 + distance;
+      const x = !this.result && horse.id === this.selected ? -65 : -finishX + distance;
       return { horse, index, p, distance, x, z: (-8.4 + index * 2.4) * gathering, finished: runner && this.time >= runner.finishMs };
     });
-    const ordered = [...states].sort((a, b) => a.finished && b.finished ? this.result.order.indexOf(a.horse.id) - this.result.order.indexOf(b.horse.id) : b.p - a.p); this.onOrder?.(ordered.map(r => r.horse.id));
-    const lead = ordered[0]?.x || -80, phase = this.result ? this.time / this.duration : 0; let shot = this.cameraMode;
+    const ordered = [...states].sort((a, b) => a.finished && b.finished ? this.result.order.indexOf(a.horse.id) - this.result.order.indexOf(b.horse.id) : b.p - a.p);
+    if (!this.photo) this.onOrder?.(ordered.map(r => r.horse.id));
+    const lead = ordered[0]?.x || -80, phase = this.result ? this.time / this.duration : 0;
+    let shot = this.photo ? 'photo' : this.cameraMode;
     if (shot === 'auto') shot = !this.result ? 'paddock' : phase < .16 ? 'start' : phase < .43 ? 'side' : phase < .62 ? 'front' : phase < .86 ? 'side' : 'finish';
+    this.finishBeam.visible = shot !== 'photo';
     for (const s of states) {
       const actor = this.actors[s.index];
       if (!actor) continue;
       actor.root.position.set(s.x, 0, s.z);
       const stridePhase = (s.distance / strideLength + s.index * .27) % 1;
       actor.mixer.setTime(stridePhase * this.gallop.duration);
+      // For the photo finish, the recorded distance refers to the muzzle crossing the line.
+      if (this.photo) actor.root.position.x += s.x - actor.bit.getWorldPosition(this.photoPoint).x - .08;
       actor.poseJockey();
-      actor.icon.visible = s.horse.id === this.selected || shot === 'front';
+      actor.icon.visible = this.photo ? s.horse.id === this.photo.id : s.horse.id === this.selected || shot === 'front';
     }
     const narrow = this.camera.aspect < 1.5;
-    if (shot === 'paddock' && this.selected) { const chosen = states.find(s => s.horse.id === this.selected); this.camera.position.set(chosen.x + 4.8, 2.8, chosen.z + 8); this.camera.lookAt(chosen.x + .1, 1.4, chosen.z); this.camera.fov = narrow ? 47 : 34; }
+    if (shot === 'photo') {
+      this.camera.position.set(finishX, 4.6, 12.3);
+      this.camera.lookAt(finishX, 1.05, 0);
+      this.camera.fov = narrow ? 58 : 37;
+    }
+    else if (shot === 'paddock' && this.selected) { const chosen = states.find(s => s.horse.id === this.selected); this.camera.position.set(chosen.x + 4.8, 2.8, chosen.z + 8); this.camera.lookAt(chosen.x + .1, 1.4, chosen.z); this.camera.fov = narrow ? 47 : 34; }
     else if (shot === 'paddock' || shot === 'start') { this.camera.position.set(lead + 12, narrow ? 5.5 : 4.8, narrow ? 22 : 20); this.camera.lookAt(lead - .3, 1.4, 0); this.camera.fov = narrow ? 49 : 42; }
     else if (shot === 'front') { this.camera.position.set(lead + (this.result ? 21 : 29), 3.4, 3); this.camera.lookAt(lead - 2, 1.3, 0); this.camera.fov = narrow ? 48 : 34; }
     else if (shot === 'finish' && phase > .83) {

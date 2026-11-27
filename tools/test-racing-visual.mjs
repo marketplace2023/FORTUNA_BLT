@@ -44,6 +44,26 @@ try {
     return 2 * Math.acos(Math.min(1, Math.abs(dot)));
   });
   assert(seam < .04, 'Gallop must wrap smoothly through the clip boundary');
+  const photo = await page.evaluate(async () => {
+    const { Box3 } = await import('/vendor/three/three.module.js');
+    qa.setCamera('front');
+    const frames = qa.result.order.slice(0, 3).map(id => {
+      qa.photoFrame(qa.result.runners.find(runner => runner.id === id).finishMs, id);
+      const highlighted = qa.actors.filter(actor => actor.icon.visible).map(actor => actor.horse.id);
+      const muzzle = qa.actors.find(actor => actor.horse.id === id).bit.getWorldPosition(qa.photoPoint);
+      muzzle.x += .08;
+      return { shot: qa.canvas.dataset.shot, highlighted, center: muzzle.project(qa.camera).x };
+    });
+    qa.photoFrame(qa.duration * 1.025);
+    const bounds = new Box3();
+    const rearEdges = qa.actors.map(actor => bounds.setFromObject(actor.model, true).min.x);
+    qa.finish();
+    return { frames, rearEdges, restoredShot: qa.canvas.dataset.shot };
+  });
+  assert.deepEqual(photo.frames.map(frame => frame.highlighted), result.order.slice(0, 3).map(id => [id]));
+  assert(photo.frames.every(frame => frame.shot === 'photo' && Math.abs(frame.center) < .001));
+  assert(photo.rearEdges.every(x => x > 80.07), 'Every horse, including its tail, must clear the finish stripe');
+  assert.equal(photo.restoredShot, 'front');
   const fallback=await browser.newContext();await fallback.addInitScript(()=>{const original=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(kind,...args){if(String(kind).startsWith('webgl'))return null;return original.call(this,kind,...args);};});
   const p2=await fallback.newPage();p2.on('pageerror',e=>errors.push(e.message));await p2.goto(origin+'/play/hipodromo-royale');await p2.waitForSelector('#track[data-renderer="canvas"]');await p2.waitForSelector('.horse');assert.equal(await p2.locator('.horse').count(),8);await fallback.close();
   const failedAsset=await browser.newContext(), p3=await failedAsset.newPage();p3.on('pageerror',e=>errors.push(e.message));await p3.route('**/assets/racing/horse.glb',r=>r.abort());await p3.goto(origin+'/play/hipodromo-royale');await p3.waitForSelector('#track[data-renderer="canvas"]');await p3.waitForSelector('.horse');await failedAsset.close();

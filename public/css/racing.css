@@ -168,6 +168,79 @@ h1, h2 { margin: 0; }
   pointer-events: none;
 }
 
+.photo-finish {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  grid-template: auto minmax(0, 1fr) auto / minmax(0, 1fr);
+  padding: 10px var(--edge) clamp(10px, 2.2dvh, 22px);
+  pointer-events: none;
+}
+.photo-finish-title {
+  justify-self: start;
+  align-self: start;
+  padding: 7px 12px;
+  border: 1px solid #cfad706e;
+  border-left: 3px solid var(--gold);
+  border-radius: 4px;
+  background: #0b1914ed;
+  color: var(--gold);
+  font: 700 clamp(11px, 1.5vw, 15px)/1.1 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.photo-podium {
+  grid-row: 3;
+  justify-self: center;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(5px, 1vw, 12px);
+  width: min(100%, 535px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.photo-place {
+  display: grid;
+  grid-template: "silks rank number" auto "silks name name" auto / auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2px 7px;
+  min-width: 0;
+  padding: 6px 9px;
+  border: 1px solid #cfad708f;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #1a3328f2, #081510f7);
+  box-shadow: 0 4px 16px #0006;
+  animation: photo-reveal 180ms ease-out both;
+}
+.photo-place:first-child { border-color: var(--gold); }
+.photo-rank {
+  grid-area: rank;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
+}
+.photo-silks { grid-area: silks; width: 42px; height: 35px; object-fit: contain; }
+.photo-name {
+  grid-area: name;
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.photo-place .runner-number {
+  grid-area: number;
+  width: 24px;
+  height: 22px;
+  font-size: 12px;
+}
+.broadcast[data-photo-finish] :is(.distance, .running-order) { visibility: hidden; }
+@keyframes photo-reveal {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .race-menus {
   z-index: 2;
   grid-area: 1 / 1;
@@ -331,7 +404,7 @@ h1, h2 { margin: 0; }
   align-self: center;
   justify-self: center;
   z-index: 2;
-  width: min(560px, calc(100% - 2 * var(--edge)));
+  width: min(640px, calc(100% - 2 * var(--edge)));
   max-height: calc(100% - 20px);
   overflow: auto;
 }
@@ -340,9 +413,31 @@ h1, h2 { margin: 0; }
 .eyebrow { margin: 0 0 4px; color: var(--gold); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .result-return { display: block; color: var(--gold); font-size: clamp(21px, 3vw, 32px); font-variant-numeric: tabular-nums; }
 .result > p { font-size: 12px; line-height: 1.5; color: var(--muted); }
-.finish-order { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
-.finish-place { display: grid; justify-items: center; gap: 3px; }
-.finish-place small { color: var(--muted); }
+.finish-order-title { margin: 16px 0 8px; font-size: 13px; color: var(--ink); }
+.finish-order {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: clamp(4px, 1vw, 8px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.finish-place {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 4px;
+  padding: 7px 2px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #0a1712;
+}
+.finish-place:nth-child(-n+3) { background: #243122; border-color: #cfad7080; }
+.finish-rank { color: var(--ink); font-size: clamp(15px, 3vw, 21px); line-height: 1; }
+.finish-place:nth-child(-n+3) .finish-rank { color: var(--gold); }
+.finish-silks { width: min(100%, 50px); height: 42px; object-fit: contain; }
+.finish-place .runner-number { width: 26px; height: 22px; font-size: 12px; }
+.finish-place .runner-number.selected { outline-offset: 0; }
 .result-actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .result-actions button { min-height: 34px; }
 .verification { overflow-wrap: anywhere; }
@@ -397,6 +492,9 @@ h1, h2 { margin: 0; }
 }
 
 @media (max-height: 440px) and (min-width: 440px) {
+  .finish-order-title { margin-top: 7px; }
+  .finish-place { padding-block: 4px; gap: 3px; }
+  .finish-silks { height: 26px; }
   .broadcast { --row-height: clamp(21px, calc((100dvh - 203px) / 8), 32px); --panel-padding: 6px; }
   .ticket, .ticket:has(#demo:not([hidden])) { gap: 3px; }
   .pick-horse { padding-block: 0; }
@@ -410,6 +508,10 @@ h1, h2 { margin: 0; }
   .order-label { display: none; }
   .ticket-values .profit dd { font-size: 16px; }
   .broadcast:not(.showing-result) .distance { inset-inline: calc(var(--edge) + var(--panel-width) + 8px); }
+}
+
+@media (max-width: 500px) and (min-height: 441px) {
+  .finish-order { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
 @media (max-height: 360px) and (min-width: 440px) {
@@ -496,8 +598,18 @@ h1, h2 { margin: 0; }
   .camera-controls { grid-column: 1; }
   .camera-controls button, #cinema { min-height: 28px; }
   .result { grid-area: 1 / 1 / 4; }
+  .photo-place {
+    grid-template: "rank silks number" auto "name name name" auto / auto minmax(0, 1fr) auto;
+    gap: 3px;
+    padding: 5px 4px;
+  }
+  .photo-rank { font-size: 11px; }
+  .photo-silks { justify-self: center; width: min(25px, 100%); height: 22px; }
+  .photo-name { text-align: center; font-size: clamp(10px, 2.7vw, 12px); }
+  .photo-place .runner-number { width: 18px; height: 18px; font-size: 11px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   button:not(:disabled) { transition: none; }
+  .photo-place { animation: none; }
 }

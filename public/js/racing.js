@@ -11,6 +11,7 @@ const betButtons = [...document.querySelectorAll('[data-bet-type]')];
 const pendingKey = 'royale-race-pending', lastKey = 'royale-race-last';
 const storage = { get(k) { try { return JSON.parse(sessionStorage.getItem(k)); } catch { return null; } }, set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch {} }, remove(k) { try { sessionStorage.removeItem(k); } catch {} } };
 try { Sound.on = localStorage.getItem('racing-sound') === '1'; } catch { Sound.on = false; }
+let closePhoto;
 const track = new RaceTrack($('#track'), ids => {
   const key = ids.join() + '|' + state.selected + '|' + !!state.result;
   if (key === state.order || !state.card) return;
@@ -122,6 +123,89 @@ function setSound() {
   soundButton(Sound.on, button);
   button.title = Sound.on ? 'Silenciar sonido' : 'Activar sonido';
 }
+async function showPhotoFinish(result, { still = false, focus = false } = {}) {
+  const photo = $('#photoFinish'), podium = $('#photoPodium'), skip = $('#skip');
+  const broadcast = $('.broadcast'), cameras = document.querySelectorAll('[data-camera]');
+  const leaders = result.order.slice(0, 3).map(id => ({
+    horse: result.card.horses.find(h => h.id === id),
+    time: result.runners.find(runner => runner.id === id).finishMs,
+  }));
+  function reveal(horse, rank) {
+    podium.append(el('li', { class: 'photo-place' }, el('span', { class: 'photo-rank' }, `${rank + 1}.º`),
+      el('img', { class: 'photo-silks', src: silkEmblem(horse), alt: '' }),
+      number(horse), el('strong', { class: 'photo-name' }, horse.name)));
+  }
+
+  podium.replaceChildren();
+  broadcast.dataset.photoFinish = '';
+  photo.hidden = false;
+  cameras.forEach(button => button.disabled = true);
+  skip.textContent = 'Ver resultado';
+  skip.hidden = false;
+  if (focus) skip.focus();
+
+  try {
+    let frame;
+    await new Promise(resolve => {
+      closePhoto = () => { cancelAnimationFrame(frame); resolve(); };
+      if (still) {
+        const last = leaders.at(-1);
+        track.photoFrame(last.time, last.horse.id);
+        leaders.forEach(({ horse }, rank) => reveal(horse, rank));
+        return;
+      }
+      let rank = 0, start = performance.now();
+      let from = Math.max(0, leaders[0].time - 1800);
+      const lastCrossing = Math.max(...result.runners.map(runner => runner.finishMs));
+      // After the nose crosses, allow four track units for the body and tail to clear the stripe.
+      const runoutEnd = lastCrossing + lastCrossing * (4 / 160);
+      const runoutDuration = Math.max(1700, runoutEnd - leaders.at(-1).time);
+      track.photoFrame(from);
+      function runout(now) {
+        const progress = Math.min(1, Math.max(0, (now - start) / runoutDuration));
+        track.photoFrame(from + (runoutEnd - from) * progress);
+        if (progress === 1) {
+          frame = requestAnimationFrame(closePhoto);
+        } else {
+          frame = requestAnimationFrame(runout);
+        }
+      }
+      function tick(now) {
+        const { horse, time } = leaders[rank];
+        const travel = rank === 0 ? 850 : 560;
+        const progress = Math.min(1, Math.max(0, (now - start) / travel));
+        if (progress < 1) {
+          track.photoFrame(from + (time - from) * progress);
+        } else {
+          if (podium.childElementCount === rank) {
+            track.photoFrame(time, horse.id);
+            reveal(horse, rank);
+          }
+          const last = rank === leaders.length - 1;
+          if (now - start >= travel + (last ? 1150 : 460)) {
+            from = time;
+            start = now;
+            if (last) {
+              frame = requestAnimationFrame(runout);
+              return;
+            }
+            rank++;
+          }
+        }
+        frame = requestAnimationFrame(tick);
+      }
+      frame = requestAnimationFrame(tick);
+    });
+  } finally {
+    closePhoto = undefined;
+    track.finish();
+    delete broadcast.dataset.photoFinish;
+    photo.hidden = true;
+    skip.hidden = true;
+    skip.textContent = 'Ver llegada';
+    cameras.forEach(button => button.disabled = false);
+  }
+}
 async function present(receipt, animate = true) {
   const result = receipt.result;
   state.busy = true; state.result = receipt; state.card = { ...result.card, bets: [receipt.bet], expiresAt: 0 };
@@ -136,20 +220,48 @@ async function present(receipt, animate = true) {
   $('#countdown').hidden = true; $('#raceState').textContent = 'EN CARRERA'; $('#skip').hidden = !animate || reduced;
   if (Sound.on && animate) { Sound.init(); Sound.tone(440, .3, { type: 'triangle', vol: .035 }); Sound.tone(659.25, .4, { at: .12, vol: .025 }); }
   await track.play(result, { reduced: !animate || reduced, onProgress: p => { $('#progress').style.width = `${p * 100}%`; $('#distanceLeft').textContent = p >= 1 ? 'LLEGADA OFICIAL' : `${Math.ceil(result.card.distance * (1 - p))} m POR RECORRER`; } });
-  track.finish(); $('#progress').style.width = '100%'; $('#distanceLeft').textContent = 'LLEGADA OFICIAL'; $('#skip').hidden = true; $('#raceState').textContent = 'LLEGADA OFICIAL';
+  if (animate && !reduced) {
+    $('#raceState').textContent = 'REPETICIÓN DE META';
+    await showPhotoFinish(result);
+  } else track.finish();
+  $('#progress').style.width = '100%'; $('#distanceLeft').textContent = 'LLEGADA OFICIAL'; $('#skip').hidden = true; $('#raceState').textContent = 'LLEGADA OFICIAL';
   state.busy = false; showResult(receipt); controls(); status();
 }
 function showResult(receipt) {
   const r = receipt.result, winner = r.card.horses.find(h => h.id === r.order[0]), chosen = r.card.horses.find(h => h.id === r.selected), place = r.order.indexOf(r.selected) + 1;
   const box = $('#result'), verification = el('p', { class: 'verification', role: 'status' });
   const betType = r.betType ?? 'win';
-  box.replaceChildren(el('div', { class: 'result-top' }, el('div', {}, el('p', { class: 'eyebrow' }, receipt.win > 0 ? 'Apuesta acertada' : 'Resultado oficial'), el('h2', {}, `${winner.name}, primer lugar`)), el('div', {}, el('span', { class: 'eyebrow' }, 'Retorno total'), el('strong', { class: 'result-return' }, money(receipt.win)))), el('p', {}, `${betTypes[betType]} · ${chosen.name} terminó ${place}.º · Apuesta ${money(receipt.bet)} · Cuota ×${(oddsCents(chosen, betType) / 100).toFixed(2)} · Ganancia neta ${money(receipt.win - receipt.bet)}`), el('div', { class: 'finish-order', 'aria-label': 'Clasificación final' }, ...r.order.map((id, i) => el('span', { class: 'finish-place' }, el('small', {}, `${i + 1}º`), number(r.card.horses.find(h => h.id === id)) ))), el('div', { class: 'result-actions' }, el('button', { type: 'button', onclick: newCard }, 'Preparar otra carrera →'), el('button', { type: 'button', class: 'verify', onclick: async e => {
+  const finishOrder = el('ol', { class: 'finish-order', role: 'list', 'aria-labelledby': 'finishOrderTitle' }, ...r.order.map((id, i) => {
+    const horse = r.card.horses.find(h => h.id === id);
+    return el('li', { class: 'finish-place', title: horse.name, 'aria-label': `${i + 1}.º, ${horse.name}, dorsal ${id}` },
+      el('strong', { class: 'finish-rank' }, `${i + 1}.º`),
+      el('img', { class: 'finish-silks', src: silkEmblem(horse), alt: '' }),
+      number(horse));
+  }));
+  box.replaceChildren(el('div', { class: 'result-top' }, el('div', {}, el('p', { class: 'eyebrow' }, receipt.win > 0 ? 'Apuesta acertada' : 'Resultado oficial'), el('h2', {}, `${winner.name}, primer lugar`)), el('div', {}, el('span', { class: 'eyebrow' }, 'Retorno total'), el('strong', { class: 'result-return' }, money(receipt.win)))),
+    el('h3', { class: 'finish-order-title', id: 'finishOrderTitle' }, 'Clasificación final'), finishOrder,
+    el('p', {}, `${betTypes[betType]} · ${chosen.name} terminó ${place}.º · Apuesta ${money(receipt.bet)} · Cuota ×${(oddsCents(chosen, betType) / 100).toFixed(2)} · Ganancia neta ${money(receipt.win - receipt.bet)}`), el('div', { class: 'result-actions' }, el('button', { type: 'button', onclick: newCard }, 'Preparar otra carrera →'), el('button', { type: 'button', class: 'verify', onclick: async e => {
     const button = e.currentTarget; button.disabled = true;
     try { const v = await api(`/api/rounds/${receipt.roundId}/verify`); verification.textContent = v.ok ? `Verificada · ${receipt.roundId} · Resultado y premio idénticos al registro.` : 'La verificación detectó una diferencia.'; }
     catch (error) { verification.textContent = error.message; } finally { button.disabled = false; }
   } }, 'Verificar carrera')), verification, el('p', { class: 'result-status', role: 'status' }));
   const replay = el('button', { type: 'button', class: 'verify', onclick: () => { if (!state.busy) present(receipt, true).catch(e => { state.busy = false; status(e.message); controls(); }); } }, 'Ver repetición');
-  box.querySelector('.result-actions').append(replay);
+  const photoReplay = el('button', { type: 'button', class: 'verify', onclick: async () => {
+    if (state.busy) return;
+    state.busy = true;
+    box.hidden = true;
+    $('#raceState').textContent = 'REPETICIÓN DE META';
+    try {
+      await showPhotoFinish(r, { still: matchMedia('(prefers-reduced-motion: reduce)').matches, focus: true });
+    } catch (error) { status(error.message); }
+    finally {
+      state.busy = false;
+      $('#raceState').textContent = 'LLEGADA OFICIAL';
+      box.hidden = false;
+      photoReplay.focus();
+    }
+  } }, 'Ver foto finish');
+  box.querySelector('.result-actions').append(photoReplay, replay);
   box.hidden = false;
   box.querySelector('.result-actions button').focus();
 }
@@ -193,7 +305,7 @@ betButtons.forEach(button => button.addEventListener('click', () => {
 $('#showHorses').addEventListener('click', () => showPanel('horses'));
 $('#showTicket').addEventListener('click', () => showPanel('ticket'));
 $('#refresh').addEventListener('click', newCard);
-$('#skip').addEventListener('click', () => track.finish());
+$('#skip').addEventListener('click', () => closePhoto ? closePhoto() : track.finish());
 document.querySelectorAll('[data-camera]').forEach(button => button.addEventListener('click', () => {
   track.setCamera?.(button.dataset.camera);
   document.querySelectorAll('[data-camera]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
