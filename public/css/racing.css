@@ -320,6 +320,10 @@ h1, h2 { margin: 0; }
 .running-order, .camera-controls { display: flex; align-items: center; gap: 5px; min-width: 0; }
 .running-order { gap: clamp(4px, .65vw, 10px); }
 .order-label { margin-right: 4px; color: var(--muted); font-size: 10px; }
+.order-runner { display: grid; justify-items: center; flex: none; gap: 1px; }
+.order-silks { display: none; width: 21px; height: 17px; }
+.broadcast:has(#track[data-renderer="webgl"]) .order-silks { display: block; }
+.order-runner .runner-number { height: 19px; font-size: 11px; }
 #cinema { min-width: 34px; font-size: 17px; line-height: 1; color: var(--gold); }
 .broadcast:fullscreen #cinema, .broadcast.cinema-expanded #cinema { background: #4a3a20; }
 .result {

@@ -1,5 +1,6 @@
 import { api, el, money } from './api.js';
 import { RaceTrack } from './race-track.js';
+import { silkEmblem } from './racing-silks.js';
 import { Sound } from './sound.js';
 import { soundButton } from './skin-common.js';
 const $ = s => document.querySelector(s), ID = 'hipodromo-royale';
@@ -14,7 +15,14 @@ const track = new RaceTrack($('#track'), ids => {
   const key = ids.join() + '|' + state.selected + '|' + !!state.result;
   if (key === state.order || !state.card) return;
   state.order = key;
-  $('#runningOrder').replaceChildren(el('span', { class: 'order-label' }, state.result ? 'Posiciones' : 'Dorsales'), ...ids.map(id => number(state.card.horses.find(h => h.id === id))));
+  $('#runningOrder').replaceChildren(
+    el('span', { class: 'order-label' }, state.result ? 'Posiciones' : 'Dorsales'),
+    ...ids.map(id => {
+      const horse = state.card.horses.find(h => h.id === id);
+      return el('span', { class: 'order-runner', title: horse.name },
+        el('img', { class: 'order-silks', src: silkEmblem(horse), alt: '' }), number(horse));
+    }),
+  );
 });
 function number(h) {
   const n = el('span', { class: `runner-number${h.id === state.selected ? ' selected' : ''}`, 'aria-label': `Dorsal ${h.id}` }, h.id);

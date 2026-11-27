@@ -1,19 +1,15 @@
 import * as T from '/vendor/three/three.module.js';
 import { GLTFLoader } from '/vendor/three/GLTFLoader.js';
 import { clone } from '/vendor/three/SkeletonUtils.js';
-import { mergeVertices } from '/vendor/three/BufferGeometryUtils.js';
+import { prepareHorse, smoothGallop, styleHorse } from './race-horse.js';
+import { mountJockey } from './race-jockey.js';
 
-const Y = new T.Vector3(0, 1, 0), coats = [0x5c2b16, 0xb0a79a, 0x201b18, 0x6b3219, 0x97603c, 0x3b2117, 0xd5cbbb, 0x51301b];
 const mat = (color, roughness = .8) => new T.MeshStandardMaterial({ color, roughness, metalness: 0 });
-const white = mat(0xe9e6d5, .55), dark = mat(0x282b26), leather = mat(0x281b13, .65);
+const white = mat(0xe9e6d5, .55);
+const racePlaybackMs = 22000;
+const strideLength = 3.2;
 function mesh(g, m, parent, x = 0, y = 0, z = 0) { const o = new T.Mesh(g, m); o.position.set(x, y, z); o.castShadow = true; o.receiveShadow = true; parent.add(o); return o; }
 function box(parent, size, position, m) { return mesh(new T.BoxGeometry(...size), m, parent, ...position); }
-function ball(parent, size, position, m) { const o = mesh(new T.SphereGeometry(1, 20, 14), m, parent, ...position); o.scale.set(...size); return o; }
-function limb(parent, a, b, radius, m) {
-  const start = new T.Vector3(...a), end = new T.Vector3(...b), direction = end.clone().sub(start);
-  const o = mesh(new T.CapsuleGeometry(radius, Math.max(.001, direction.length() - radius * 2), 4, 10), m, parent);
-  o.position.copy(start.add(end).multiplyScalar(.5)); o.quaternion.setFromUnitVectors(Y, direction.normalize()); return o;
-}
 function texture(c) { const t = new T.CanvasTexture(c); t.colorSpace = T.SRGBColorSpace; return t; }
 function label(text, background, color = '#fff') {
   const c = document.createElement('canvas'); c.width = 256; c.height = 128; const x = c.getContext('2d');
@@ -28,7 +24,7 @@ function grassTexture() {
 /** Geometry and cameras only. Arrival times and order always come from the recorded server result. */
 export class RaceTrack3D {
   constructor(canvas, onOrder) {
-    this.canvas = canvas; this.onOrder = onOrder; this.horses = []; this.actors = []; this.time = 0; this.visualSeconds = 0; this.selected = null; this.running = false; this.cameraMode = 'auto';
+    this.canvas = canvas; this.onOrder = onOrder; this.horses = []; this.actors = []; this.time = 0; this.selected = null; this.running = false; this.cameraMode = 'auto';
     this.renderer = new T.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.6)); this.renderer.shadowMap.enabled = true; this.renderer.shadowMap.type = T.PCFSoftShadowMap;
     this.renderer.outputColorSpace = T.SRGBColorSpace; this.renderer.toneMapping = T.ACESFilmicToneMapping; this.renderer.toneMappingExposure = 1.25;
@@ -80,53 +76,57 @@ export class RaceTrack3D {
   }
   async loadHorse() {
     const gltf = await new GLTFLoader().loadAsync('/assets/racing/horse.glb'); this.template = gltf.scene;
-    this.template.traverse(n => { if (n.isMesh) { const g = n.geometry.clone(); g.deleteAttribute('normal'); n.geometry = mergeVertices(g, .0001); n.geometry.computeVertexNormals(); } });
+    prepareHorse(this.template);
     const bounds = new T.Box3().setFromObject(this.template), size = bounds.getSize(new T.Vector3());
     this.modelScale = 2.7 / Math.max(size.x, size.z); this.modelFloor = bounds.min.y * this.modelScale;
-    this.gallop = gltf.animations.find(a => /Gallop$/.test(a.name));
+    this.gallop = smoothGallop(gltf.animations.find(a => /Gallop$/.test(a.name)));
     const head = this.template.getObjectByName('Head')?.getWorldPosition(new T.Vector3());
     this.modelAngle = head && Math.abs(head.x) > Math.abs(head.z) ? (head.x >= 0 ? 0 : Math.PI) : head && head.z < 0 ? -Math.PI / 2 : Math.PI / 2;
   }
   buildHorses() {
     if (!this.template) return;
-    for (const a of this.actors) { a.mixer.stopAllAction(); a.mixer.uncacheRoot(a.model); a.root.traverse(n => {
-      if (n.isMesh && !n.isSkinnedMesh) n.geometry.dispose();
-      for (const m of [n.material].flat().filter(Boolean)) if (![white, dark, leather].includes(m)) { m.map?.dispose(); m.dispose(); }
-    }); }
+    for (const actor of this.actors) {
+      actor.mixer.stopAllAction();
+      actor.mixer.uncacheRoot(actor.model);
+      const materials = new Set(), skeletons = new Set();
+      actor.root.traverse(node => {
+        if (node.isSkinnedMesh) skeletons.add(node.skeleton);
+        else if (node.geometry && !node.isSprite) node.geometry.dispose();
+        if (node.material) materials.add(node.material);
+      });
+      for (const skeleton of skeletons) skeleton.dispose();
+      for (const material of materials) {
+        material.map?.dispose();
+        material.dispose();
+      }
+    }
     this.trackGroup.clear(); this.actors = [];
     this.horses.forEach((horse, index) => {
       const root = new T.Group(); this.trackGroup.add(root); const model = clone(this.template); model.scale.setScalar(this.modelScale); model.rotation.y = this.modelAngle; model.position.y = -this.modelFloor;
-      model.traverse(n => { if (n.isMesh) { n.castShadow = true; n.receiveShadow = true; n.frustumCulled = false;
-        const adjust = old => { const m = old.clone(); m.metalness = 0; m.roughness = .6; m.flatShading = false; if (/Main|Body/i.test(old.name)) m.color.setHex(coats[index]); return m; };
-        n.material = Array.isArray(n.material) ? n.material.map(adjust) : adjust(n.material);
-      } }); root.add(model); const rider = this.rider(horse); root.add(rider);
-      const mixer = new T.AnimationMixer(model), action = mixer.clipAction(this.gallop); action.play();
-      const icon = new T.Sprite(new T.SpriteMaterial({ map: label(String(horse.id), horse.color), depthTest: false })); icon.scale.set(.55, .28, 1); icon.position.set(.1, 3.1, 0); icon.renderOrder = 10; root.add(icon);
-      this.actors.push({ root, model, rider, mixer, action, icon, horse, index });
+      root.add(model);
+      const bit = styleHorse(model, root, index);
+      const poseJockey = mountJockey(root, model, horse, bit);
+      const mixer = new T.AnimationMixer(model);
+      mixer.clipAction(this.gallop).play();
+      const icon = new T.Sprite(new T.SpriteMaterial({ map: label(String(horse.id), horse.color), depthTest: false, toneMapped: false })); icon.scale.set(.55, .28, 1); icon.position.set(.1, 2.75, 0); icon.renderOrder = 10; root.add(icon);
+      this.actors.push({ root, model, poseJockey, mixer, icon, horse });
     }); this.canvas.dataset.horses = String(this.actors.length); this.draw();
   }
-  rider(horse) {
-    const r = new T.Group(), silk = mat(horse.color, .4), skin = mat(0xc88f67, .7), boots = mat(0x1a201a, .45);
-    limb(r, [-.25, 1.73, 0], [.30, 2.13, 0], .18, silk); ball(r, [.13, .16, .13], [.43, 2.23, 0], skin); ball(r, [.16, .12, .16], [.42, 2.36, 0], silk); box(r, [.18, .025, .31], [.53, 2.31, 0], dark);
-    for (const s of [-1, 1]) {
-      limb(r, [-.25, 1.73, s * .12], [.18, 1.22, s * .40], .10, white); limb(r, [.18, 1.22, s * .40], [-.18, .99, s * .43], .075, boots); ball(r, [.15, .07, .07], [-.10, .96, s * .43], boots);
-      limb(r, [.25, 2.10, s * .15], [.55, 1.84, s * .25], .065, silk); limb(r, [.55, 1.84, s * .25], [.85, 1.76, s * .18], .05, skin);
-      const rein = new T.CatmullRomCurve3([new T.Vector3(.85, 1.76, s * .18), new T.Vector3(1.12, 1.65, s * .15), new T.Vector3(1.40, 1.62, s * .13)]);
-      mesh(new T.TubeGeometry(rein, 12, .008, 4, false), leather, r);
-      const cloth = mesh(new T.PlaneGeometry(.72, .43), new T.MeshStandardMaterial({ map: label(String(horse.id), horse.color), roughness: .85, side: T.DoubleSide }), r, -.20, 1.35, s * .39); if (s < 0) cloth.rotation.y = Math.PI;
-    } ball(r, [.45, .10, .32], [-.20, 1.60, 0], leather); return r;
-  }
   resize() { const r = this.canvas.getBoundingClientRect(); if (!r.width || !r.height) return; this.renderer.setSize(r.width, r.height, false); this.camera.aspect = r.width / r.height; this.camera.updateProjectionMatrix(); this.draw(); }
-  setCard(card) { this.stop(); this.result = null; this.time = 0; this.visualSeconds = 0; this.horses = card.horses; this.buildHorses(); this.draw(); }
+  setCard(card) { this.stop(); this.result = null; this.time = 0; this.horses = card.horses; this.buildHorses(); this.draw(); }
   choose(id) { this.selected = id; this.draw(); }
   setCamera(mode) { this.cameraMode = ['auto', 'side', 'front', 'finish'].includes(mode) ? mode : 'auto'; this.draw(); }
   progress(runner, time) { const t = Math.max(0, Math.min(1, time / runner.finishMs)); return t + Math.sin(Math.PI * t) * runner.pace + Math.sin(2 * Math.PI * t) * runner.surge; }
   async play(result, { onProgress, reduced = false } = {}) {
-    this.stop(); await this.ready; this.result = result; this.horses = result.card.horses; this.selected = result.selected; this.time = 0; this.visualSeconds = 0; this.duration = Math.max(...result.runners.map(r => r.finishMs));
+    this.stop(); await this.ready; this.result = result; this.horses = result.card.horses; this.selected = result.selected; this.time = 0; this.duration = Math.max(...result.runners.map(r => r.finishMs));
+    if (this.actors.length !== this.horses.length || this.horses.some((horse, i) => {
+      const previous = this.actors[i].horse;
+      return horse.id !== previous.id || horse.color !== previous.color;
+    })) this.buildHorses();
     if (reduced) { this.time = this.duration; this.draw(); onProgress?.(1); return; }
     this.running = true;
     return new Promise(resolve => { this.resolve = resolve; const start = performance.now(); const tick = now => {
-      const p = Math.min(1, (now - start) / 24000); this.time = this.duration * p; this.visualSeconds = (now - start) / 1000; this.draw(); onProgress?.(p);
+      const p = Math.min(1, (now - start) / racePlaybackMs); this.time = this.duration * p; this.draw(); onProgress?.(p);
       if (p < 1 && this.running) this.raf = requestAnimationFrame(tick); else { this.running = false; this.resolve = null; resolve(); }
     }; this.raf = requestAnimationFrame(tick); });
   }
@@ -137,20 +137,35 @@ export class RaceTrack3D {
     const states = this.horses.map((horse, index) => {
       const runner = this.result?.runners.find(r => r.id === horse.id), p = runner ? this.progress(runner, this.time) : 0;
       const after = runner ? Math.max(0, (this.time - runner.finishMs) / this.duration) * 160 : 0;
-      const gathering = this.result ? 1 - .48 * Math.min(1, p / .18) : 1;
-      const x = !this.result && horse.id === this.selected ? -65 : -80 + p * 160 + after;
-      return { horse, index, p, x, z: (-8.4 + index * 2.4) * gathering, finished: runner && this.time >= runner.finishMs };
+      const gathering = 1 - .48 * T.MathUtils.smoothstep(p, 0, .18);
+      const distance = p * 160 + after;
+      const x = !this.result && horse.id === this.selected ? -65 : -80 + distance;
+      return { horse, index, p, distance, x, z: (-8.4 + index * 2.4) * gathering, finished: runner && this.time >= runner.finishMs };
     });
     const ordered = [...states].sort((a, b) => a.finished && b.finished ? this.result.order.indexOf(a.horse.id) - this.result.order.indexOf(b.horse.id) : b.p - a.p); this.onOrder?.(ordered.map(r => r.horse.id));
-    for (const s of states) { const a = this.actors[s.index]; if (!a) continue; a.root.position.set(s.x, 0, s.z); a.mixer.setTime(this.visualSeconds * 1.25 + s.index * .14); a.rider.position.y = this.running ? Math.sin(this.visualSeconds * 13 + s.index * .9) * .028 : 0; a.icon.visible = s.horse.id === this.selected || this.cameraMode === 'front'; }
     const lead = ordered[0]?.x || -80, phase = this.result ? this.time / this.duration : 0; let shot = this.cameraMode;
     if (shot === 'auto') shot = !this.result ? 'paddock' : phase < .16 ? 'start' : phase < .43 ? 'side' : phase < .62 ? 'front' : phase < .86 ? 'side' : 'finish';
+    for (const s of states) {
+      const actor = this.actors[s.index];
+      if (!actor) continue;
+      actor.root.position.set(s.x, 0, s.z);
+      const stridePhase = (s.distance / strideLength + s.index * .27) % 1;
+      actor.mixer.setTime(stridePhase * this.gallop.duration);
+      actor.poseJockey();
+      actor.icon.visible = s.horse.id === this.selected || shot === 'front';
+    }
     const narrow = this.camera.aspect < 1.5;
     if (shot === 'paddock' && this.selected) { const chosen = states.find(s => s.horse.id === this.selected); this.camera.position.set(chosen.x + 4.8, 2.8, chosen.z + 8); this.camera.lookAt(chosen.x + .1, 1.4, chosen.z); this.camera.fov = narrow ? 47 : 34; }
     else if (shot === 'paddock' || shot === 'start') { this.camera.position.set(lead + 12, narrow ? 5.5 : 4.8, narrow ? 22 : 20); this.camera.lookAt(lead - .3, 1.4, 0); this.camera.fov = narrow ? 49 : 42; }
     else if (shot === 'front') { this.camera.position.set(lead + (this.result ? 21 : 29), 3.4, 3); this.camera.lookAt(lead - 2, 1.3, 0); this.camera.fov = narrow ? 48 : 34; }
-    else if (shot === 'finish') { const focus = this.result && phase > .83 ? 79 : lead; this.camera.position.set(focus + 5, 4.8, narrow ? 29 : 27); this.camera.lookAt(focus, 1.1, 0); this.camera.fov = narrow ? 48 : 38; }
-    else { this.camera.position.set(lead - 1.5, 2.9, 21); this.camera.lookAt(lead - 2.5, 1.4, 1); this.camera.fov = narrow ? 50 : 34; }
+    else if (shot === 'finish' && phase > .83) {
+      // Shoot from inside the rail so the near finish post does not hide the pack.
+      this.camera.position.set(87, 4.2, 11.8);
+      this.camera.lookAt(78, 1.2, 0);
+      this.camera.fov = narrow ? 58 : 48;
+    }
+    else if (shot === 'finish') { this.camera.position.set(lead + 5, 4.8, narrow ? 29 : 27); this.camera.lookAt(lead, 1.1, 0); this.camera.fov = narrow ? 48 : 38; }
+    else { this.camera.position.set(lead - 1.5, 3.2, narrow ? 21 : 18.5); this.camera.lookAt(lead - 2.5, 1.4, 1); this.camera.fov = narrow ? 50 : 33; }
     this.camera.updateProjectionMatrix(); this.canvas.dataset.shot = shot; this.sun.position.set(lead - 20, 45, 25); this.sun.target.position.set(lead, 0, 0); this.renderer.render(this.scene, this.camera);
   }
 }

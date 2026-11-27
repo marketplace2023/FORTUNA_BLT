@@ -29,7 +29,7 @@ export class RaceTrack {
       this.resolve = resolve;
       const start = performance.now();
       const tick = now => {
-        const p = Math.min(1, (now - start) / 14000);
+        const p = Math.min(1, (now - start) / 13000);
         this.time = this.duration * p; this.draw(); onProgress?.(p);
         if (p < 1 && this.running) this.raf = requestAnimationFrame(tick);
         else { this.running = false; this.resolve = null; resolve(); }
