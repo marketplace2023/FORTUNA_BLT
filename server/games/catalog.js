@@ -18,14 +18,6 @@ import { ZOO_DEF } from './fortunazoo.js';
 import { EXPANSION_SLOTS } from './expansion/index.js';
 export const BETS = [0.2, 0.4, 1, 2, 4, 10, 20, 40, 100];
 
-const LINES_3X3 = [
-  [1, 1, 1],
-  [0, 0, 0],
-  [2, 2, 2],
-  [0, 1, 2],
-  [2, 1, 0],
-];
-
 const same = (n, w) => Array.from({ length: n }, () => ({ ...w }));
 /** Tiras de ways: sin comodín en el primer rodillo. */
 const waysReels = (n, w) => Array.from({ length: n }, (_, i) => (i === 0 ? { ...w, W: 0 } : { ...w }));
@@ -85,9 +77,9 @@ export const CATALOG = [
     id: 'panda-zen',
     name: 'Panda Zen',
     engine: 'lines',
-    tag: '3×3 · Respin',
+    tag: '5×3 · Respin',
     blurb: 'El panda medita y los símbolos se quedan quietos. Respins hasta que no caiga nada nuevo.',
-    cols: 3, rows: 3,
+    cols: 5, rows: 3,
     theme: { bg1: '#08311f', bg2: '#13804e', accent: '#ffd76a', ink: '#effff4', tile: '#f3fff2', tile2: '#a8e6b8' },
     symbols: {
       W: { g: '🐼', n: 'Panda (comodín)', t: 'wild' },
@@ -101,9 +93,15 @@ export const CATALOG = [
     },
     pay: { W: [250], H1: [100], H2: [25], H3: [12], L1: [7], L2: [4], L3: [2] },
     payDiv: 5,
-    lines: LINES_3X3,
+    lines: [
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [2, 2, 2, 2, 2],
+      [0, 1, 2, 1, 0],
+      [2, 1, 0, 1, 2],
+    ],
     fullScreenMult: 10,
-    reels: { base: same(3, { W: 2, H1: 2, H2: 4, H3: 5, L1: 7, L2: 9, L3: 10 }) },
+    reels: { base: same(5, { W: 10, H1: 2, H2: 4, H3: 5, L1: 7, L2: 9, L3: 10 }) },
     feature: { type: 'respinLock', per10k: 220, targets: { H1: 1, H2: 2, H3: 4, L1: 5, L2: 7, L3: 8 }, cells: { T: 3, W: 1, X: 6 }, maxRespins: 20 },
     maxWin: 2500,
     targetRtp: 96.3,
@@ -112,9 +110,9 @@ export const CATALOG = [
     id: 'frutas-neon',
     name: 'Frutas Neón',
     engine: 'lines',
-    tag: '3×3 · Rodillos salvajes',
+    tag: '4×3 · Rodillos salvajes',
     blurb: 'Clásico de frutas con luces de neón: de repente uno, dos o tres rodillos se vuelven comodín.',
-    cols: 3, rows: 3,
+    cols: 4, rows: 3,
     theme: { bg1: '#1a0533', bg2: '#5d14a3', accent: '#3ff5ff', ink: '#f6ecff', tile: '#2a0f4d', tile2: '#ff4fd8', dark: true },
     symbols: {
       W: { g: '🌟', n: 'Estrella (comodín)', t: 'wild' },
@@ -127,10 +125,21 @@ export const CATALOG = [
     },
     pay: { W: [150], H1: [60], H2: [25], H3: [12], L1: [6], L2: [4], L3: [2] },
     payDiv: 5,
-    lines: LINES_3X3,
+    lines: [
+      [1, 1, 1, 1],
+      [0, 0, 0, 0],
+      [2, 2, 2, 2],
+      [0, 1, 1, 2],
+      [2, 1, 1, 0],
+    ],
     fullScreenMult: 5,
-    reels: { base: same(3, { W: 1, H1: 3, H2: 4, H3: 5, L1: 7, L2: 8, L3: 9 }) },
-    feature: { type: 'wildReels', per10k: 350, counts: { 1: 80, 2: 17, 3: 3 } },
+    reels: {
+      base: [
+        ...same(3, { W: 3, H1: 3, H2: 4, H3: 5, L1: 7, L2: 8, L3: 9 }),
+        { W: 5, H1: 3, H2: 4, H3: 5, L1: 7, L2: 8, L3: 9 },
+      ],
+    },
+    feature: { type: 'wildReels', per10k: 350, counts: { 1: 48, 2: 20, 3: 32 } },
     maxWin: 1500,
     targetRtp: 96.0,
   },

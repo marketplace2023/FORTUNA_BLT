@@ -1,18 +1,18 @@
-# Panda Zen — jardín de los nueve sellos
+# Panda Zen · jardín de bambú
 
 ## Alcance
 
-Décima entrega de la renovación: jardín de bambú original, panda ilustrado, tablero de piedra marfil, jade y controles verdes. La función existente de respins tiene un mapa de nueve posiciones que refleja los símbolos bloqueados, el número de respin y el símbolo elegido. El escenario es estático; rodillos, entrada de símbolos, bloqueos y premios tienen animación.
+El jardín de bambú enmarca un gabinete de jade con cinco rodillos de marfil y una consola debajo. El mapa de 15 posiciones muestra los símbolos bloqueados junto al número de respin y el símbolo elegido. El escenario es estático. Los rodillos, los bloqueos y los premios tienen animación.
 
-Se conservaron motor, probabilidades, tiras, pagos, calibración, semillas, `configHash` y límites. Panda Zen pertenece a la misma familia de líneas y respins que Koi Dorado; esta entrega no inventa una mecánica matemática distinta ni reproduce un juego privado de otro proveedor.
+La ampliación a cinco rodillos ajusta la frecuencia de comodines de las tiras base y la escala de pagos para mantener el RTP objetivo del 96,3 %. El respin conserva su probabilidad de activación del 2,2 %. Las rondas 3×3 se verifican con el `configHash` de la configuración archivada.
 
 ## Reglas conservadas
 
-- Tablero 3×3 con cinco líneas. Tres símbolos compatibles de izquierda a derecha pagan; el panda es comodín.
+- Tablero 5×3 con cinco líneas. Cinco símbolos compatibles de izquierda a derecha pagan. El panda es comodín.
 - Una pantalla llena con un mismo símbolo y comodines multiplica el premio de las líneas por diez.
 - El respin se activa al azar. El servidor elige un símbolo y solo pueden aparecer ese símbolo, pandas comodín o casillas vacías.
 - Los símbolos que caen quedan bloqueados. Solo se renuevan las casillas vacías; la función termina cuando no aparece ningún símbolo nuevo, se llena el tablero o se alcanza el límite de 20 respins.
-- Se paga el tablero final. El mapa de nueve posiciones representa el bloqueo actual, sin añadir premios por colección.
+- Se paga el tablero final. El mapa de 15 posiciones representa el bloqueo actual.
 - Premio máximo de la ronda: 2.500 veces la apuesta, limitado por el servidor.
 
 ## Implementación
@@ -27,6 +27,8 @@ Se conservaron motor, probabilidades, tiras, pagos, calibración, semillas, `con
 Uso: `npm start`, abrir `http://localhost:3000/play/panda-zen`. Un servidor anterior necesita reiniciarse para cargar la ruta.
 
 ## Validación
+
+`node tools/simulate.js --game panda-zen --spins 5000000` regenera la hoja PAR para la configuración actual.
 
 `node tools/test-koi.mjs panda-zen`. El script histórico admite los diez clientes ilustrados. Usa Playwright y Microsoft Edge con servidor en 4318 y libro temporal, sin modificar saldos reales.
 

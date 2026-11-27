@@ -67,9 +67,8 @@ export async function collectMultipliers(spin, state, { anim, wait, T }) {
   phase = 'applied'; refresh(state);
   await wait(T(180));
 }
-export function freeState(active) {
+export function freeState() {
   accumulated = 0; visibleBonbons = []; phase = 'idle'; cascade = 0;
-  document.querySelector('#sweetMode').textContent = active ? 'LA RECETA DEL BONUS' : 'LA FIESTA EMPIEZA AQUÍ';
 }
 export function glyph(g, info) {
   const entry = Object.entries(info.symbols).find(([, d]) => d.g === g);

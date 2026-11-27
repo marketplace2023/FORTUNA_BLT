@@ -9,11 +9,14 @@ export function createReelPresentation({ tile, prefix, symbols, speed = 460, pad
     dispose();
     state.cells.flat().forEach(n => { n.style.visibility = 'hidden'; });
     for (let c = 0; c < state.info.cols; c++) {
-      const window = el('div', { class: `${prefix}-reel-window`, style: { left: `${c * state.cell}px`, width: `${state.cell}px` }, 'aria-hidden': 'true' });
+      const reelWidth = 'var(--reel-width, var(--cell))';
+      const window = el('div', { class: `${prefix}-reel-window`, style: { left: `calc(${c} * ${reelWidth})`, width: reelWidth }, 'aria-hidden': 'true' });
       const belt = el('div', { class: `${prefix}-reel-belt` });
-      for (let r = 0; r < 15; r++) belt.append(el('div', { class: `${prefix}-reel-symbol`, style: { height: `${state.cell}px` } }, tile(symbols[(r + c * 3) % symbols.length])));
+      for (let r = 0; r < symbols.length + state.info.rows; r++) {
+        belt.append(el('div', { class: `${prefix}-reel-symbol`, style: { height: 'var(--cell)' } }, tile(symbols[(r + c * 3) % symbols.length])));
+      }
       window.append(belt); board.append(window);
-      const animation = belt.animate([{ transform: `translateY(${-8 * state.cell}px)` }, { transform: 'translateY(0)' }], { duration: timing(speed), iterations: Infinity, easing: 'linear' });
+      const animation = belt.animate([{ transform: `translateY(calc(${-symbols.length} * var(--cell)))` }, { transform: 'translateY(0)' }], { duration: timing(speed), iterations: Infinity, easing: 'linear' });
       reels.push({ window, animation });
     }
     await new Promise(resolve => setTimeout(resolve, timing(spinPause)));

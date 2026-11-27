@@ -2,14 +2,16 @@
 
 ## Alcance
 
-Segunda entrega de la renovación visual, elegida por su función distinta del respin de Koi Dorado. La mecánica ya existente transforma uno, dos o tres rodillos completos en comodines. La presentación ahora muestra primero el giro, después una descarga por columna y finalmente las líneas premiadas. No se añadieron funciones nuevas al motor ni se cambiaron pesos, tiras, pagos, calibración, `configHash`, límite de premio ni condición de pantalla completa ×5.
+Cabina cromada con cuatro rodillos de tres filas y una consola debajo. Hay cinco líneas fijas y se requieren cuatro símbolos compatibles por línea. La descarga transforma uno, dos o tres rodillos completos en comodines, antes de mostrar las líneas premiadas. La pantalla completa multiplica el premio ×5 y el límite de la ronda es ×1.500.
+
+El cuarto rodillo, los pesos de comodín y la distribución de descargas se calibraron para un RTP objetivo del 96 %. La descarga conserva su probabilidad de activación del 3,5 %. Las rondas 3×3 se verifican con el `configHash` de la configuración archivada.
 
 Arte original: recreativa nocturna, metal cromado, cristal oscuro, acentos coral y hielo, símbolos 3D de frutas y estrella WILD. Sonido sintetizado de arpegios y barrido electrónico. No contiene banda sonora grabada.
 
 ## Implementación
 
 - `/play/frutas-neon` sirve `public/neon.html`, con estilos independientes en `public/css/neon.css`.
-- `public/js/neon.js` proporciona símbolos, rodillos cosméticos, estados de descarga e indicadores de las columnas transformadas.
+- `public/js/neon.js` proporciona los símbolos, la animación de rodillos y los indicadores de descarga del gabinete.
 - El cliente común carga el módulo de presentación según el juego. Koi conserva su propio módulo y tema.
 - La transformación actualiza tanto el símbolo visible como el símbolo interno de cada celda; el tablero final corresponde al frame recibido del servidor.
 - El movimiento reducido acorta la animación y desactiva los efectos CSS repetidos.
@@ -19,6 +21,8 @@ Arte original: recreativa nocturna, metal cromado, cristal oscuro, acentos coral
 ## Uso y comprobaciones
 
 Ejecutar `npm start` y abrir `http://localhost:3000/play/frutas-neon`. Reiniciar un servidor antiguo para que cargue la nueva ruta.
+
+`node tools/simulate.js --game frutas-neon --spins 5000000` regenera la hoja PAR para la configuración actual.
 
 Pruebas: `node tools/test-koi.mjs frutas-neon` para Neón y `node tools/test-koi.mjs` para Koi. Requiere Playwright y Microsoft Edge; instalación local de la herramienta: `npm install --no-save --package-lock=false playwright`. El nombre histórico del script se conserva; su argumento selecciona el juego.
 

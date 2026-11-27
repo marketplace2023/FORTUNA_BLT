@@ -23,14 +23,11 @@ export function banner(kind, data, info, state) {
   const mult = ladder[step];
   if (state.busy && mult > lastMult) Sound.catrinaRise(mult);
   lastMult = mult;
-  document.querySelector('#catrinaPower').textContent = `×${mult}`;
-  document.querySelector('#catrinaMoment').textContent = data.step ? `Cascada ${data.step}` : 'Cada cascada duplica el multiplicador';
   const box = el('div', { class: 'catrina-procession', 'data-mult': mult, 'data-mode': state.free ? 'free' : 'base' });
   box.append(el('span', { class: 'catrina-procession-label' }, state.free ? 'LA VELADA · HASTA ×64' : 'CADA CASCADA · EL DOBLE'));
   box.append(el('div', { class: 'catrina-candles', 'aria-label': `Multiplicador actual por ${mult}` }, ladder.map((m, i) => el('span', { class: `catrina-candle${i === step ? ' on' : ''}${i < step ? ' passed' : ''}`, 'aria-current': i === step ? 'step' : null }, el('span', { class: 'candle-art', 'aria-hidden': 'true' }), el('strong', {}, `×${m}`)))));
   return box;
 }
-export function freeState(active) { document.querySelector('#catrinaMode').textContent = active ? 'LA VELADA DE LA FORTUNA' : 'UNA NOCHE PARA CELEBRAR'; }
 export function glyph(g, info) {
   const entry = Object.entries(info.symbols).find(([, d]) => d.g === g);
   return tile(entry?.[0] || 'W', entry?.[1] || info.symbols.W);

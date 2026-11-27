@@ -26,8 +26,6 @@ export function banner(kind, data, info, state) {
   const mult = ladder[step];
   if (state.busy && state.free === wasFree && rawStep > lastStep) Sound.samuraiStep(step);
   lastStep = rawStep; wasFree = state.free;
-  document.querySelector('#samuraiCurrent').textContent = `×${mult}`;
-  document.querySelector('#samuraiStep').textContent = rawStep ? `Cascada ${rawStep}` : 'Un giro. Un nuevo comienzo.';
   const box = el('div', { class: 'samurai-wind', 'data-step': rawStep, 'data-mult': mult, 'data-mode': state.free ? 'free' : 'base' });
   box.append(el('span', { class: 'samurai-wind-label' }, state.free ? 'VIENTO DE SAKURA · GIROS GRATIS' : 'CADA CASCADA IMPULSA EL PREMIO'));
   box.append(el('div', { class: 'samurai-strokes', 'aria-label': `Multiplicador actual por ${mult}` }, ladder.map((m, i) => el('span', { class: `samurai-stroke${i === step ? ' on' : ''}${i < step ? ' passed' : ''}`, 'data-step': i, 'aria-current': i === step ? 'step' : null }, el('small', {}, `0${i + 1}`), el('strong', {}, `×${m}`)))));
@@ -35,7 +33,6 @@ export function banner(kind, data, info, state) {
 }
 export function freeState(active) {
   lastStep = 0; wasFree = active;
-  document.querySelector('#samuraiMode').textContent = active ? 'EL VIENTO DE SAKURA' : 'EL SILENCIO ANTES DEL VIENTO';
 }
 export function glyph(g, info) {
   const entry = Object.entries(info.symbols).find(([, d]) => d.g === g);

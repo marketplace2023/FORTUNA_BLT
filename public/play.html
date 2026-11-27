@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
   <title>Juego</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -11,56 +11,46 @@
   <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/game.css">
   <link rel="stylesheet" href="/css/slot-theme.css">
+  <link rel="stylesheet" href="/css/slot-cabinet.css">
 </head>
 <body>
-  <div class="stage" id="stage">
-    <div class="machine" id="machine">
+  <main class="stage" id="stage">
+    <div class="machine slot-machine" id="machine">
       <header class="m-top">
-        <a class="icon-btn" href="/" aria-label="Volver al lobby">‹</a>
-        <span class="slot-studio">VLT <span>ORIGINALS</span></span>
-        <button class="icon-btn" id="soundBtn" type="button" aria-label="Sonido" aria-pressed="true"></button>
+        <a class="icon-btn back" href="/" aria-label="Volver al lobby">‹</a>
+        <h1 id="title">Cargando…</h1>
+        <button class="icon-btn" id="soundBtn" type="button" aria-label="Activar o desactivar sonido" aria-pressed="true"></button>
       </header>
-      <section class="slot-hero" aria-labelledby="title">
-        <div class="slot-brand">
-          <h1 class="m-title" id="title">…</h1>
-          <p id="slotDescription" hidden></p>
+      <section class="slot-cabinet" aria-label="Tragamonedas">
+        <div class="m-banner" id="banner" role="status" aria-live="polite"></div>
+        <section class="board-wrap" id="boardWrap">
+          <div class="board" id="board"><svg class="paylines" id="paylines" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+          <div class="float-win" id="floatWin" aria-hidden="true"></div>
+          <div class="fs-counter" id="fsCounter" hidden></div>
+        </section>
+        <div class="slot-console">
+          <div class="m-info">
+            <div class="info-box"><span class="lbl">Créditos <span id="creditMode"></span></span><span class="val" id="balVal">—</span></div>
+            <div class="info-box m-win" id="winbar" aria-live="polite"><span class="lbl">Último premio</span><span class="val" id="winVal">0,00</span></div>
+            <div class="info-box"><span class="lbl">Apuesta total</span><span class="val" id="betVal">—</span></div>
+          </div>
+          <div class="m-controls">
+            <button class="ctl" id="menuBtn" type="button" aria-label="Pagos, reglas e historial">Menú</button>
+            <button class="ctl" id="autoBtn" type="button" aria-label="Juego automático">Auto</button>
+            <button class="ctl" id="turboBtn" type="button" aria-pressed="false">Turbo</button>
+            <button class="ctl bet-adjust" id="betDown" type="button" aria-label="Bajar apuesta">−</button>
+            <button class="ctl bet-adjust" id="betUp" type="button" aria-label="Subir apuesta">+</button>
+            <button class="spin" id="spinBtn" type="button" aria-label="Girar" data-stop-label="Detener giros automáticos">
+              <svg class="spin-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M37 16a15 15 0 1 0 1 15M37 7v11H26"/></svg>
+              <span class="spin-label">Girar</span><span class="spin-stop">Parar</span><span class="spin-auto" id="spinAuto"></span>
+            </button>
+          </div>
+          <footer class="m-sub"><span class="rtp-note" id="rtpNote"></span><span>18+</span></footer>
         </div>
       </section>
-
-      <div class="m-banner" id="banner"></div>
-
-      <div class="board-wrap" id="boardWrap">
-        <div class="board" id="board" role="group">
-          <svg class="paylines" id="paylines" aria-hidden="true"></svg>
-        </div>
-        <div class="float-win" id="floatWin"></div>
-        <div class="fs-counter" id="fsCounter" hidden></div>
-      </div>
-
-      <div class="m-win" id="winbar"><span class="lbl">Último premio</span><span class="val" id="winVal">0,00</span></div>
-
-      <div class="m-info">
-        <div class="info-box"><span class="lbl">Créditos <span id="creditMode"></span></span><span class="val" id="balVal">—</span></div>
-        <div class="info-box bet"><span class="lbl">Apuesta total</span><span class="val" id="betVal">—</span></div>
-      </div>
-
-      <div class="m-controls">
-        <button class="ctl" id="menuBtn" type="button" aria-label="Menú"><span>☰</span><small>Menú</small></button>
-        <button class="ctl" id="betDown" type="button" aria-label="Bajar apuesta"><span>−</span><small>Apuesta</small></button>
-        <button class="spin" id="spinBtn" type="button" aria-label="Girar"><svg class="spin-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M37 16a15 15 0 1 0 1 15M37 7v11H26"/></svg><span class="spin-auto" id="spinAuto"></span></button>
-        <button class="ctl" id="betUp" type="button" aria-label="Subir apuesta"><span>+</span><small>Apuesta</small></button>
-        <button class="ctl" id="autoBtn" type="button" aria-label="Juego automático"><span>▶▶</span><small>Auto</small></button>
-      </div>
-      <div class="m-sub">
-        <button class="pill" id="turboBtn" type="button">Turbo</button>
-        <span class="rtp-note" id="rtpNote"></span>
-        <span class="slot-age">18+</span>
-      </div>
-
       <div class="overlay" id="overlay" hidden></div>
     </div>
-  </div>
-
+  </main>
   <dialog class="sheet" id="menuDlg">
     <div class="sheet-head"><h2>Menú</h2><form method="dialog"><button class="x" aria-label="Cerrar">✕</button></form></div>
     <div class="sheet-tabs">

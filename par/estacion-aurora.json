@@ -2,68 +2,68 @@
   "id": "estacion-aurora",
   "name": "Estación Aurora",
   "engine": "lines",
-  "configHash": "48761c5bd5ba0ef31dcae6eb0cee7c5898d75a7c13646854a97108eafb86e496",
+  "configHash": "8e3d35668dbba7c9d5fac503e688af538267b5393f6e3e84ee5141e515427bb5",
   "scale": 1,
   "targetRtp": 96.3,
   "spins": 5000000,
-  "rtp": 96.50289883916773,
-  "ci95": 0.7239278235840845,
-  "sd": 8.2589378792729,
+  "rtp": 96.08223964430826,
+  "ci95": 0.7311776536360386,
+  "sd": 8.341647638566217,
   "volatility": "Alta",
-  "hitRate": 28.3957,
-  "featureEvery": 52,
-  "featureRtp": 52.86593643997326,
-  "baseRtp": 43.63696239919447,
-  "avgFeatureWin": 27.730477250539366,
+  "hitRate": 28.059299999999997,
+  "featureEvery": 53,
+  "featureRtp": 52.407142044444576,
+  "baseRtp": 43.67509759986368,
+  "avgFeatureWin": 27.565876646071125,
   "avgCascades": 0,
-  "maxWinX": 448.464,
+  "maxWinX": 384.4,
   "maxWinCap": 1800,
   "cappedRounds": 0,
   "distribution": [
     {
       "label": "0x",
-      "count": 3580215,
-      "pct": 71.6043
+      "count": 3597035,
+      "pct": 71.9407
     },
     {
       "label": "0–1x",
-      "count": 790974,
-      "pct": 15.81948
+      "count": 767839,
+      "pct": 15.35678
     },
     {
       "label": "1–2x",
-      "count": 310520,
-      "pct": 6.2104
+      "count": 306615,
+      "pct": 6.1323
     },
     {
       "label": "2–5x",
-      "count": 167658,
-      "pct": 3.3531600000000004
+      "count": 177524,
+      "pct": 3.5504800000000003
     },
     {
       "label": "5–10x",
-      "count": 103832,
-      "pct": 2.0766400000000003
+      "count": 83854,
+      "pct": 1.67708
     },
     {
       "label": "10–20x",
-      "count": 18479,
-      "pct": 0.36958
+      "count": 37154,
+      "pct": 0.7430800000000001
     },
     {
       "label": "20–50x",
-      "count": 17920,
-      "pct": 0.3584
+      "count": 14501,
+      "pct": 0.29002
     },
     {
       "label": "50–100x",
-      "count": 4078,
-      "pct": 0.08156
+      "count": 10278,
+      "pct": 0.20556
     },
     {
       "label": "100–500x",
-      "count": 6324,
-      "pct": 0.12647999999999998
+      "count": 5200,
+      "pct": 0.104
     },
     {
       "label": "500–1000x",
@@ -78,27 +78,27 @@
   ],
   "paytable": {
     "W": [
-      91.4
+      97.2
     ],
     "H1": [
-      44.7
+      47.5
     ],
     "H2": [
-      29.1
+      31
     ],
     "H3": [
-      14.9
+      15.8
     ],
     "L1": [
-      8.12
+      8.64
     ],
     "L2": [
-      4.74
+      5.04
     ],
     "L3": [
-      2.71
+      2.88
     ]
   },
-  "generatedAt": "2026-11-27T14:42:07.126Z",
-  "elapsedMs": 71470
+  "generatedAt": "2026-11-27T15:52:27.732Z",
+  "elapsedMs": 43002
 }

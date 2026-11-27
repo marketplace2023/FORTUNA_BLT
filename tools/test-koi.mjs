@@ -25,7 +25,7 @@ const sweet = gameId === 'fiesta-dulce';
 const panda = gameId === 'panda-zen';
 const clients = {
   'koi-dorado': { prefix: 'koi', cells: 15 },
-  'frutas-neon': { prefix: 'neon', cells: 9 },
+  'frutas-neon': { prefix: 'neon', cells: 12 },
   'dragon-jade': { prefix: 'dragon', cells: 20, active: '.dragon-rung.on' },
   'faraon-dorado': { prefix: 'pharaoh', cells: 30 },
   'noche-catrinas': { prefix: 'catrina', cells: 24, active: '.catrina-candle.on strong' },
@@ -33,7 +33,7 @@ const clients = {
   'samurai-viento': { prefix: 'samurai', cells: 15, active: '.samurai-stroke.on strong' },
   'templo-jaguar': { prefix: 'jaguar', cells: 30, active: '.jaguar-stair.on strong' },
   'fiesta-dulce': { prefix: 'sweet', cells: 30 },
-  'panda-zen': { prefix: 'panda', cells: 9 },
+  'panda-zen': { prefix: 'panda', cells: 15 },
 };
 const client = clients[gameId];
 assert(client);

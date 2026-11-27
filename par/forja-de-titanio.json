@@ -2,73 +2,73 @@
   "id": "forja-de-titanio",
   "name": "Forja de Titanio",
   "engine": "lines",
-  "configHash": "ec24a943083e4aec607af923a027dc0b7536def0f5f864d006d3c97ace1ae2eb",
+  "configHash": "aaf15cb98d4900eb9a4391785cf292520d4103742d73d1112e831f21f1c8d0dc",
   "scale": 1,
   "targetRtp": 96,
   "spins": 5000000,
-  "rtp": 96.25923600134246,
-  "ci95": 0.48375083333862196,
-  "sd": 5.518876262843522,
+  "rtp": 95.8977927560419,
+  "ci95": 0.4821105623571775,
+  "sd": 5.500163214802552,
   "volatility": "Media",
-  "hitRate": 29.7362,
+  "hitRate": 29.83386,
   "featureEvery": 60,
-  "featureRtp": 21.09329999999667,
-  "baseRtp": 75.16593600134578,
-  "avgFeatureWin": 12.62013880578956,
+  "featureRtp": 20.775889977776433,
+  "baseRtp": 75.12190277826545,
+  "avgFeatureWin": 12.428447499327866,
   "avgCascades": 0,
-  "maxWinX": 536.4000000000001,
+  "maxWinX": 449.46666666666675,
   "maxWinCap": 1200,
   "cappedRounds": 0,
   "distribution": [
     {
       "label": "0x",
-      "count": 3513190,
-      "pct": 70.2638
+      "count": 3508307,
+      "pct": 70.16614
     },
     {
       "label": "0–1x",
-      "count": 477100,
-      "pct": 9.542
+      "count": 541459,
+      "pct": 10.82918
     },
     {
       "label": "1–2x",
-      "count": 394020,
-      "pct": 7.8804
+      "count": 306105,
+      "pct": 6.1221
     },
     {
       "label": "2–5x",
-      "count": 414880,
-      "pct": 8.2976
+      "count": 447766,
+      "pct": 8.95532
     },
     {
       "label": "5–10x",
-      "count": 113955,
-      "pct": 2.2790999999999997
+      "count": 134124,
+      "pct": 2.68248
     },
     {
       "label": "10–20x",
-      "count": 72302,
-      "pct": 1.44604
+      "count": 45894,
+      "pct": 0.91788
     },
     {
       "label": "20–50x",
-      "count": 9754,
-      "pct": 0.19508
+      "count": 11751,
+      "pct": 0.23502
     },
     {
       "label": "50–100x",
-      "count": 2099,
-      "pct": 0.04198
+      "count": 2106,
+      "pct": 0.04212
     },
     {
       "label": "100–500x",
-      "count": 2699,
-      "pct": 0.05398
+      "count": 2488,
+      "pct": 0.04976
     },
     {
       "label": "500–1000x",
-      "count": 1,
-      "pct": 0.000019999999999999998
+      "count": 0,
+      "pct": 0
     },
     {
       "label": "1000x+",
@@ -78,27 +78,27 @@
   ],
   "paytable": {
     "W": [
-      125
+      131
     ],
     "H1": [
-      65
+      67.9
     ],
     "H2": [
-      36
+      37.6
     ],
     "H3": [
-      21
+      21.9
     ],
     "L1": [
-      11
+      11.5
     ],
     "L2": [
-      6
+      6.27
     ],
     "L3": [
-      3
+      3.13
     ]
   },
-  "generatedAt": "2026-11-27T14:41:00.277Z",
-  "elapsedMs": 92056
+  "generatedAt": "2026-11-27T15:53:39.525Z",
+  "elapsedMs": 81415
 }

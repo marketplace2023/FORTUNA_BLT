@@ -2,73 +2,73 @@
   "id": "el-ultimo-atraco",
   "name": "El Último Atraco",
   "engine": "lines",
-  "configHash": "af26cc2cfc2562a27be736c52ddaee07101e07122cef0c608d6b83a68800ee3a",
+  "configHash": "67e843dfcbcdb323312f9e0428f10bec36703fdfc1e2998ed99f6384f291afd7",
   "scale": 1,
   "targetRtp": 96,
   "spins": 5000000,
-  "rtp": 96.05882000028413,
-  "ci95": 0.7557322895107623,
-  "sd": 8.621779449681714,
+  "rtp": 96.35986800017928,
+  "ci95": 0.7665207567589175,
+  "sd": 8.744859787130208,
   "volatility": "Alta",
-  "hitRate": 28.16826,
-  "featureEvery": 114,
-  "featureRtp": 29.335856000000106,
-  "baseRtp": 66.72296400028402,
-  "avgFeatureWin": 33.44870929490115,
+  "hitRate": 20.396819999999998,
+  "featureEvery": 115,
+  "featureRtp": 29.326239999999903,
+  "baseRtp": 67.03362800017936,
+  "avgFeatureWin": 33.66807494489335,
   "avgCascades": 0,
-  "maxWinX": 886.4,
+  "maxWinX": 624,
   "maxWinCap": 2500,
   "cappedRounds": 0,
   "distribution": [
     {
       "label": "0x",
-      "count": 3591587,
-      "pct": 71.83174
+      "count": 3980159,
+      "pct": 79.60318
     },
     {
       "label": "0–1x",
-      "count": 391161,
-      "pct": 7.82322
+      "count": 247437,
+      "pct": 4.94874
     },
     {
       "label": "1–2x",
-      "count": 608232,
-      "pct": 12.16464
+      "count": 410484,
+      "pct": 8.20968
     },
     {
       "label": "2–5x",
-      "count": 229207,
-      "pct": 4.58414
+      "count": 175853,
+      "pct": 3.5170600000000003
     },
     {
       "label": "5–10x",
-      "count": 101504,
-      "pct": 2.03008
+      "count": 91130,
+      "pct": 1.8226
     },
     {
       "label": "10–20x",
-      "count": 57320,
-      "pct": 1.1464
+      "count": 59526,
+      "pct": 1.19052
     },
     {
       "label": "20–50x",
-      "count": 14745,
-      "pct": 0.2949
+      "count": 27761,
+      "pct": 0.55522
     },
     {
       "label": "50–100x",
-      "count": 2543,
-      "pct": 0.05086
+      "count": 3875,
+      "pct": 0.0775
     },
     {
       "label": "100–500x",
-      "count": 3215,
-      "pct": 0.0643
+      "count": 3272,
+      "pct": 0.06544
     },
     {
       "label": "500–1000x",
-      "count": 486,
-      "pct": 0.009720000000000001
+      "count": 503,
+      "pct": 0.010060000000000001
     },
     {
       "label": "1000x+",
@@ -99,6 +99,6 @@
       3
     ]
   },
-  "generatedAt": "2026-11-27T14:40:55.104Z",
-  "elapsedMs": 86899
+  "generatedAt": "2026-11-27T15:51:46.722Z",
+  "elapsedMs": 54397
 }

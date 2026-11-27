@@ -1,21 +1,17 @@
-.samurai-game { --display: 'Yu Mincho', 'Palatino Linotype', Georgia, serif; --ui: 'Segoe UI', system-ui, sans-serif; color: #f4efdf; background: #252626; }
+.samurai-game {
+  --display: 'Yu Mincho', 'Palatino Linotype', Georgia, serif;
+  --ui: 'Segoe UI', system-ui, sans-serif;
+  color: #f4efdf;
+  background: #252626;
+  --cabinet-base: #29372f;
+  --cabinet-trim: #b5b8a2;
+  --cabinet-control: #3a473e;
+  --cabinet-title: #fff2d2;
+  --cabinet-reel-light: #eeeadb;
+  --cabinet-reel-edge: #d2d3c4;
+}
 .samurai-game .stage { background: linear-gradient(#24262655, #202322cc), url('/assets/samurai/pass.png') center / cover; }
 .samurai-game .stage::before { display: none; }
-.samurai-game .machine { width: min(100%, 580px); height: 100dvh; max-height: 1050px; border-radius: 0; isolation: isolate; background: #2b2e2c; box-shadow: 0 0 100px #111a15aa; }
-.samurai-game .machine::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(#26282411, #30322c77 28%, #262a28ed 70%, #242826 100%), url('/assets/samurai/pass.png') 13% top / auto 75% no-repeat; transition: filter 1s; }
-.samurai-game .m-top { flex: 0 0 43px; padding: 7px 15px 0; background: linear-gradient(#202725aa, transparent); }
-.samurai-studio { font: 600 14px var(--ui); letter-spacing: .14em; color: #f1ebd9; }
-.samurai-studio span { font-size: 8px; letter-spacing: .2em; color: #c9cdbf; margin-left: 6px; }
-.samurai-game .icon-btn { width: 32px; height: 32px; color: #f2ecda; border: 1px solid #bfc6b74d; background: #2d353188; border-radius: 2px; font: 28px Georgia, serif; }
-.samurai-game .icon-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.samurai-hero { flex: 0 0 150px; position: relative; display: flex; align-items: center; padding: 10px 24px; }
-.samurai-brand { position: relative; z-index: 1; max-width: 73%; text-shadow: 0 3px 12px #1d2923; }
-.samurai-brand > span { font: 500 7px var(--ui); letter-spacing: .17em; color: #e3d8c1; }
-.samurai-brand h1 { font: 600 35px/1 var(--display); letter-spacing: -.045em; max-width: 9ch; margin: 6px 0; color: #fff7e2; }
-.samurai-brand p { margin: 8px 0 0; font: 400 10px var(--ui); color: #cbd1c4; }
-.samurai-crest { position: absolute; right: 0; top: 9px; width: 135px; height: 135px; background: url('/assets/samurai/symbols.png') 66.666667% 100% / 400% 300%; filter: drop-shadow(0 6px 10px #15211d88); }
-.samurai-current-card, .samurai-guide { display: none; }
-.samurai-game .m-banner { flex: 0 0 76px; min-height: 66px; padding: 0 18px 7px; }
 .samurai-wind { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 100%; }
 .samurai-wind-label { font: 500 7px var(--ui); letter-spacing: .16em; color: #d4d6c8; text-align: center; }
 .samurai-strokes { display: flex; width: min(100%, 390px); justify-content: center; gap: 7px; }
@@ -24,12 +20,8 @@
 .samurai-stroke strong { font: 600 23px/1 var(--display); }
 .samurai-stroke.on { background: #b54c3f; border-bottom-color: #f3b28e; color: #fff1dc; box-shadow: 0 5px 15px #8a2d2222; }
 .samurai-stroke.passed { border-bottom-color: #b97a5f; color: #e1c6a6; }
-.samurai-game .board-wrap { flex: 1 1 280px; min-height: 140px; padding: 12px 16px; }
-.samurai-game .board { background: linear-gradient(125deg, #eeeadb, #d2d3c4); border-radius: 2px; box-shadow: 0 0 0 2px #3c4940, 0 0 0 4px #b5b8a2, 0 0 0 7px #4a5548, 0 0 0 9px #8d957f, 0 12px 25px #17231c88; }
-.samurai-game .board::after { content: ''; position: absolute; inset: 0; z-index: 6; pointer-events: none; box-shadow: inset 0 7px 16px #3c493533; background: repeating-linear-gradient(90deg, transparent 0 calc(20% - 1px), #727e6533 calc(20% - 1px) 20%); }
-.samurai-game .cell { padding: 3px; }
 .samurai-game .samurai-tile { background: transparent; border-radius: 2px; box-shadow: none; }
-.samurai-symbol { display: block; width: 100%; height: 100%; background: url('/assets/samurai/symbols.png') no-repeat; background-size: 400% 300%; transform: scale(1.12); filter: drop-shadow(0 2px 2px #35412c33); }
+.samurai-symbol { display: block; width: min(100%, var(--cell)); aspect-ratio: 1; background: url('/assets/samurai/symbols.png') no-repeat; background-size: 400% 300%; filter: drop-shadow(0 2px 2px #35412c33); }
 .samurai-game .tile .lab { bottom: 1%; color: #fff3e0; background: #9e4b3d; border: 1px solid #d8ba92; border-radius: 1px; padding: 1px 3px; font: 600 calc(var(--cell) * .08) var(--ui); letter-spacing: .04em; }
 .samurai-game .t-wild { background: radial-gradient(ellipse, #be816533, transparent 70%); }
 .samurai-game .t-scatter { background: radial-gradient(ellipse, #e5a7ac33, transparent 70%); }
@@ -40,26 +32,8 @@
 .samurai-reel-window { position: absolute; top: 0; height: 100%; overflow: hidden; z-index: 4; }
 .samurai-reel-belt { filter: blur(1.4px); }
 .samurai-reel-symbol { padding: 3px; }
-.samurai-game .m-win { flex: 0 0 44px; min-height: 36px; padding: 4px 0; gap: 12px; }
-.samurai-game .m-win .lbl { font: 500 8px var(--ui); color: #c1cbbb; opacity: 1; letter-spacing: .12em; }
-.samurai-game .m-win .val { font: 500 31px var(--display); color: #fff2d2; text-shadow: 0 2px 6px #1d2a22; }
-.samurai-game .m-info { flex: 0 0 50px; margin: 0 22px; padding: 0; gap: 0; border-block: 1px solid #bec6b033; }
-.samurai-game .info-box { background: transparent; border-radius: 0; padding: 7px; }
-.samurai-game .info-box + .info-box { border-left: 1px solid #bec6b033; }
-.samurai-game .info-box .lbl { font: 400 8px var(--ui); letter-spacing: .1em; color: #bcc8b6; opacity: 1; }
-.samurai-game .info-box .val { font: 500 18px var(--ui); color: #f7f2de; font-variant-numeric: tabular-nums; }
-.samurai-game .m-controls { flex: 0 0 95px; grid-template-columns: 1fr 1fr 110px 1fr 1fr; gap: 8px; padding: 5px 22px 0; }
-.samurai-game .ctl { justify-self: center; width: 40px; height: 40px; border-radius: 2px; background: #3a473e; border: 1px solid #a8b39a55; box-shadow: 0 3px #1b2a20; color: #dce3cc; }
-.samurai-game .ctl span { font-size: 22px; font-weight: 400; }
-.samurai-game .ctl small { font: 500 7px var(--ui); letter-spacing: .06em; }
-.samurai-game .bet-adjust { width: 32px; height: 32px; background: transparent; box-shadow: none; }
-.samurai-game .spin { width: 104px; height: 64px; justify-self: center; border-radius: 2px; background: linear-gradient(#d57b63, #b84b3d 65%, #8e362d); border: 1px solid #e8a883; box-shadow: inset 0 2px #eeb79155, 0 4px #652e26, 0 0 0 5px #2e3e32, 0 0 0 6px #89977c77; }
-.samurai-game .spin-icon { width: 38px; height: 38px; fill: none; stroke: #fff0d4; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-.samurai-game .spin-auto { font: 600 25px var(--ui); color: #fff0d4; }
-.samurai-game .m-sub { flex: 0 0 auto; justify-content: center; gap: 12px; padding: 4px 12px max(10px, env(safe-area-inset-bottom)); }
-.samurai-game .pill { padding: 4px 8px; background: transparent; border: 1px solid #a8b39a4d; border-radius: 2px; color: #c2cfba; font: 500 9px var(--ui); }
-.samurai-game .pill.on { color: #fff0cd; border-color: #d99a76; background: #b9754b22; }
-.samurai-game .rtp-note { font: 400 8px var(--ui); color: #b1bfab; opacity: 1; }
+.samurai-game .m-sub { grid-column: 1 / -1; justify-content: center; gap: 8px; padding: 0; }
+.samurai-game .rtp-note { font: 400 10px var(--ui); color: #b1bfab; opacity: 1; }
 .samurai-game .age-note { font: 400 8px var(--ui); color: #b1bfab; border: 1px solid #a8b39a4d; border-radius: 2px; padding: 2px; }
 .samurai-game button { transition: filter .15s, transform .15s, background .15s; }
 .samurai-game button:hover:not(:disabled) { filter: brightness(1.14); }
@@ -76,7 +50,7 @@
 .samurai-game .overlay { background: radial-gradient(ellipse at 50% 40%, #506046e6, #1c2921f5); backdrop-filter: blur(7px); }
 .samurai-game .ov-card, .samurai-game .gate { gap: 16px; }
 .samurai-game .ov-title { font: 600 clamp(34px, 8vw, 50px)/1.05 var(--display); color: #fff0cf; text-shadow: 0 2px 9px #203223; max-width: 11ch; }
-.samurai-game .ov-glyph { width: 150px; height: 150px; font-size: initial; }
+.samurai-game .ov-glyph { width: 150px; height: 150px; font-size: initial; --cell: 150px; }
 .samurai-game .ov-sub, .samurai-game .gate p { font: 400 13px/1.6 var(--ui); color: #d8e0cc; max-width: 28ch; }
 .samurai-game .ov-btn { background: linear-gradient(#d18a6d, #af503f); color: #fff0d2; font: 600 14px var(--ui); border-radius: 2px; box-shadow: 0 4px #713b2d; }
 .samurai-game .ghost-btn { font: 500 14px var(--ui); border-radius: 2px; }
@@ -88,62 +62,11 @@
 .samurai-game .toast { background: #41523d; color: #eff0d2; border: 1px solid #aab99466; font: 500 13px var(--ui); border-radius: 3px; }
 .samurai-game .toast-error { background: #663f35; }
 .samurai-game .fs-counter { top: 1px; font: 600 11px var(--ui); padding: 5px 12px; color: #fff0d2; background: #b65d4d; border: 1px solid #e4ab85; border-radius: 2px; }
-.samurai-game .machine.free { background: #394136; }
-.samurai-game .free::before { filter: sepia(.2) saturate(1.2) brightness(1.1); }
 .samurai-game .free .board { box-shadow: 0 0 0 2px #795342, 0 0 0 4px #e8c3a3, 0 0 0 7px #7e7658, 0 0 0 9px #b79570, 0 0 30px #cba37133; }
-@media (min-width: 950px) and (min-height: 600px) {
-  .samurai-game .machine { width: min(1240px, 96vw); height: min(920px, 96dvh); max-height: none; display: grid; grid-template-columns: 280px minmax(0, 1fr); grid-template-rows: 45px 78px minmax(180px, 1fr) 100px 30px; border: 1px solid #aeb59c66; border-radius: 3px; padding: 0 22px; }
-  .samurai-game .machine::before { background: linear-gradient(90deg, #24312722 5%, #29352a99 28%, #29352bd9 65%), url('/assets/samurai/pass.png') left top / cover; }
-  .samurai-game .m-top { grid-column: 1 / -1; grid-row: 1; }
-  .samurai-hero { grid-column: 1; grid-row: 2 / 4; min-height: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; padding: 25px 20px; background: linear-gradient(transparent 20%, #2b392bd9 90%); }
-  .samurai-brand { max-width: none; }
-  .samurai-brand h1 { font-size: 43px; max-width: 8ch; }
-  .samurai-brand p { font-size: 11px; }
-  .samurai-crest { display: none; }
-  .samurai-current-card { display: flex; flex-direction: column; gap: 4px; padding-top: 18px; margin-top: 18px; align-self: stretch; border-top: 1px solid #aebf9d4d; }
-  .samurai-current-card > span { font: 500 7px var(--ui); letter-spacing: .15em; color: #c7d3b8; }
-  .samurai-current-card > strong { font: 500 51px/.95 var(--display); color: #fce8c4; }
-  .samurai-current-card > small { font: 400 9px var(--ui); color: #bac9ac; }
-  .samurai-guide { display: flex; align-items: center; gap: 7px; margin-top: 13px; }
-  .guide-sakura { display: block; width: 54px; height: 54px; background: url('/assets/samurai/symbols.png') 33.333333% 0 / 400% 300%; }
-  .samurai-guide p { font: 400 9px/1.7 var(--ui); color: #c8d4bc; }
-  .samurai-guide strong { font-weight: 500; color: #f8e5c5; }
-  .samurai-game .m-banner { grid-column: 2; grid-row: 2; padding-top: 3px; }
-  .samurai-wind-label { font-size: 8px; }
-  .samurai-game .board-wrap { grid-column: 2; grid-row: 3; min-height: 0; }
-  .samurai-game .m-win { grid-column: 1; grid-row: 4; flex-direction: column; align-items: flex-start; justify-content: center; gap: 4px; margin: 0 20px; border-top: 1px solid #aebf9d4d; }
-  .samurai-game .m-win .val { font-size: 37px; }
-  .samurai-game .m-info { grid-column: 2; grid-row: 4; align-self: center; width: 210px; height: 52px; margin: 0 0 0 18px; }
-  .samurai-game .m-controls { grid-column: 2; grid-row: 4; align-self: center; margin-left: 240px; padding: 4px 18px; }
-  .samurai-game .m-sub { grid-column: 1 / -1; grid-row: 5; padding-top: 0; }
+
+@media (max-height: 540px) and (orientation: landscape) {
+  .samurai-wind { gap: 4px; }
+  .samurai-stroke { gap: 4px; padding: 4px; }
+  .samurai-stroke strong { font-size: 16px; }
 }
-@media (max-height: 730px) and (max-width: 949px) {
-  .samurai-game .m-top { flex-basis: 35px; }
-  .samurai-hero { flex-basis: 110px; padding: 5px 22px; }
-  .samurai-brand h1 { font-size: 30px; }
-  .samurai-brand > span { font-size: 6px; }
-  .samurai-brand p { font-size: 9px; margin-top: 5px; }
-  .samurai-crest { width: 100px; height: 100px; top: 0; }
-  .samurai-game .m-banner { flex-basis: 67px; min-height: 62px; }
-  .samurai-stroke { gap: 6px; padding: 7px 6px; }
-  .samurai-stroke strong { font-size: 21px; }
-  .samurai-game .m-win { flex-basis: 36px; }
-  .samurai-game .m-win .val { font-size: 26px; }
-  .samurai-game .m-info { flex-basis: 44px; }
-  .samurai-game .info-box .val { font-size: 16px; }
-  .samurai-game .m-controls { flex-basis: 80px; grid-template-columns: 1fr 1fr 94px 1fr 1fr; }
-  .samurai-game .spin { width: 88px; height: 57px; }
-  .samurai-game .spin-icon { width: 33px; height: 33px; }
-}
-@media (max-width: 949px) and (max-height: 620px) {
-  .samurai-game .m-top { padding-top: 2px; }
-  .samurai-hero { flex-basis: 48px; justify-content: center; padding: 2px 15px; }
-  .samurai-brand { max-width: none; text-align: center; }
-  .samurai-brand h1 { max-width: none; font-size: 25px; margin: 0; }
-  .samurai-brand > span { font-size: 6px; }
-  .samurai-brand p, .samurai-crest { display: none; }
-  .samurai-game .m-banner { flex-basis: 62px; min-height: 58px; }
-  .samurai-game .m-controls { flex-basis: 74px; }
-}
-@media (max-height: 540px) { .samurai-game { overflow-y: auto; } .samurai-game .stage { position: relative; min-height: 620px; } .samurai-game .machine { height: 620px; flex-shrink: 0; } }
 @media (prefers-reduced-motion: reduce) { .samurai-game *, .samurai-game *::after { animation: none !important; transition: none !important; } .samurai-reel-belt { filter: none; } }

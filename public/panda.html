@@ -4,45 +4,49 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#142d24">
-  <meta name="description" content="Panda Zen. Un jardín de bambú, cinco líneas y respins con símbolos bloqueados.">
+  <meta name="description" content="Panda Zen. Cinco rodillos, cinco líneas y respins con símbolos bloqueados.">
   <title>Panda Zen · VLT Royale</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/assets/panda/garden.png" as="image">
   <link rel="preload" href="/assets/panda/symbols.png" as="image">
   <link rel="stylesheet" href="/css/game.css">
   <link rel="stylesheet" href="/css/panda.css">
+  <link rel="stylesheet" href="/css/slot-cabinet.css">
 </head>
 <body class="panda-game">
   <main class="stage" id="stage">
-    <div class="machine" id="machine">
+    <div class="machine slot-machine" id="machine">
       <header class="m-top">
         <a class="icon-btn back" href="/" aria-label="Volver al lobby">‹</a>
-        <span class="studio-mark">VLT <span>ORIGINALS</span></span>
+        <h1 id="title">Panda Zen</h1>
         <button class="icon-btn" id="soundBtn" type="button" aria-label="Activar o desactivar sonido" aria-pressed="true"></button>
       </header>
-      <section class="panda-hero" aria-label="Un panda en un jardín de bambú">
-        <div class="panda-brand"><span class="panda-eyebrow">EL JARDÍN DE LOS NUEVE SELLOS</span><h1 id="title">Panda Zen</h1><span class="panda-subtitle">La calma guarda tu fortuna</span></div>
-        <div class="panda-seal" aria-label="Pantalla llena multiplica el premio por diez"><span>JARDÍN</span><strong>×10</strong><small>PANTALLA LLENA</small></div>
+      <section class="slot-cabinet" aria-label="Tragamonedas">
+        <div class="m-banner" id="banner" role="status" aria-live="polite"></div>
+        <section class="board-wrap" id="boardWrap" aria-label="Cinco rodillos de tres filas">
+          <div class="board" id="board"><svg class="paylines" id="paylines" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+          <div class="float-win" id="floatWin" aria-hidden="true"></div>
+          <div class="fs-counter" id="fsCounter" hidden></div>
+        </section>
+        <div class="slot-console">
+          <div class="m-info">
+            <div class="info-box"><span class="lbl">Créditos <span id="creditMode"></span></span><span class="val" id="balVal">—</span></div>
+            <div class="info-box m-win" id="winbar" aria-live="polite"><span class="lbl">Último premio</span><span class="val" id="winVal">0,00</span></div>
+            <div class="info-box"><span class="lbl">Apuesta total</span><span class="val" id="betVal">—</span></div>
+          </div>
+          <div class="m-controls">
+            <button class="ctl" id="menuBtn" type="button" aria-label="Pagos, reglas e historial">Menú</button>
+            <button class="ctl" id="autoBtn" type="button" aria-label="Juego automático">Auto</button>
+            <button class="ctl" id="turboBtn" type="button" aria-pressed="false">Turbo</button>
+            <button class="ctl bet-adjust" id="betDown" type="button" aria-label="Bajar apuesta">−</button>
+            <button class="ctl bet-adjust" id="betUp" type="button" aria-label="Subir apuesta">+</button>
+            <button class="spin" id="spinBtn" type="button" aria-label="Girar" data-stop-label="Detener giros automáticos">
+              <svg class="spin-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M37 16a15 15 0 1 0 1 15M37 7v11H26"/></svg>
+              <span class="spin-label">Girar</span><span class="spin-stop">Parar</span><span class="spin-auto" id="spinAuto"></span>
+            </button>
+          </div>
+        </div>
       </section>
-      <div class="m-banner" id="banner" role="status" aria-live="polite"></div>
-      <section class="board-wrap" id="boardWrap" aria-label="Rodillos, tres por tres">
-        <div class="board" id="board"><svg class="paylines" id="paylines" aria-hidden="true"></svg></div>
-        <div class="float-win" id="floatWin" aria-hidden="true"></div>
-        <div class="fs-counter" id="fsCounter" hidden></div>
-      </section>
-      <div class="m-win" id="winbar" aria-live="polite"><span class="lbl">Último premio</span><span class="val" id="winVal">0,00</span></div>
-      <div class="m-info">
-        <div class="info-box"><span class="lbl">Créditos <span id="creditMode"></span></span><span class="val" id="balVal">—</span></div>
-        <div class="info-box bet"><span class="lbl">Apuesta total</span><span class="val" id="betVal">—</span></div>
-      </div>
-      <div class="m-controls">
-        <button class="ctl" id="menuBtn" type="button" aria-label="Pagos, reglas e historial"><span>☰</span><small>Menú</small></button>
-        <button class="ctl bet-adjust" id="betDown" type="button" aria-label="Bajar apuesta"><span>−</span></button>
-        <button class="spin" id="spinBtn" type="button" aria-label="Girar"><svg class="spin-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M37 16a15 15 0 1 0 1 15M37 7v11H26"/></svg><span class="spin-auto" id="spinAuto"></span></button>
-        <button class="ctl bet-adjust" id="betUp" type="button" aria-label="Subir apuesta"><span>+</span></button>
-        <button class="ctl" id="autoBtn" type="button" aria-label="Juego automático"><span>▷</span><small>Auto</small></button>
-      </div>
-      <footer class="m-sub"><button class="pill" id="turboBtn" type="button" aria-pressed="false">Turbo</button><span class="rtp-note" id="rtpNote"></span><span class="age-note">18+</span></footer>
       <div class="overlay" id="overlay" hidden></div>
     </div>
   </main>

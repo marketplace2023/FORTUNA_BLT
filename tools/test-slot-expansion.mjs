@@ -61,6 +61,10 @@ try {
   let balance = 2000;
   for (const [index, { id, name, engine, theme }] of games.entries()) {
     const config = await get(`/api/games/${id}`);
+    if (engine === 'lines') {
+      assert.equal(config.cols, 4, id);
+      assert.ok(config.lines.every((line) => line.length === config.cols), id);
+    }
     assert.ok(config.paytable.every(({ sym, pays }) => config.symbols[sym] && pays.length > 0), id);
     assert.equal(config.cover.length, 4, id);
     if (theme.art) assert.equal((await context.request.get(theme.art)).status(), 200, id);
@@ -82,7 +86,7 @@ try {
 
     if (!index) await page.getByRole('button', { name: 'Jugar demo', exact: true }).click();
     await page.waitForFunction(() => document.querySelector('#creditMode').textContent.includes('DEMO'));
-    await page.getByRole('button', { name: 'Menú', exact: true }).click();
+    await page.getByRole('button', { name: 'Pagos, reglas e historial', exact: true }).click();
     assert.ok(await page.locator('#menuBody .pt-row').count() >= config.paytable.length, id);
     assert.equal(await page.locator('#menuBody .pt-row .slot-symbol').count(), await page.locator('#menuBody .pt-row').count(), id);
     await page.getByRole('button', { name: 'Reglas', exact: true }).click();
@@ -104,25 +108,30 @@ try {
     assert.deepEqual(replay.result, round.result, id);
     await page.waitForFunction(() => document.querySelector('#spinBtn').getAttribute('aria-busy') === 'false', null, { timeout: 60_000 });
     const sizes = [0, 13, 28, 29].includes(index)
-      ? [[320, 568], [844, 390], [768, 1024], [1024, 900], [1440, 900], [1920, 918]]
-      : [[1440, 900]];
+      ? [[320, 568], [390, 844], [844, 390], [768, 1024], [1024, 900], [1440, 900], [1920, 918]]
+      : [[390, 844], [1440, 900]];
     for (const [width, height] of sizes) {
       await page.setViewportSize({ width, height });
       await page.waitForFunction((rows) => {
         const board = document.querySelector('#board').getBoundingClientRect();
         const wrap = document.querySelector('#boardWrap').getBoundingClientRect();
+        const title = document.querySelector('h1').getBoundingClientRect();
+        const meters = document.querySelector('.m-info').getBoundingClientRect();
         const controls = document.querySelector('.m-controls').getBoundingClientRect();
-        return board.height >= rows * 23 && board.top >= wrap.top - 1 && board.bottom <= wrap.bottom + 1 &&
-          board.left >= wrap.left - 1 && board.right <= wrap.right + 1 && controls.bottom <= innerHeight;
+        const buttons = [...document.querySelectorAll('.m-controls button')].map((button) => button.getBoundingClientRect());
+        const controlsFit = buttons.every((a, index) => a.height >= 44 && a.width >= 44 &&
+          buttons.slice(index + 1).every((b) => a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top));
+        return board.height >= rows * 23 && board.width >= Math.min(innerWidth * .55, 1080) &&
+          Math.abs(board.x + board.width / 2 - innerWidth / 2) <= 2 &&
+          title.bottom < board.top && board.bottom < meters.top && meters.bottom <= controls.top &&
+          board.top >= wrap.top - 1 && board.bottom <= wrap.bottom + 1 &&
+          board.left >= wrap.left - 1 && board.right <= wrap.right + 1 &&
+          controlsFit && controls.right <= innerWidth + 1 && controls.bottom <= innerHeight + 1;
       }, config.rows, { timeout: 5000 }).catch((error) => {
-        throw new Error(`Tablero de ${id} recortado a ${width}×${height}`, { cause: error });
+        return page.locator('#board, #boardWrap, h1, .m-info, .m-controls').evaluateAll((nodes) =>
+          Object.fromEntries(nodes.map((node) => [node.id || node.className, node.getBoundingClientRect().toJSON()])))
+          .then((bounds) => { throw new Error(`Disposición de ${id} a ${width}×${height}: ${JSON.stringify(bounds)}`, { cause: error }); });
       });
-      if (width >= 900) {
-        const machine = await page.locator('#machine').boundingBox();
-        const hero = await page.locator('.slot-hero').boundingBox();
-        const reels = await page.locator('#board').boundingBox();
-        assert.ok(machine.width >= width * .83 && hero.width > 200 && hero.x + hero.width < reels.x, id);
-      }
     }
     await page.setViewportSize({ width: 390, height: 844 });
   }

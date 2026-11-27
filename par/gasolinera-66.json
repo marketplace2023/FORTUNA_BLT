@@ -2,103 +2,103 @@
   "id": "gasolinera-66",
   "name": "Gasolinera 66",
   "engine": "lines",
-  "configHash": "159336b33d01eb30ec10f6036dcbac924d71d2ab52d2ffbd0fc7daf42dbf1e84",
-  "scale": 0.9888909525168119,
+  "configHash": "0a91bb24006bcd45c4d36c6708855c94be004bb1397a1ea76e5f0bd7fa9d2a2f",
+  "scale": 1.8409237133920668,
   "targetRtp": 96,
   "spins": 5000000,
-  "rtp": 96.23254839897108,
-  "ci95": 1.2346377775823945,
-  "sd": 14.085377542160714,
-  "volatility": "Muy alta",
-  "hitRate": 26.77264,
+  "rtp": 95.9671809529912,
+  "ci95": 0.4508766167523207,
+  "sd": 5.143830431241376,
+  "volatility": "Media",
+  "hitRate": 28.97882,
   "featureEvery": 32,
-  "featureRtp": 42.18303439998459,
-  "baseRtp": 54.049513998986484,
-  "avgFeatureWin": 13.593398556323985,
+  "featureRtp": 17.222193876919185,
+  "baseRtp": 78.74498707607201,
+  "avgFeatureWin": 5.565600399728279,
   "avgCascades": 0,
-  "maxWinX": 775,
+  "maxWinX": 1100,
   "maxWinCap": 1100,
-  "cappedRounds": 0,
+  "cappedRounds": 26,
   "distribution": [
     {
       "label": "0x",
-      "count": 3661368,
-      "pct": 73.22735999999999
+      "count": 3551059,
+      "pct": 71.02118
     },
     {
       "label": "0–1x",
-      "count": 451563,
-      "pct": 9.031260000000001
+      "count": 552689,
+      "pct": 11.05378
     },
     {
       "label": "1–2x",
-      "count": 545049,
-      "pct": 10.90098
+      "count": 326411,
+      "pct": 6.52822
     },
     {
       "label": "2–5x",
-      "count": 175114,
-      "pct": 3.50228
+      "count": 289544,
+      "pct": 5.7908800000000005
     },
     {
       "label": "5–10x",
-      "count": 114470,
-      "pct": 2.2894
+      "count": 161215,
+      "pct": 3.2243
     },
     {
       "label": "10–20x",
-      "count": 41349,
-      "pct": 0.82698
+      "count": 87755,
+      "pct": 1.7551
     },
     {
       "label": "20–50x",
-      "count": 7854,
-      "pct": 0.15708
+      "count": 27886,
+      "pct": 0.55772
     },
     {
       "label": "50–100x",
-      "count": 1336,
-      "pct": 0.02672
+      "count": 2838,
+      "pct": 0.056760000000000005
     },
     {
       "label": "100–500x",
-      "count": 336,
-      "pct": 0.006719999999999999
+      "count": 534,
+      "pct": 0.010679999999999999
     },
     {
       "label": "500–1000x",
-      "count": 1561,
-      "pct": 0.03122
+      "count": 43,
+      "pct": 0.0008600000000000001
     },
     {
       "label": "1000x+",
-      "count": 0,
-      "pct": 0
+      "count": 26,
+      "pct": 0.0005200000000000001
     }
   ],
   "paytable": {
     "W": [
-      155
+      289
     ],
     "H1": [
-      73.6
+      137
     ],
     "H2": [
-      36.8
+      68.5
     ],
     "H3": [
-      19.6
+      36.5
     ],
     "L1": [
-      9.2
+      17.1
     ],
     "L2": [
-      5.76
+      10.7
     ],
     "L3": [
-      3.45
+      6.42
     ]
   },
-  "generatedAt": "2026-11-27T14:40:58.480Z",
-  "elapsedMs": 90268
+  "generatedAt": "2026-11-27T15:54:04.476Z",
+  "elapsedMs": 84446
 }

@@ -1,5 +1,15 @@
-.jaguar-game { --display: Georgia, 'Times New Roman', serif; --ui: 'Segoe UI', system-ui, sans-serif; color: #fff0cf; background: #172a1f; }
-.jaguar-current-card, .jaguar-guide { display: none; }
+.jaguar-game {
+  --display: Georgia, 'Times New Roman', serif;
+  --ui: 'Segoe UI', system-ui, sans-serif;
+  color: #fff0cf;
+  background: #172a1f;
+  --cabinet-base: #203729;
+  --cabinet-trim: #d0ac65;
+  --cabinet-control: #3c593b;
+  --cabinet-title: #ffe0a0;
+  --cabinet-reel-light: #3b573b;
+  --cabinet-reel-edge: #203b28;
+}
 .jaguar-ascent { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 7px; width: 100%; height: 100%; }
 .jaguar-ascent-label { font: 500 7px var(--ui); letter-spacing: .12em; color: #d7d9b0; text-align: center; }
 .jaguar-stairs { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); align-items: end; gap: 3px; width: min(100%, 600px); }
@@ -7,31 +17,10 @@
 .jaguar-stair strong { font: 500 11px Georgia, serif; }
 .jaguar-stair.passed { border-color: #b7ae6e88; color: #e0d5a1; background: linear-gradient(#64704a, #3b5735); }
 .jaguar-stair.on { background: linear-gradient(#f6e4ad, #c2a664); border-color: #ffedbe; color: #3c4926; box-shadow: inset 0 -3px #8e8b4c55, 0 0 14px #f1d18a44; }
-.jaguar-game .spin { border-radius: 13px; background: linear-gradient(145deg, #bfd3a0, #7c9b63 55%, #426748); border-color: #d4e3b6; box-shadow: 0 0 0 4px #213d29, 0 0 0 5px #a1b17c, inset 0 -4px #38593c66, 0 7px 15px #112519; }
-.jaguar-game .spin-icon { stroke: #253f2c; }
-.jaguar-game .spin-auto { color: #253f2c; }
 .jaguar-game .stage { background: linear-gradient(#18291c66, #13251bdd), url('/assets/jaguar/temple.png') center / cover; }
 .jaguar-game .stage::before { display: none; }
-.jaguar-game .machine { width: min(100%, 580px); height: 100dvh; max-height: 1050px; border-radius: 0; background: #233b2a; isolation: isolate; box-shadow: 0 0 100px #0f1e12aa; }
-.jaguar-game .machine::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(#203d2422, #233b2a99 33%, #172e20f5 80%), url('/assets/jaguar/temple.png') 33% top / auto 70% no-repeat; transition: filter 1s; }
-.jaguar-game .m-top { flex: 0 0 43px; padding: 7px 15px 0; background: linear-gradient(#122215cc, transparent); }
-.jaguar-studio { font: 600 14px var(--ui); color: #e8c987; letter-spacing: .14em; }
-.jaguar-studio span { font-size: 8px; margin-left: 6px; letter-spacing: .19em; color: #d2c5a6; }
-.jaguar-game .icon-btn { width: 32px; height: 32px; color: #f2d79f; border: 1px solid #b5945c55; background: #1a302199; border-radius: 3px; font: 28px Georgia, serif; }
-.jaguar-game .icon-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.jaguar-hero { flex: 0 0 130px; position: relative; display: flex; align-items: center; padding: 10px 23px; }
-.jaguar-brand { position: relative; z-index: 1; max-width: 66%; text-shadow: 0 3px 12px #081727; }
-.jaguar-brand > span { font: 500 8px var(--ui); letter-spacing: .24em; color: #e2c994; }
-.jaguar-brand h1 { margin: 6px 0; max-width: 8ch; color: #ffe7ab; font: 500 37px/.98 Georgia, serif; letter-spacing: -.035em; }
-.jaguar-brand p { margin: 9px 0 0; font: 400 10px var(--ui); color: #d8d1ba; }
-.jaguar-emblem { position: absolute; right: 1%; top: 0; width: 140px; height: 140px; background: url('/assets/jaguar/symbols.png') 0 0 / 400% 300%; filter: drop-shadow(0 7px 10px #071426); }
-.jaguar-game .m-banner { flex: 0 0 87px; min-height: 77px; padding: 0 19px 6px; }
-.jaguar-game .board-wrap { flex: 1 1 360px; min-height: 150px; padding: 12px 16px; }
-.jaguar-game .board { background: radial-gradient(ellipse at 50% 30%, #345334, #203b28); border-radius: 3px; box-shadow: 0 0 0 2px #14251b, 0 0 0 4px #d0ac65, 0 0 0 7px #4b5430, 0 0 0 9px #ac884c, 0 12px 25px #10221588; }
-.jaguar-game .board::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 6; box-shadow: inset 0 7px 18px #11231566; border: 1px solid #fde1a033; background: repeating-linear-gradient(90deg, transparent 0 calc(16.666667% - 1px), #d7bd7d0e calc(16.666667% - 1px) 16.666667%); }
-.jaguar-game .cell { padding: 2px; }
 .jaguar-game .jaguar-tile { background: transparent; box-shadow: none; border-radius: 2px; }
-.jaguar-symbol { display: block; width: 100%; height: 100%; background: url('/assets/jaguar/symbols.png') no-repeat; background-size: 400% 300%; transform: scale(1.15); filter: drop-shadow(0 3px 2px #14271a66); }
+.jaguar-symbol { display: block; width: min(100%, var(--cell)); aspect-ratio: 1; background: url('/assets/jaguar/symbols.png') no-repeat; background-size: 400% 300%; filter: drop-shadow(0 3px 2px #14271a66); }
 .jaguar-game .tile .lab { bottom: 2%; color: #fff2b9; background: #704f29; border: 1px solid #d8b775; font: 600 calc(var(--cell) * .08) var(--ui); letter-spacing: .04em; border-radius: 2px; padding: 1px 3px; }
 .jaguar-game .t-scatter { background: radial-gradient(ellipse, #d0a84533, transparent 70%); }
 .jaguar-game .cell.hit .tile, .jaguar-game .cell.sc .tile { animation: jaguar-hit .55s ease-in-out infinite alternate; }
@@ -40,25 +29,8 @@
 .jaguar-reel-window { position: absolute; top: 0; height: 100%; overflow: hidden; z-index: 4; }
 .jaguar-reel-belt { filter: blur(1.5px); }
 .jaguar-reel-symbol { padding: 2px; }
-.jaguar-game .m-win { flex: 0 0 44px; min-height: 36px; padding: 4px 0; gap: 12px; }
-.jaguar-game .m-win .lbl { font: 500 8px var(--ui); letter-spacing: .12em; color: #bbbec0; opacity: 1; }
-.jaguar-game .m-win .val { font: 500 31px Georgia, serif; color: #ffe0a0; text-shadow: 0 2px 5px #071522; }
-.jaguar-game .m-info { flex: 0 0 50px; margin: 0 22px; padding: 0; gap: 0; border-block: 1px solid #c9a76333; }
-.jaguar-game .info-box { background: transparent; border-radius: 0; padding: 7px; }
-.jaguar-game .info-box + .info-box { border-left: 1px solid #c9a76333; }
-.jaguar-game .info-box .lbl { font: 400 8px var(--ui); color: #b7c1cb; letter-spacing: .12em; opacity: 1; }
-.jaguar-game .info-box .val { font: 500 18px var(--ui); color: #fcf0cf; font-variant-numeric: tabular-nums; }
-.jaguar-game .m-controls { flex: 0 0 95px; grid-template-columns: 1fr 1fr 92px 1fr 1fr; gap: 8px; padding: 5px 22px 0; }
-.jaguar-game .ctl { width: 40px; height: 40px; justify-self: center; border: 1px solid #a795694d; background: #3c593b; border-radius: 3px; color: #e2d4ac; box-shadow: 0 3px #162b1d; }
-.jaguar-game .ctl span { font-size: 22px; font-weight: 400; }
-.jaguar-game .ctl small { font: 500 7px var(--ui); letter-spacing: .06em; }
-.jaguar-game .bet-adjust { width: 32px; height: 32px; background: transparent; box-shadow: none; }
-.jaguar-game .spin-icon { width: 40px; height: 40px; fill: none; stroke: #253f2c; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-.jaguar-game .spin-auto { font: 600 25px var(--ui); color: #253f2c; }
-.jaguar-game .m-sub { flex: 0 0 auto; justify-content: center; gap: 12px; padding: 4px 12px max(10px, env(safe-area-inset-bottom)); }
-.jaguar-game .pill { font: 500 9px var(--ui); color: #c1c7cc; border: 1px solid #879ba84d; background: transparent; border-radius: 3px; padding: 4px 8px; }
-.jaguar-game .pill.on { color: #ffe2a1; border-color: #d5b16c; background: #bc924b22; }
-.jaguar-game .rtp-note { font: 400 8px var(--ui); color: #a4b3bf; opacity: 1; }
+.jaguar-game .m-sub { grid-column: 1 / -1; justify-content: center; gap: 8px; padding: 0; }
+.jaguar-game .rtp-note { font: 400 10px var(--ui); color: #a4b3bf; opacity: 1; }
 .jaguar-game .age-note { font: 400 8px var(--ui); color: #a4b3bf; border: 1px solid #879ba84d; border-radius: 3px; padding: 2px; }
 .jaguar-game button { transition: filter .18s, transform .18s, background .18s; }
 .jaguar-game button:hover:not(:disabled) { filter: brightness(1.16); }
@@ -75,7 +47,7 @@
 .jaguar-game .overlay { background: radial-gradient(ellipse at 50% 40%, #46613ae6, #152b1df5); backdrop-filter: blur(7px); }
 .jaguar-game .ov-card, .jaguar-game .gate { gap: 16px; }
 .jaguar-game .ov-title { font: 500 clamp(34px, 8vw, 50px)/1.05 Georgia, serif; color: #fbe4aa; text-shadow: 0 2px 9px #1a2e1d; max-width: 11ch; }
-.jaguar-game .ov-glyph { width: 150px; height: 150px; font-size: initial; }
+.jaguar-game .ov-glyph { width: 150px; height: 150px; font-size: initial; --cell: 150px; }
 .jaguar-game .ov-sub, .jaguar-game .gate p { font: 400 13px/1.6 var(--ui); color: #d3dce3; max-width: 28ch; }
 .jaguar-game .ov-btn { background: linear-gradient(#f3dfae, #c19b55); color: #283647; font: 600 14px var(--ui); border-radius: 3px; box-shadow: 0 4px #7a6239; }
 .jaguar-game .ghost-btn { font: 500 14px var(--ui); border-radius: 3px; }
@@ -87,65 +59,10 @@
 .jaguar-game .toast { background: #3a5739; color: #f4e3bd; border: 1px solid #b7a16a66; font: 500 13px var(--ui); border-radius: 3px; }
 .jaguar-game .toast-error { background: #5d3231; }
 .jaguar-game .fs-counter { top: 1px; font: 600 11px var(--ui); padding: 5px 12px; border-radius: 2px; color: #433c2a; background: #f3daa1; border: 1px solid #fff0c4; }
-.jaguar-game .machine.free { background: #33472b; }
-.jaguar-game .free::before { filter: sepia(.25) saturate(1.4) brightness(1.2); }
 .jaguar-game .free .board { box-shadow: 0 0 0 2px #77592f, 0 0 0 4px #ffe2a0, 0 0 0 7px #7c633c, 0 0 0 9px #c7a565, 0 0 35px #cba05b44; }
-@media (min-width: 900px) and (min-height: 600px) {
-  .jaguar-game .machine { width: min(1260px, 96vw); height: min(940px, 96dvh); max-height: none; display: grid; grid-template-columns: 240px minmax(0, 1fr); grid-template-rows: 45px 90px minmax(150px, 1fr) 100px 30px; border: 1px solid #bfa16a66; border-radius: 5px; padding: 0 22px; }
-  .jaguar-game .machine::before { background: linear-gradient(90deg, #1e341922, #213c23a6 27%, #203b25e6 65%), url('/assets/jaguar/temple.png') left top / cover; }
-  .jaguar-game .m-top { grid-column: 1 / -1; grid-row: 1; }
-  .jaguar-hero { grid-column: 1; grid-row: 2 / 4; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; min-height: 0; padding: 30px 20px; border-right: 1px solid #c1a46a33; }
-  .jaguar-brand { max-width: none; }
-  .jaguar-brand h1 { font-size: 42px; }
-  .jaguar-brand > span { font-size: 8px; }
-  .jaguar-brand p { font-size: 11px; line-height: 1.5; }
-  .jaguar-emblem { width: 175px; height: 175px; top: 2%; right: 12%; }
-  .jaguar-emblem { display: none; }
-  .jaguar-current-card { display: flex; flex-direction: column; gap: 5px; padding-top: 18px; margin-top: auto; align-self: stretch; border-top: 1px solid #c2b27d44; }
-  .jaguar-current-card > span { font: 500 7px var(--ui); color: #c8d0a5; letter-spacing: .15em; }
-  .jaguar-current-card > strong { font: 500 49px/.95 Georgia, serif; color: #f5dfa1; }
-  .jaguar-current-card > small { font: 400 9px/1.5 var(--ui); color: #bdc9a3; }
-  .jaguar-guide { display: flex; align-items: center; gap: 7px; margin-top: 12px; }
-  .guide-sun { display: block; width: 48px; height: 48px; background: url('/assets/jaguar/symbols.png') 33.333333% 0 / 400% 300%; }
-  .jaguar-guide p { font: 400 9px/1.7 var(--ui); color: #c7d2b2; }
-  .jaguar-guide strong { color: #f2dba5; font-weight: 500; }
-  .jaguar-ascent-label { font-size: 8px; }
-  .jaguar-stair strong { font-size: 15px; }
-  .jaguar-game .m-banner { grid-column: 2; grid-row: 2; padding: 0 18px 4px; }
-  .jaguar-game .board-wrap { grid-column: 2; grid-row: 3; min-height: 0; }
-  .jaguar-game .m-win { grid-column: 1; grid-row: 4; flex-direction: column; align-items: flex-start; justify-content: center; gap: 4px; margin: 0 20px; border-top: 1px solid #c1a46a33; }
-  .jaguar-game .m-win .val { font-size: 37px; }
-  .jaguar-game .m-info { grid-column: 2; grid-row: 4; align-self: center; width: 220px; height: 52px; margin: 0 0 0 20px; }
-  .jaguar-game .m-controls { grid-column: 2; grid-row: 4; align-self: center; margin-left: 250px; padding: 4px 20px; }
-  .jaguar-game .m-sub { grid-column: 1 / -1; grid-row: 5; padding-top: 0; }
+
+@media (max-height: 540px) and (orientation: landscape) {
+  .jaguar-ascent { gap: 4px; }
+  .jaguar-stair { height: calc(18px + var(--level) * 1.75px); }
 }
-@media (max-height: 730px) and (max-width: 899px) {
-  .jaguar-game .m-top { flex-basis: 35px; }
-  .jaguar-hero { flex-basis: 95px; padding: 5px 20px; }
-  .jaguar-brand h1 { font-size: 29px; }
-  .jaguar-brand > span { font-size: 7px; }
-  .jaguar-brand p { font-size: 9px; margin-top: 5px; }
-  .jaguar-emblem { width: 100px; height: 100px; }
-  .jaguar-game .m-banner { flex-basis: 72px; min-height: 68px; }
-  .jaguar-stair { height: calc(20px + var(--level) * 2.5px); }
-  .jaguar-game .m-win { flex-basis: 36px; }
-  .jaguar-game .m-win .val { font-size: 26px; }
-  .jaguar-game .m-info { flex-basis: 44px; }
-  .jaguar-game .info-box .val { font-size: 16px; }
-  .jaguar-game .m-controls { flex-basis: 80px; grid-template-columns: 1fr 1fr 74px 1fr 1fr; }
-  .jaguar-game .spin { width: 62px; height: 62px; }
-  .jaguar-game .spin-icon { width: 33px; height: 33px; }
-}
-@media (max-width: 899px) and (max-height: 620px) {
-  .jaguar-hero { flex-basis: 48px; justify-content: center; padding: 2px 16px; }
-  .jaguar-brand { max-width: none; text-align: center; }
-  .jaguar-brand h1 { max-width: none; font-size: 26px; margin: 3px 0; }
-  .jaguar-brand > span { font-size: 6px; }
-  .jaguar-brand p, .jaguar-emblem { display: none; }
-  .jaguar-game .m-banner { flex-basis: 62px; min-height: 58px; }
-  .jaguar-ascent { gap: 5px; }
-  .jaguar-stair { height: calc(18px + var(--level) * 2px); }
-  .jaguar-game .m-controls { flex-basis: 74px; }
-}
-@media (max-height: 540px) { .jaguar-game { overflow-y: auto; } .jaguar-game .stage { position: relative; min-height: 650px; } .jaguar-game .machine { height: 650px; flex-shrink: 0; } }
 @media (prefers-reduced-motion: reduce) { .jaguar-game *, .jaguar-game *::after { animation: none !important; transition: none !important; } .jaguar-reel-belt { filter: none; } }

@@ -19,12 +19,12 @@ export async function rollOut(state, board, timing) {
   dispose();
   state.cells.flat().forEach(n => { n.style.visibility = 'hidden'; });
   for (let c = 0; c < state.info.cols; c++) {
-    const window = el('div', { class: 'dragon-reel-window', style: { left: `${c * state.cell}px`, width: `${state.cell}px` }, 'aria-hidden': 'true' });
+    const window = el('div', { class: 'dragon-reel-window', style: { left: `calc(${c} * var(--reel-width, var(--cell)))`, width: 'var(--reel-width, var(--cell))' }, 'aria-hidden': 'true' });
     const belt = el('div', { class: 'dragon-reel-belt' });
     // This strip is cosmetic; all final results come from the server.
-    for (let r = 0; r < 14; r++) belt.append(el('div', { class: 'dragon-reel-symbol', style: { height: `${state.cell}px` } }, tile(symbols[(r + c * 3) % symbols.length])));
+    for (let r = 0; r < 14; r++) belt.append(el('div', { class: 'dragon-reel-symbol', style: { height: 'var(--cell)' } }, tile(symbols[(r + c * 3) % symbols.length])));
     window.append(belt); board.append(window);
-    const animation = belt.animate([{ transform: `translateY(${-8 * state.cell}px)` }, { transform: 'translateY(0)' }], { duration: timing(520), iterations: Infinity, easing: 'linear' });
+    const animation = belt.animate([{ transform: 'translateY(calc(-8 * var(--cell)))' }, { transform: 'translateY(0)' }], { duration: timing(520), iterations: Infinity, easing: 'linear' });
     reels.push({ window, animation });
   }
   await new Promise(resolve => setTimeout(resolve, timing(400)));
@@ -47,8 +47,6 @@ export function banner(kind, data, info, state) {
   const step = Math.min(data.step || 0, ladder.length - 1);
   const mult = ladder[step];
   const changed = mult !== lastMult;
-  document.querySelector('#dragonMult').textContent = `×${mult}`;
-  document.querySelector('#dragonStep').textContent = step ? `Cascada ${data.step}` : 'Comienza cada giro';
   if (changed && state.busy && mult > lastMult) Sound.rise(mult);
   lastMult = mult;
   const box = el('div', { class: 'dragon-ladder-wrap' });
@@ -57,7 +55,6 @@ export function banner(kind, data, info, state) {
   return box;
 }
 export function freeState(active) {
-  document.querySelector('#dragonMode').textContent = active ? 'EL DRAGÓN HA DESPERTADO' : 'EL SANTUARIO';
 }
 export function glyph(g, info) {
   const entry = Object.entries(info.symbols).find(([, d]) => d.g === g);

@@ -24,8 +24,6 @@ export function banner(kind, data, info, state) {
   const mult = ladder[step];
   if (state.busy && state.free === wasFree && rawStep > lastStep) Sound.oceanStep(step);
   lastStep = rawStep; wasFree = state.free;
-  document.querySelector('#oceanCurrent').textContent = `×${mult}`;
-  document.querySelector('#oceanStep').textContent = rawStep ? `Cascada ${rawStep}` : 'La marea comienza';
   const box = el('div', { class: 'ocean-tide', 'data-step': rawStep, 'data-mult': mult, 'data-mode': state.free ? 'free' : 'base' });
   box.append(el('span', { class: 'ocean-tide-label' }, state.free ? 'LA MAREA DE LAS PERLAS · HASTA ×34' : 'LA SECUENCIA DE LAS PERLAS'));
   box.append(el('div', { class: 'ocean-strand', 'aria-label': `Escalón ${step + 1}, multiplicador por ${mult}` }, ladder.map((m, i) => el('span', { class: `ocean-pearl${i === step ? ' on' : ''}${i < step ? ' passed' : ''}`, 'data-step': i, 'aria-current': i === step ? 'step' : null }, el('strong', {}, `×${m}`)))));
@@ -34,7 +32,6 @@ export function banner(kind, data, info, state) {
 }
 export function freeState(active) {
   lastStep = 0; wasFree = active;
-  document.querySelector('#oceanMode').textContent = active ? 'LA MAREA DE LAS PERLAS' : 'EL SECRETO DE LA MAREA';
 }
 export function glyph(g, info) {
   const entry = Object.entries(info.symbols).find(([, d]) => d.g === g);
