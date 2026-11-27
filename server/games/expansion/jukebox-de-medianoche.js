@@ -1,0 +1,43 @@
+export default {
+  id: 'jukebox-de-medianoche',
+  name: 'Jukebox de Medianoche',
+  engine: 'lines',
+  tag: '3×3 · Rodillos comodín',
+  blurb: 'La rocola marca el compás y convierte hasta tres rodillos enteros en comodines.',
+  cols: 3,
+  rows: 3,
+  theme: {
+    bg1: '#180d29', bg2: '#531f4a', accent: '#ff84c6', ink: '#fff0fb',
+    tile: '#321b43', tile2: '#b55486', dark: true,
+    scene: [
+      'repeating-radial-gradient(circle at 51% 54%, transparent 0 13px, #ff97cb18 14px 15px, transparent 16px 24px)',
+      'conic-gradient(from 20deg at 51% 54%, #1b1328, #7a2b5b, #231337, #28445e, #1b1328)',
+    ].join(', '),
+    cue: 'Al compás de la rocola',
+    effect: 'rhythm',
+  },
+  cover: ['💿', '🎙️', '🪙', '🔊'],
+  symbols: {
+    W: { g: '🎶', n: 'Notas musicales (comodín)', t: 'wild' },
+    H1: { g: '💿', n: 'Disco de vinilo', t: 'high' },
+    H2: { g: '🎙️', n: 'Micrófono', t: 'high' },
+    H3: { g: '🔊', n: 'Amplificador', t: 'high' },
+    L1: { g: '🪙', n: 'Moneda', t: 'low' },
+    L2: { g: '🎷', n: 'Saxofón', t: 'low' },
+    L3: { g: '👞', n: 'Zapato de baile', t: 'low' },
+  },
+  pay: { W: [108], H1: [52], H2: [29], H3: [17], L1: [9], L2: [6], L3: [4] },
+  payDiv: 5,
+  lines: [[1, 1, 1], [0, 0, 0], [2, 2, 2], [0, 1, 2], [2, 1, 0]],
+  fullScreenMult: 4,
+  reels: {
+    base: [
+      { W: 2, H1: 3, H2: 5, H3: 5, L1: 7, L2: 7, L3: 10 },
+      { W: 1, H1: 3, H2: 4, H3: 6, L1: 8, L2: 9, L3: 8 },
+      { W: 2, H1: 3, H2: 5, H3: 6, L1: 7, L2: 9, L3: 7 },
+    ],
+  },
+  feature: { type: 'wildReels', per10k: 234, counts: { 1: 73, 2: 25, 3: 2 } },
+  maxWin: 850,
+  targetRtp: 96,
+};

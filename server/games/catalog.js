@@ -15,6 +15,7 @@ import { EUROPEAN_PAYOUTS, EUROPEAN_WHEEL } from '../engine/roulette.js';
 
 import { RACING_DEF } from './racing.js';
 import { ZOO_DEF } from './fortunazoo.js';
+import { EXPANSION_SLOTS } from './expansion/index.js';
 export const BETS = [0.2, 0.4, 1, 2, 4, 10, 20, 40, 100];
 
 const LINES_3X3 = [
@@ -369,4 +370,5 @@ export const CATALOG = [
     maxWin: 5000,
     targetRtp: 96.2,
   },
+  ...EXPANSION_SLOTS,
 ];

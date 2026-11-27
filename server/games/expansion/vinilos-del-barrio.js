@@ -1,0 +1,51 @@
+const salsaReels = (weights) => Array.from({ length: 6 }, () => ({ ...weights }));
+
+export default {
+  id: 'vinilos-del-barrio',
+  name: 'Vinilos del Barrio',
+  engine: 'anywhere',
+  tag: '6×4 · Caídas · Clave de salsa',
+  blurb: 'Seis símbolos iguales pagan en cualquier posición. Tres tocadiscos dan cinco giros gratis, donde las claves de percusión suman entre ×3 y ×12 al multiplicador de los giros con premio.',
+  cols: 6,
+  rows: 4,
+  theme: {
+    bg1: '#182420', bg2: '#5c332b', accent: '#febe65', ink: '#fff2cf', tile: '#fde9c5', tile2: '#d7a164',
+    scene: 'radial-gradient(ellipse at 22% 16%, #ffbc625e, transparent 40%), repeating-radial-gradient(circle at 80% 66%, #20191d7d 0 2px, #78533e35 3px 7px, transparent 8px 12px), linear-gradient(155deg, #2d4e44, #55382e 58%, #291b24)',
+    bonusScene: 'radial-gradient(ellipse at 52% 15%, #ffc57493, transparent 55%), repeating-conic-gradient(from 10deg at 52% 5%, #7d4e2d3d 0deg 11deg, transparent 11deg 24deg), linear-gradient(158deg, #71453a, #642d36 57%, #132b28)',
+    cue: '¡Entró la percusión!',
+    effect: 'salsa',
+  },
+  cover: ['💿', '🪘', '🎺', '🪇'],
+  symbols: {
+    S: { g: '📻', n: 'Tocadiscos del barrio (scatter)', t: 'scatter' },
+    M: { g: '🥢', n: 'Claves multiplicadoras', t: 'mult' },
+    H1: { g: '💿', n: 'Vinilo de salsa', t: 'high' },
+    H2: { g: '🪘', n: 'Conga', t: 'high' },
+    H3: { g: '🎺', n: 'Trombón de la orquesta', t: 'high' },
+    H4: { g: '🪇', n: 'Maracas', t: 'high' },
+    L1: { g: '🎹', n: 'Piano del montuno', t: 'low' },
+    L2: { g: '🎤', n: 'Micrófono del sonero', t: 'low' },
+    L3: { g: '🔔', n: 'Campana salsera', t: 'low' },
+    L4: { g: '🎼', n: 'Partitura del arreglo', t: 'low' },
+    L5: { g: '🔊', n: 'Parlante de la pista', t: 'low' },
+    L6: { g: '🎶', n: 'Coro de la rueda', t: 'low' },
+  },
+  pay: {
+    H1: [7.66, 24.7, 61.2], H2: [5.1, 17, 42.5], H3: [3.57, 11.1, 30.6], H4: [2.72, 7.66, 20.4],
+    L1: [1.7, 5.1, 13.6], L2: [1.36, 3.83, 11.1], L3: [0.978, 2.89, 8.51],
+    L4: [0.681, 2.21, 6.21], L5: [0.476, 1.7, 4.93], L6: [0.323, 1.36, 3.91],
+  },
+  payDiv: 1,
+  tiers: [6, 9, 12],
+  reels: {
+    base: salsaReels({ S: 4, M: 2, H1: 11, H2: 14, H3: 18, H4: 20, L1: 22, L2: 24, L3: 25, L4: 28, L5: 30, L6: 32 }),
+    free: salsaReels({ S: 3, M: 8, H1: 13, H2: 17, H3: 17, H4: 22, L1: 21, L2: 23, L3: 25, L4: 27, L5: 29, L6: 30 }),
+  },
+  mult: {
+    base: { 2: 68, 3: 25, 6: 7 },
+    free: { 3: 63, 6: 26, 9: 8, 12: 3 },
+  },
+  scatter: { min: 3, spins: 5, reMin: 3, reSpins: 3, maxSpins: 45 },
+  maxWin: 3600,
+  targetRtp: 96,
+};

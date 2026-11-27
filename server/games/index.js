@@ -129,7 +129,8 @@ export function publicInfo(game, settings) {
       roulette: publicRoulette(game.math),
     };
   }
-  const par = readPar(d.id);
+  const report = readPar(d.id);
+  const par = report?.configHash === game.configHash ? report : null;
   const unit = 1 / d.payDiv;
   const paytable = Object.entries(game.math.pay).map(([sym, arr]) => {
     let labels;
@@ -149,14 +150,19 @@ export function publicInfo(game, settings) {
     ways: waysCount(d),
     lines: d.lines || null,
     theme: d.theme,
+    cover: d.cover,
     symbols: d.symbols,
     paytable,
     ladder: d.ladder || null,
     scatter: d.scatter || null,
-    feature: d.feature ? { type: d.feature.type, per10k: d.feature.per10k } : null,
+    feature: d.feature ? { type: d.feature.type, per10k: d.feature.per10k, maxRespins: d.feature.maxRespins } : null,
     fullScreenMult: d.fullScreenMult || null,
     tiers: d.tiers || null,
-    multValues: d.mult ? { base: Object.keys(d.mult.base).map(Number), free: Object.keys(d.mult.free).map(Number) } : null,
+    multValues: d.mult ? {
+      base: Object.keys(d.mult.base).map(Number),
+      free: Object.keys(d.mult.free).map(Number),
+      baseEnabled: game.math.strips.base.some((strip) => strip.includes('M')),
+    } : null,
     maxWin: d.maxWin,
     rtp: par ? par.rtp : d.targetRtp,
     rtpSource: par ? 'par' : 'target',

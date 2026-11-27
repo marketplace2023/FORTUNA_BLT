@@ -1,0 +1,104 @@
+{
+  "id": "jukebox-de-medianoche",
+  "name": "Jukebox de Medianoche",
+  "engine": "lines",
+  "configHash": "1429abc4c58fdd3661f2fc3619d16b777683e2c87c309cd70a8522361ccaab22",
+  "scale": 0.995292608894497,
+  "targetRtp": 96,
+  "spins": 5000000,
+  "rtp": 95.57767960047727,
+  "ci95": 0.853853453039778,
+  "sd": 9.741195733774838,
+  "volatility": "Alta",
+  "hitRate": 27.1194,
+  "featureEvery": 43,
+  "featureRtp": 37.76251279998592,
+  "baseRtp": 57.81516680049133,
+  "avgFeatureWin": 16.2130712623483,
+  "avgCascades": 0,
+  "maxWinX": 428,
+  "maxWinCap": 850,
+  "cappedRounds": 0,
+  "distribution": [
+    {
+      "label": "0x",
+      "count": 3644030,
+      "pct": 72.8806
+    },
+    {
+      "label": "0–1x",
+      "count": 340993,
+      "pct": 6.81986
+    },
+    {
+      "label": "1–2x",
+      "count": 621229,
+      "pct": 12.42458
+    },
+    {
+      "label": "2–5x",
+      "count": 206396,
+      "pct": 4.1279200000000005
+    },
+    {
+      "label": "5–10x",
+      "count": 119140,
+      "pct": 2.3828
+    },
+    {
+      "label": "10–20x",
+      "count": 50843,
+      "pct": 1.0168599999999999
+    },
+    {
+      "label": "20–50x",
+      "count": 11541,
+      "pct": 0.23081999999999997
+    },
+    {
+      "label": "50–100x",
+      "count": 2781,
+      "pct": 0.055619999999999996
+    },
+    {
+      "label": "100–500x",
+      "count": 3047,
+      "pct": 0.060939999999999994
+    },
+    {
+      "label": "500–1000x",
+      "count": 0,
+      "pct": 0
+    },
+    {
+      "label": "1000x+",
+      "count": 0,
+      "pct": 0
+    }
+  ],
+  "paytable": {
+    "W": [
+      107
+    ],
+    "H1": [
+      51.8
+    ],
+    "H2": [
+      28.9
+    ],
+    "H3": [
+      16.9
+    ],
+    "L1": [
+      8.96
+    ],
+    "L2": [
+      5.97
+    ],
+    "L3": [
+      3.98
+    ]
+  },
+  "generatedAt": "2026-11-27T14:40:54.129Z",
+  "elapsedMs": 85917
+}

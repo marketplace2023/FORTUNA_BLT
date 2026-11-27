@@ -1,0 +1,104 @@
+{
+  "id": "arcade-de-bolsillo",
+  "name": "Arcade de Bolsillo",
+  "engine": "lines",
+  "configHash": "a7ac815474daf2aec0c12d4f15b3135895a1d756a9f52d514b196599c7ca7f68",
+  "scale": 0.9840056950177531,
+  "targetRtp": 96.1,
+  "spins": 5000000,
+  "rtp": 95.68249959940634,
+  "ci95": 0.9544766054980817,
+  "sd": 10.88915598381102,
+  "volatility": "Alta",
+  "hitRate": 26.607419999999998,
+  "featureEvery": 24,
+  "featureRtp": 54.61105004000848,
+  "baseRtp": 41.07144955939786,
+  "avgFeatureWin": 13.009879323244018,
+  "avgCascades": 0,
+  "maxWinX": 362,
+  "maxWinCap": 1200,
+  "cappedRounds": 0,
+  "distribution": [
+    {
+      "label": "0x",
+      "count": 3669629,
+      "pct": 73.39258
+    },
+    {
+      "label": "0–1x",
+      "count": 403534,
+      "pct": 8.07068
+    },
+    {
+      "label": "1–2x",
+      "count": 566034,
+      "pct": 11.32068
+    },
+    {
+      "label": "2–5x",
+      "count": 235801,
+      "pct": 4.71602
+    },
+    {
+      "label": "5–10x",
+      "count": 85258,
+      "pct": 1.70516
+    },
+    {
+      "label": "10–20x",
+      "count": 23911,
+      "pct": 0.47822000000000003
+    },
+    {
+      "label": "20–50x",
+      "count": 10414,
+      "pct": 0.20828000000000002
+    },
+    {
+      "label": "50–100x",
+      "count": 420,
+      "pct": 0.0084
+    },
+    {
+      "label": "100–500x",
+      "count": 4999,
+      "pct": 0.09997999999999999
+    },
+    {
+      "label": "500–1000x",
+      "count": 0,
+      "pct": 0
+    },
+    {
+      "label": "1000x+",
+      "count": 0,
+      "pct": 0
+    }
+  ],
+  "paytable": {
+    "W": [
+      90.5
+    ],
+    "H1": [
+      35.4
+    ],
+    "H2": [
+      24.6
+    ],
+    "H3": [
+      15.7
+    ],
+    "L1": [
+      8.86
+    ],
+    "L2": [
+      5.9
+    ],
+    "L3": [
+      2.95
+    ]
+  },
+  "generatedAt": "2026-11-27T14:41:00.169Z",
+  "elapsedMs": 91950
+}

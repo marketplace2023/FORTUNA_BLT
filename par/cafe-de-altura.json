@@ -1,0 +1,104 @@
+{
+  "id": "cafe-de-altura",
+  "name": "Café de Altura",
+  "engine": "lines",
+  "configHash": "0cac80d6da313ca14ab51fb6ff1ccc0db68e05b24d85ba1502c434c7257e0666",
+  "scale": 1,
+  "targetRtp": 96,
+  "spins": 5000000,
+  "rtp": 96.19223255942472,
+  "ci95": 0.45767696877336317,
+  "sd": 5.221412315884125,
+  "volatility": "Media",
+  "hitRate": 24.043139999999998,
+  "featureEvery": 44,
+  "featureRtp": 35.4278968000196,
+  "baseRtp": 60.76433575940511,
+  "avgFeatureWin": 15.705108031677884,
+  "avgCascades": 0,
+  "maxWinX": 318.056,
+  "maxWinCap": 900,
+  "cappedRounds": 0,
+  "distribution": [
+    {
+      "label": "0x",
+      "count": 3797843,
+      "pct": 75.95686
+    },
+    {
+      "label": "0–1x",
+      "count": 322583,
+      "pct": 6.4516599999999995
+    },
+    {
+      "label": "1–2x",
+      "count": 287686,
+      "pct": 5.7537199999999995
+    },
+    {
+      "label": "2–5x",
+      "count": 388739,
+      "pct": 7.774780000000001
+    },
+    {
+      "label": "5–10x",
+      "count": 94663,
+      "pct": 1.8932600000000002
+    },
+    {
+      "label": "10–20x",
+      "count": 83396,
+      "pct": 1.66792
+    },
+    {
+      "label": "20–50x",
+      "count": 18633,
+      "pct": 0.37266
+    },
+    {
+      "label": "50–100x",
+      "count": 3069,
+      "pct": 0.06138
+    },
+    {
+      "label": "100–500x",
+      "count": 3388,
+      "pct": 0.06776
+    },
+    {
+      "label": "500–1000x",
+      "count": 0,
+      "pct": 0
+    },
+    {
+      "label": "1000x+",
+      "count": 0,
+      "pct": 0
+    }
+  ],
+  "paytable": {
+    "W": [
+      98.3
+    ],
+    "H1": [
+      51.4
+    ],
+    "H2": [
+      30.6
+    ],
+    "H3": [
+      19.7
+    ],
+    "L1": [
+      10.9
+    ],
+    "L2": [
+      7.65
+    ],
+    "L3": [
+      4.37
+    ]
+  },
+  "generatedAt": "2026-11-27T14:41:06.636Z",
+  "elapsedMs": 98419
+}
