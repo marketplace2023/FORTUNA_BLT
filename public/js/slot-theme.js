@@ -24,7 +24,7 @@ export function setSlotTheme(theme, stage, machine, boardWrap) {
     preload.src = theme.bonusArt;
   }
   const bonusScene = theme.bonusArt ? artBackground(theme.bonusArt) : theme.bonusScene;
-  if (bonusScene) machine.style.setProperty('--bonus-scene', bonusScene);
+  if (bonusScene) stage.style.setProperty('--bonus-scene', bonusScene);
   effectLayer = document.createElement('div');
   effectLayer.className = 'slot-effect';
   effectLayer.setAttribute('aria-hidden', 'true');
@@ -45,14 +45,12 @@ export function playSlotEffect(duration) {
   if (activeTheme.art && !cabinet.classList.contains('free') &&
       ['train', 'dunes'].includes(activeTheme.effect)) {
     sceneMotion?.cancel();
-    const desktop = window.matchMedia('(min-width: 900px) and (min-height: 481px)').matches;
-    const surface = desktop ? cabinet.querySelector('.slot-hero') : cabinet;
+    const surface = cabinet.closest('.stage');
     const current = getComputedStyle(surface).backgroundPosition;
-    const layers = desktop ? 'center, center, ' : 'center, ';
     sceneMotion = surface.animate(
       [
         { backgroundPosition: current },
-        { backgroundPosition: `${layers}64% center`, offset: .78 },
+        { backgroundPosition: '54% center', offset: .78 },
         { backgroundPosition: current },
       ],
       { duration, easing: 'ease-out' },

@@ -24,8 +24,6 @@ export function banner(kind, data, info, state) {
   const mult = ladder[step];
   if (state.busy && state.free === wasFree && rawStep > lastStep) Sound.jaguarStep(step);
   lastStep = rawStep; wasFree = state.free;
-  document.querySelector('#jaguarCurrent').textContent = `×${mult}`;
-  document.querySelector('#jaguarMoment').textContent = rawStep ? `Cascada ${rawStep} · escalón ${step + 1}` : 'Cada giro comienza en el primer escalón';
   const box = el('div', { class: 'jaguar-ascent', 'data-step': rawStep, 'data-mult': mult, 'data-mode': state.free ? 'free' : 'base' });
   box.append(el('span', { class: 'jaguar-ascent-label' }, state.free ? 'EL TEMPLO DESPIERTA · +2 POR CASCADA' : 'LA ESCALINATA DEL JAGUAR · +1 POR CASCADA'));
   box.append(el('div', { class: 'jaguar-stairs', 'aria-label': `Escalón ${step + 1}, multiplicador por ${mult}` }, ladder.map((m, i) => {
@@ -37,7 +35,6 @@ export function banner(kind, data, info, state) {
 }
 export function freeState(active) {
   lastStep = 0; wasFree = active;
-  document.querySelector('#jaguarMode').textContent = active ? 'EL TEMPLO HA DESPERTADO' : 'EL GUARDIÁN DE LA SELVA';
 }
 export function glyph(g, info) {
   const entry = Object.entries(info.symbols).find(([, d]) => d.g === g);

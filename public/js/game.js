@@ -25,6 +25,8 @@ const S = {
 
 const board = $('#board');
 const machine = $('#machine');
+const boardWrap = $('#boardWrap');
+const arcadeCabinet = machine.classList.contains('slot-machine');
 let illustratedReels;
 const T = (ms) => (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? Math.min(ms, 70) : S.turbo ? ms * 0.45 : ms);
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -41,17 +43,16 @@ async function init() {
   const t = { ...S.info.theme, ...Skin?.theme };
   const root = document.documentElement.style;
   for (const [k, v] of Object.entries({ bg1: t.bg1, bg2: t.bg2, accent: t.accent, ink: t.ink, tile: t.tile, tile2: t.tile2 })) root.setProperty(`--${k}`, v);
-  setSlotTheme(t, $('#stage'), machine, $('#boardWrap'));
+  setSlotTheme(t, $('#stage'), machine, boardWrap);
   if (t.dark) machine.classList.add('dark');
   document.title = S.info.name;
   document.querySelector('meta[name=theme-color]').content = t.bg1;
   $('#title').textContent = S.info.name;
+  const { cols, rows } = S.info;
+  machine.style.setProperty('--cabinet-ratio', cols / rows);
+  boardWrap.setAttribute('aria-label', `${cols} carretes de ${rows} filas`);
   if (t.symbolArt) {
     machine.dataset.engine = S.info.engine;
-    const description = $('#slotDescription');
-    description.textContent = S.info.blurb;
-    description.hidden = false;
-    board.setAttribute('aria-label', `Rodillos de ${S.info.cols} por ${S.info.rows}`);
     const paying = Object.entries(S.info.symbols)
       .filter(([, symbol]) => symbol.t === 'high' || symbol.t === 'low')
       .map(([key]) => key);
@@ -68,7 +69,7 @@ async function init() {
   $('#turboBtn').setAttribute('aria-pressed', String(S.turbo));
 
   layout();
-  if (t.effect) new ResizeObserver(layout).observe($('#boardWrap'));
+  if (arcadeCabinet) new ResizeObserver(layout).observe(boardWrap);
   S.grid = idleGrid();
   renderInstant(S.grid);
   setBanner('idle');
@@ -104,8 +105,22 @@ function gate() {
 // ───────────────────────────── Disposición ─────────────────────────────
 function layout() {
   if (!S.info) return;
+  if (arcadeCabinet) {
+    const { cols, rows } = S.info;
+    const style = getComputedStyle(boardWrap);
+    const width = boardWrap.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    const height = boardWrap.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+    S.cellWidth = Math.max(1, width / cols);
+    S.cell = Math.max(1, height / rows);
+    board.style.width = `${S.cellWidth * cols}px`;
+    board.style.height = `${S.cell * rows}px`;
+    board.style.setProperty('--reel-width', `${S.cellWidth}px`);
+    document.documentElement.style.setProperty('--cell', `${S.cell}px`);
+    S.cells.forEach((col, c) => col.forEach((node, r) => place(node, c, r)));
+    return;
+  }
   if (Skin) return Skin.resize(board, S, place);
-  const wrap = $('#boardWrap');
+  const wrap = boardWrap;
   const style = getComputedStyle(wrap);
   const w = wrap.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
   const h = wrap.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
@@ -118,7 +133,7 @@ function layout() {
   for (let c = 0; c < S.cells.length; c++) for (let r = 0; r < S.cells[c].length; r++) place(S.cells[c][r], c, r);
 }
 let rz;
-window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(layout, 80); });
+if (!arcadeCabinet) window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(layout, 80); });
 
 // ───────────────────────────── Celdas ─────────────────────────────
 function symDef(sym) {
@@ -189,8 +204,8 @@ async function dropOut() {
 }
 
 async function dropIn(grid, { locked } = {}) {
-  if (Skin) return skinDropIn(grid, locked);
-  illustratedReels?.dispose();
+  const presentation = Skin ?? illustratedReels;
+  if (presentation) return reelDropIn(grid, locked, presentation);
   clearBoard();
   const H = S.info.rows * S.cell + 30;
   const jobs = [];
@@ -207,9 +222,9 @@ async function dropIn(grid, { locked } = {}) {
   S.grid = grid;
 }
 
-async function skinDropIn(grid, locked) {
+async function reelDropIn(grid, locked, presentation) {
   clearBoard();
-  const reveal = { delay: 120, stagger: 170, duration: 330, travel: 1.4, ...Skin.reveal };
+  const reveal = { delay: 120, stagger: 135, duration: 330, travel: 1.4, ...presentation.reveal };
   const lockSet = new Set((locked || []).map(([c, r]) => `${c},${r}`));
   S.cells = grid.map((col, c) => col.map((sym, r) => {
     const n = makeCell(sym, c, r);
@@ -219,14 +234,14 @@ async function skinDropIn(grid, locked) {
   }));
   await Promise.all(S.cells.map(async (col, c) => {
     await wait(T(reveal.delay + c * reveal.stagger));
-    Skin.stopReel(c);
+    presentation.stopReel(c);
     Sound.stop();
     await Promise.all(col.map(n => {
       n.style.visibility = '';
       return anim(n, [{ transform: `translateY(${-S.cell * reveal.travel}px)`, filter: 'blur(3px)' }, { transform: 'translateY(5px)', filter: 'blur(0)', offset: .8 }, { transform: 'translateY(0)', filter: 'blur(0)' }], { duration: T(reveal.duration), easing: 'cubic-bezier(.18,.7,.3,1)' });
     }));
   }));
-  Skin.dispose();
+  presentation.dispose();
   S.grid = grid;
 }
 
@@ -250,16 +265,17 @@ async function showWins(frame, amount) {
 function drawLines(wins) {
   const svg = $('#paylines');
   svg.replaceChildren();
-  const cellWidth = S.cellWidth ?? S.cell;
-  svg.setAttribute('viewBox', `0 0 ${S.info.cols * cellWidth} ${S.info.rows * S.cell}`);
+  svg.setAttribute('viewBox', `0 0 ${S.info.cols} ${S.info.rows}`);
+  svg.setAttribute('preserveAspectRatio', 'none');
   const ns = 'http://www.w3.org/2000/svg';
   for (const w of wins) {
     const pl = document.createElementNS(ns, 'polyline');
-    const pts = w.pos.map(([c, r]) => `${(c + 0.5) * cellWidth},${(r + 0.5) * S.cell}`);
+    const pts = w.pos.map(([c, r]) => `${c + 0.5},${r + 0.5}`);
     const [c0, r0] = w.pos[0];
     const [c1, r1] = w.pos.at(-1);
-    pts.unshift(`${(c0 + 0.08) * cellWidth},${(r0 + 0.5) * S.cell}`);
-    pts.push(`${(c1 + 0.92) * cellWidth},${(r1 + 0.5) * S.cell}`);
+    pts.unshift(`${c0 + 0.08},${r0 + 0.5}`);
+    pts.push(`${c1 + 0.92},${r1 + 0.5}`);
+    pl.setAttribute('vector-effect', 'non-scaling-stroke');
     pl.setAttribute('points', pts.join(' '));
     svg.append(pl);
   }
@@ -605,7 +621,12 @@ async function applyMult(spin, b, mult) {
   clearMarks();
 }
 
-function enterFree() { S.free = true; machine.classList.add('free'); if (Skin?.freeState) { Skin.freeState(true); setBanner('ladder', { step: 0 }); } }
+function enterFree() {
+  S.free = true;
+  machine.classList.add('free');
+  Skin?.freeState?.(true);
+  if (Skin) setBanner('ladder', { step: 0 });
+}
 function exitFree() { S.free = false; machine.classList.remove('free'); $('#fsCounter').hidden = true; Skin?.freeState?.(false); }
 function setCounter(i, total) { const c = $('#fsCounter'); c.hidden = false; c.textContent = `Giro ${i} / ${total}`; }
 

@@ -1,0 +1,278 @@
+/* The scene frames a full-width reel window and a single control deck. */
+body:has(.slot-machine) .stage {
+  position: fixed;
+  min-height: 0;
+  overflow: auto;
+  align-items: safe center;
+  padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right))
+    max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+}
+
+:where(body) {
+  --cabinet-base: color-mix(in srgb, var(--bg1) 75%, #14131a);
+  --cabinet-trim: color-mix(in srgb, var(--accent) 65%, #625040);
+  --cabinet-control: color-mix(in srgb, var(--bg2) 62%, #26272c);
+  --cabinet-title: color-mix(in srgb, var(--accent) 62%, #fff5dd);
+  --cabinet-ink: color-mix(in srgb, var(--accent) 23%, white);
+  --cabinet-reel-light: color-mix(in srgb, var(--tile) 62%, #fff5db);
+  --cabinet-reel-edge: color-mix(in srgb, var(--tile2) 72%, #8d5f40);
+}
+
+.machine.slot-machine {
+  --cabinet-fit: calc((100dvh - 195px) * var(--cabinet-ratio, 1.6) * 1.34);
+  width: min(100%, 1240px, clamp(61vw, var(--cabinet-fit), 77vw));
+  height: min(calc(100dvh - 22px), 1040px);
+  min-height: 335px;
+  max-height: none;
+  display: grid;
+  grid-template: auto minmax(0, 1fr) / minmax(0, 1fr);
+  gap: 0;
+  padding: 0;
+  border: 0;
+  overflow: visible;
+  isolation: isolate;
+  background: none;
+  box-shadow: none;
+}
+
+.machine.slot-machine::before { content: none; }
+.machine.slot-machine.free { background: none; }
+.slot-machine.dark {
+  --cabinet-reel-light: color-mix(in srgb, var(--tile) 82%, var(--tile2));
+  --cabinet-reel-edge: color-mix(in srgb, var(--tile) 63%, #050409);
+}
+.slot-machine .m-top {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  justify-items: center;
+  gap: 8px;
+  min-height: clamp(50px, 9.6dvh, 91px);
+  padding: 2px 0 6px;
+  width: auto;
+  background: none;
+  border: 0;
+}
+.slot-machine .m-top h1 {
+  margin: 0;
+  color: var(--cabinet-title);
+  font: 700 clamp(25px, min(5.3vw, 6.3dvh), 65px)/1 var(--display);
+  letter-spacing: -.025em;
+  text-align: center;
+  text-wrap: balance;
+  text-shadow: 0 2px #000a, 0 4px 20px #000, 0 0 6px #0009;
+}
+.slot-machine .m-top .icon-btn {
+  position: static;
+  translate: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--cabinet-trim);
+  border-radius: 8px;
+  color: var(--cabinet-ink);
+  background: color-mix(in srgb, var(--cabinet-base) 92%, transparent);
+  font-size: 27px;
+}
+.slot-machine #soundBtn svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.slot-cabinet {
+  display: grid;
+  grid-template: auto minmax(0, 1fr) auto / minmax(0, 1fr);
+  min-height: 0;
+  padding: 0 clamp(8px, 1.25vw, 24px) clamp(8px, 1vw, 16px);
+  border: 1px solid var(--cabinet-trim);
+  border-radius: 17px;
+  background: linear-gradient(90deg, #18141b, color-mix(in srgb, var(--cabinet-base) 48%, var(--cabinet-trim)) 1.5%,
+    var(--cabinet-base) 4% 96%, color-mix(in srgb, var(--cabinet-base) 48%, var(--cabinet-trim)) 98.5%, #18141b);
+  box-shadow: inset 0 0 0 3px #111014b3, inset 0 0 0 4px #fff3, 0 12px 40px #000a;
+}
+.slot-machine.free .slot-cabinet {
+  border-color: var(--cabinet-title);
+  box-shadow: inset 0 0 0 3px #111014b3, 0 0 28px color-mix(in srgb, var(--accent) 43%, transparent);
+}
+.slot-machine .m-banner {
+  min-width: 0;
+  min-height: clamp(34px, 5dvh, 47px);
+  flex-wrap: wrap;
+  gap: 3px 10px;
+  padding: 4px 2px;
+  color: var(--cabinet-ink);
+  text-align: center;
+  background: none;
+}
+.slot-machine .banner-text { font-size: clamp(12px, 1.6vw, 17px); }
+.slot-machine .ladder { padding: 3px; }
+.slot-machine .rung {
+  min-width: clamp(27px, 5vw, 42px);
+  padding: 2px 3px;
+  border-radius: 5px;
+  font-size: clamp(12px, 1.7vw, 16px);
+}
+.slot-machine .board-wrap {
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  padding: 6px 4px 9px;
+}
+.slot-machine .board {
+  border: 0;
+  border-radius: 9px;
+  outline: 0;
+  background:
+    linear-gradient(90deg, #1b101441, transparent 8% 91%, #1b101431) 0 0 / var(--reel-width, 20%) 100%,
+    linear-gradient(180deg, var(--cabinet-reel-edge), var(--cabinet-reel-light) 16% 76%, var(--cabinet-reel-edge));
+  box-shadow: 0 0 0 1px #21161a, 0 0 0 3px var(--cabinet-title), 0 0 0 5px var(--cabinet-trim), 0 5px 14px 3px #0009;
+}
+.slot-machine .board::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  border: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 12px 16px -10px #130a16ad, inset 0 -12px 16px -10px #130a16ad;
+  background: linear-gradient(90deg, #1b101467 0 1px, #fff3 1px 2px, transparent 2px) 0 0 / var(--reel-width, 20%) 100%;
+}
+.slot-machine .cell {
+  width: var(--reel-width);
+  padding: 2px;
+  border: 0;
+}
+.slot-machine .fs-counter { top: 8px; }
+
+.slot-console { display: grid; gap: 5px; min-width: 0; }
+.slot-machine .m-info {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: auto;
+  max-width: none;
+  padding: 0;
+  gap: 5px;
+}
+.slot-machine .info-box {
+  min-width: 0;
+  min-height: clamp(37px, 6.5dvh, 64px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px 2px;
+  border: 1px solid color-mix(in srgb, var(--cabinet-trim) 62%, transparent);
+  border-radius: 5px;
+  background: linear-gradient(#08070cc9, #08070c45);
+  color: var(--cabinet-ink);
+  text-align: center;
+}
+.slot-machine .info-box .lbl {
+  font: 750 clamp(9px, 1.1vw, 13px)/1.1 var(--ui);
+  letter-spacing: .055em;
+  opacity: .94;
+}
+.slot-machine .info-box .val {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font: 800 clamp(14px, 3.2dvh, 29px)/1.06 var(--ui);
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+}
+.slot-machine .m-win .val { color: color-mix(in srgb, var(--accent) 55%, white); }
+.slot-machine .m-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(44px, 1fr)) repeat(2, minmax(44px, .55fr)) minmax(74px, 1.6fr);
+  width: auto;
+  max-width: none;
+  gap: 5px;
+  padding: 0;
+  background: none;
+}
+.slot-machine .m-controls :is(.ctl, .spin) {
+  width: 100%;
+  height: clamp(44px, 6.5dvh, 60px);
+  justify-self: stretch;
+  padding: 0 2px;
+  border: 1px solid var(--cabinet-trim);
+  border-radius: 7px;
+  background: linear-gradient(var(--cabinet-control), var(--cabinet-base));
+  box-shadow: inset 0 1px #fff4, inset 0 -3px #0006, 0 1px 2px #0009;
+  color: var(--cabinet-ink);
+  font: 800 clamp(11px, 1.35vw, 16px)/1 var(--ui);
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.slot-machine .m-controls .ctl.on { background: var(--cabinet-title); color: #1c1316; }
+.slot-machine .m-controls .bet-adjust { font-size: 22px; }
+.slot-machine .m-controls .spin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: linear-gradient(color-mix(in srgb, var(--accent) 38%, #fff9e3), color-mix(in srgb, var(--accent) 51%, #e9d5c4) 60%, var(--cabinet-trim));
+  color: #1c1316;
+}
+.slot-machine .spin-icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.slot-machine .spin-auto { position: static; font: inherit; color: inherit; }
+.slot-machine .spin-stop, .slot-machine .spin.auto .spin-label { display: none; }
+.slot-machine .spin.auto .spin-stop { display: inline; }
+.slot-machine .m-sub {
+  min-height: 0;
+  justify-content: center;
+  gap: 10px;
+  padding: 0;
+  color: var(--cabinet-ink);
+  background: none;
+  font-size: 10px;
+}
+.slot-machine .rtp-note { opacity: .8; }
+.slot-machine :is(button, .icon-btn):hover:not(:disabled) { filter: brightness(1.15); }
+.slot-machine :is(button, .icon-btn):focus-visible { outline: 2px solid var(--cabinet-title); outline-offset: 2px; }
+.slot-machine button:disabled { opacity: .45; cursor: default; }
+
+@media (max-width: 830px) and (min-height: 540px) {
+  .machine.slot-machine {
+    width: min(100%, 680px);
+    height: auto;
+    grid-template-rows: auto auto;
+  }
+  .slot-machine .slot-cabinet { grid-template-rows: auto auto auto; }
+  .slot-machine .board-wrap {
+    width: 100%;
+    aspect-ratio: var(--cabinet-ratio, 1.6);
+    max-height: min(55dvh, calc(100dvh - 333px));
+  }
+}
+
+@media (max-width: 500px) {
+  .machine.slot-machine { width: 100%; min-height: 0; }
+  .slot-machine .m-top h1 { font-size: clamp(22px, 6.6vw, 34px); }
+  .slot-machine .m-controls {
+    grid-template: repeat(2, 44px) / repeat(6, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .slot-machine .m-controls :is(.ctl, .spin) { height: 44px; }
+  .slot-machine .m-controls :is(#menuBtn, #autoBtn, #turboBtn) { grid-column: span 2; }
+  .slot-machine .m-controls .spin { grid-column: span 4; }
+  .slot-machine .info-box .val { font-size: clamp(13px, 4.2vw, 18px); }
+}
+
+@media (max-height: 539px) {
+  .machine.slot-machine { width: min(100%, 850px); }
+  .slot-machine .m-top h1 { font-size: clamp(20px, 5.7dvh, 30px); }
+  .slot-machine .m-banner { min-height: 28px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .slot-cabinet { animation: cabinet-in .3s ease-out both; }
+  @keyframes cabinet-in { from { opacity: .65; transform: translateY(4px); } }
+  .slot-machine :is(.ctl, .spin, .icon-btn) { transition: filter .16s, transform .16s; }
+  .slot-machine :is(.ctl, .spin, .icon-btn):active:not(:disabled) { transform: translateY(1px); }
+}

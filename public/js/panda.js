@@ -28,12 +28,16 @@ export function banner(kind, data, info) {
   document.querySelector('#machine').classList.toggle('panda-feature', active);
   document.querySelector('#machine').classList.toggle('panda-full', full);
   const locked = active ? frame?.locked || [] : [];
-  const box = el('div', { class: 'panda-status', 'data-mode': active ? 'respin' : full ? 'full' : 'base', 'data-step': active ? frame?.respin || 0 : 0, 'data-locked': locked.length });
-  const label = full ? `Jardín completo · ×${info.fullScreenMult}` : active ? 'EL JARDÍN SE CONSERVA' : 'CINCO CAMINOS DE FORTUNA';
-  const detail = active ? `${locked.length}/9 símbolos bloqueados · respin ${frame?.respin || 0}` : full ? 'Se multiplica el premio de las líneas' : 'El panda es comodín · pantalla llena ×10';
+  const cols = active ? frame?.grid.length ?? info.cols : info.cols;
+  const rows = active ? frame?.grid[0].length ?? info.rows : info.rows;
+  const step = active ? frame?.respin ?? 0 : 0;
+  const total = cols * rows;
+  const box = el('div', { class: 'panda-status', 'data-mode': active ? 'respin' : full ? 'full' : 'base', 'data-step': step, 'data-locked': locked.length });
+  const label = full ? `Jardín completo · ×${info.fullScreenMult}` : active ? 'Respin con bloqueo' : `${info.lines.length} líneas`;
+  const detail = active ? `${locked.length}/${total} bloqueados · respin ${step}` : full ? 'Se multiplica el premio de las líneas' : `Pantalla llena ×${info.fullScreenMult}`;
   const copy = el('div', { class: 'panda-status-copy' }, el('strong', {}, label), el('span', {}, detail));
-  const meter = el('div', { class: 'panda-lock-map', 'aria-label': active ? `${locked.length} de 9 posiciones bloqueadas` : 'Nueve posiciones del jardín' });
-  for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) meter.append(el('i', { class: locked.some(([x, y]) => x === c && y === r) ? 'on' : '', 'aria-hidden': 'true' }));
+  const meter = el('div', { class: 'panda-lock-map', style: { gridTemplateColumns: `repeat(${cols}, 1fr)` }, 'aria-hidden': 'true' });
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) meter.append(el('i', { class: locked.some(([x, y]) => x === c && y === r) ? 'on' : '' }));
   if (active && target) {
     const icon = el('div', { class: 'panda-target', 'aria-label': `Símbolo elegido: ${info.symbols[target].n}` }, tile(target, info.symbols[target]));
     box.append(icon);

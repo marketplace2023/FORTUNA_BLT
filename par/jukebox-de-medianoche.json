@@ -2,73 +2,73 @@
   "id": "jukebox-de-medianoche",
   "name": "Jukebox de Medianoche",
   "engine": "lines",
-  "configHash": "1429abc4c58fdd3661f2fc3619d16b777683e2c87c309cd70a8522361ccaab22",
-  "scale": 0.995292608894497,
+  "configHash": "13e96bc79a91e7c38aeb1ddee70f516fab34a28adb3544082014f4455d5700c5",
+  "scale": 2.036199651206849,
   "targetRtp": 96,
   "spins": 5000000,
-  "rtp": 95.57767960047727,
-  "ci95": 0.853853453039778,
-  "sd": 9.741195733774838,
-  "volatility": "Alta",
-  "hitRate": 27.1194,
+  "rtp": 95.99783839932918,
+  "ci95": 0.48451553879832676,
+  "sd": 5.527600412795895,
+  "volatility": "Media",
+  "hitRate": 26.15056,
   "featureEvery": 43,
-  "featureRtp": 37.76251279998592,
-  "baseRtp": 57.81516680049133,
-  "avgFeatureWin": 16.2130712623483,
+  "featureRtp": 18.08659759999534,
+  "baseRtp": 77.91124079933385,
+  "avgFeatureWin": 7.749915416189761,
   "avgCascades": 0,
-  "maxWinX": 428,
+  "maxWinX": 850,
   "maxWinCap": 850,
-  "cappedRounds": 0,
+  "cappedRounds": 13,
   "distribution": [
     {
       "label": "0x",
-      "count": 3644030,
-      "pct": 72.8806
+      "count": 3692472,
+      "pct": 73.84944
     },
     {
       "label": "0–1x",
-      "count": 340993,
-      "pct": 6.81986
+      "count": 350702,
+      "pct": 7.0140400000000005
     },
     {
       "label": "1–2x",
-      "count": 621229,
-      "pct": 12.42458
+      "count": 352047,
+      "pct": 7.04094
     },
     {
       "label": "2–5x",
-      "count": 206396,
-      "pct": 4.1279200000000005
+      "count": 369501,
+      "pct": 7.39002
     },
     {
       "label": "5–10x",
-      "count": 119140,
-      "pct": 2.3828
+      "count": 158565,
+      "pct": 3.1713
     },
     {
       "label": "10–20x",
-      "count": 50843,
-      "pct": 1.0168599999999999
+      "count": 53441,
+      "pct": 1.06882
     },
     {
       "label": "20–50x",
-      "count": 11541,
-      "pct": 0.23081999999999997
+      "count": 19701,
+      "pct": 0.39402
     },
     {
       "label": "50–100x",
-      "count": 2781,
-      "pct": 0.055619999999999996
+      "count": 2720,
+      "pct": 0.0544
     },
     {
       "label": "100–500x",
-      "count": 3047,
-      "pct": 0.060939999999999994
+      "count": 658,
+      "pct": 0.01316
     },
     {
       "label": "500–1000x",
-      "count": 0,
-      "pct": 0
+      "count": 193,
+      "pct": 0.00386
     },
     {
       "label": "1000x+",
@@ -78,27 +78,27 @@
   ],
   "paytable": {
     "W": [
-      107
+      220
     ],
     "H1": [
-      51.8
+      106
     ],
     "H2": [
-      28.9
+      59
     ],
     "H3": [
-      16.9
+      34.6
     ],
     "L1": [
-      8.96
+      18.3
     ],
     "L2": [
-      5.97
+      12.2
     ],
     "L3": [
-      3.98
+      8.14
     ]
   },
-  "generatedAt": "2026-11-27T14:40:54.129Z",
-  "elapsedMs": 85917
+  "generatedAt": "2026-11-27T15:53:59.041Z",
+  "elapsedMs": 79049
 }

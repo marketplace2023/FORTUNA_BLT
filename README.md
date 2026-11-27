@@ -15,8 +15,8 @@ Variables de entorno: `PORT`, `DATA_DIR` (por defecto `./data`), `SITE_NAME`, `A
 | Juego | Mecánica | RTP (PAR, 5M giros) | Volatilidad |
 |---|---|---|---|
 | Koi Dorado | 5×3, 5 líneas, respin con bloqueo, pantalla llena x10 | 97,27 % ± 1,57 | Muy alta |
-| Panda Zen | 3×3, 5 líneas, respin con bloqueo, pantalla llena x10 | 95,70 % ± 1,21 | Alta |
-| Frutas Neón | 3×3, 5 líneas, rodillos salvajes aleatorios | 95,67 % ± 1,57 | Muy alta |
+| Panda Zen | 5×3, 5 líneas, respin con bloqueo, pantalla llena x10 | 95,31 % ± 1,31 | Muy alta |
+| Frutas Neón | 4×3, 5 líneas, rodillos salvajes aleatorios | 96,42 % ± 1,30 | Muy alta |
 | Dragón de Jade | 5×4, 1.024 ways, cascadas x1→x5 / FS x2→x10 | 96,70 % ± 0,31 | Media |
 | Templo del Jaguar | 6×5, 15.625 ways, cascadas +1 hasta x10 / FS hasta x20 | 96,26 % ± 0,55 | Media |
 | Océano de Perlas | 5×5, 3.125 ways, cascadas Fibonacci / FS hasta x34 | 96,47 % ± 0,44 | Media |
@@ -29,9 +29,9 @@ Temas, símbolos, tablas de pago y tiras son originales. Las mecánicas (cascada
 
 ## Expansión de 30 tragamonedas
 
-Incluye 8 juegos de 3×3 con respins o rodillos comodín, 12 con ways y cascadas, y 10 con pago en cualquier posición. Las definiciones se encuentran en [el catálogo de expansión](server/games/expansion/index.js). El lobby muestra los juegos y el RTP medido de cada [hoja PAR](par/).
+Incluye 8 juegos de 4×3 con respins o rodillos comodín, 12 con ways y cascadas, y 10 con pago en cualquier posición. Las definiciones se encuentran en [el catálogo de expansión](server/games/expansion/index.js). El lobby muestra los juegos y el RTP medido de cada [hoja PAR](par/).
 
-Cada máquina tiene una composición de escritorio con escena lateral y rodillos amplios, y una vista adaptable para móvil. Las figuras ilustradas de los rodillos y la tabla de pagos se guardan en `public/assets/expansion/<id>/<símbolo>.webp`.
+Cada tragamonedas centra los rodillos en un gabinete arcade con el título arriba y los medidores y controles debajo. La escena y los símbolos conservan la temática del juego. Las figuras ilustradas de los rodillos y la tabla de pagos de la expansión se guardan en `public/assets/expansion/<id>/<símbolo>.webp`.
 
 `node tools/test-slot-expansion.mjs` comprueba los 30 juegos en el lobby, valida el arte y la disposición de cada máquina y verifica un giro demo a partir de la semilla guardada. Requiere Playwright y Microsoft Edge.
 

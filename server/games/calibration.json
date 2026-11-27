@@ -1,8 +1,8 @@
 {
   "arcade-de-bolsillo": {
-    "scale": 0.9840056950177531,
+    "scale": 2.39569098595667,
     "target": 96.1,
-    "calibratedAt": "2026-11-27T14:39:27.860Z"
+    "calibratedAt": "2026-11-27T15:52:28.000Z"
   },
   "arepas-de-madrugada": {
     "scale": 0.9850954686194495,
@@ -95,14 +95,14 @@
     "calibratedAt": "2026-11-27T14:39:27.860Z"
   },
   "frutas-neon": {
-    "scale": 0.7227332750773429,
+    "scale": 1.39919,
     "target": 96,
-    "calibratedAt": "2026-11-26T14:29:48.722Z"
+    "calibratedAt": "2026-11-27T15:52:20.000Z"
   },
   "gasolinera-66": {
-    "scale": 0.9888909525168119,
+    "scale": 1.8409237133920668,
     "target": 96,
-    "calibratedAt": "2026-11-27T14:39:27.860Z"
+    "calibratedAt": "2026-11-27T15:52:28.000Z"
   },
   "gran-premio-de-karts": {
     "scale": 0.9939215279485311,
@@ -110,9 +110,9 @@
     "calibratedAt": "2026-11-27T14:38:11.945Z"
   },
   "jukebox-de-medianoche": {
-    "scale": 0.995292608894497,
+    "scale": 2.036199651206849,
     "target": 96,
-    "calibratedAt": "2026-11-27T14:39:27.860Z"
+    "calibratedAt": "2026-11-27T15:52:28.000Z"
   },
   "koi-dorado": {
     "scale": 1.092449964483268,
@@ -160,9 +160,9 @@
     "calibratedAt": "2026-11-26T14:29:40.726Z"
   },
   "panda-zen": {
-    "scale": 0.6061769744797423,
+    "scale": 0.826267,
     "target": 96.3,
-    "calibratedAt": "2026-11-26T14:28:17.865Z"
+    "calibratedAt": "2026-11-27T15:52:20.000Z"
   },
   "relojeria-secreta": {
     "scale": 1,

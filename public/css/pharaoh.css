@@ -1,21 +1,17 @@
-.pharaoh-game { --display: Georgia, 'Times New Roman', serif; --ui: 'Segoe UI', system-ui, sans-serif; color: #fff1ce; background: #101e30; }
+.pharaoh-game {
+  --display: Georgia, 'Times New Roman', serif;
+  --ui: 'Segoe UI', system-ui, sans-serif;
+  color: #fff1ce;
+  background: #101e30;
+  --cabinet-base: #12283d;
+  --cabinet-trim: #d0ac65;
+  --cabinet-control: #243951;
+  --cabinet-title: #ffe0a0;
+  --cabinet-reel-light: #253f55;
+  --cabinet-reel-edge: #12243b;
+}
 .pharaoh-game .stage { background: linear-gradient(#111b2b66, #0b1522dd), url('/assets/pharaoh/temple.png') center / cover; }
 .pharaoh-game .stage::before { display: none; }
-.pharaoh-game .machine { width: min(100%, 580px); height: 100dvh; max-height: 1050px; border-radius: 0; background: #132339; isolation: isolate; box-shadow: 0 0 100px #070f1aaa; }
-.pharaoh-game .machine::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(#0e1d2a22, #13233999 33%, #0e1c2ef5 80%), url('/assets/pharaoh/temple.png') 33% top / auto 70% no-repeat; transition: filter 1s; }
-.pharaoh-game .m-top { flex: 0 0 43px; padding: 7px 15px 0; background: linear-gradient(#091425cc, transparent); }
-.pharaoh-studio { font: 600 14px var(--ui); color: #e8c987; letter-spacing: .14em; }
-.pharaoh-studio span { font-size: 8px; margin-left: 6px; letter-spacing: .19em; color: #d2c5a6; }
-.pharaoh-game .icon-btn { width: 32px; height: 32px; color: #f2d79f; border: 1px solid #b5945c55; background: #0e1c2b99; border-radius: 3px; font: 28px Georgia, serif; }
-.pharaoh-game .icon-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.pharaoh-hero { flex: 0 0 130px; position: relative; display: flex; align-items: center; padding: 10px 23px; }
-.pharaoh-brand { position: relative; z-index: 1; max-width: 66%; text-shadow: 0 3px 12px #081727; }
-.pharaoh-brand > span { font: 500 8px var(--ui); letter-spacing: .24em; color: #e2c994; }
-.pharaoh-brand h1 { margin: 6px 0; max-width: 8ch; color: #ffe7ab; font: 500 37px/.98 Georgia, serif; letter-spacing: -.035em; }
-.pharaoh-brand p { margin: 9px 0 0; font: 400 10px var(--ui); color: #d8d1ba; }
-.pharaoh-emblem { position: absolute; right: 1%; top: 0; width: 140px; height: 140px; background: url('/assets/pharaoh/symbols.png') 66.666667% 0 / 400% 300%; filter: drop-shadow(0 7px 10px #071426); }
-.pharaoh-legend { display: none; }
-.pharaoh-game .m-banner { flex: 0 0 87px; min-height: 77px; padding: 0 19px 6px; }
 .pharaoh-bank { display: flex; align-items: center; gap: 14px; width: 100%; height: 100%; padding: 8px 13px; border-block: 1px solid #ceaa6955; background: linear-gradient(90deg, #0c192ed9, #1b3148aa); }
 .pharaoh-bank-text { flex: 1; min-width: 0; display: grid; gap: 5px; }
 .pharaoh-bank-text > strong { color: #e8d7b0; font: 600 8px var(--ui); letter-spacing: .08em; }
@@ -25,12 +21,8 @@
 .pharaoh-sun-values { display: flex; align-items: center; gap: 5px; white-space: nowrap; overflow-x: auto; scrollbar-width: thin; max-width: 100%; color: #e8c87f; }
 .pharaoh-sun-values span { font: 600 10px var(--ui); }
 .pharaoh-sun-values small { font: 400 8px var(--ui); opacity: .65; }
-.pharaoh-game .board-wrap { flex: 1 1 360px; min-height: 150px; padding: 12px 16px; }
-.pharaoh-game .board { background: radial-gradient(ellipse at 50% 30%, #203950, #12243b); border-radius: 3px; box-shadow: 0 0 0 2px #071627, 0 0 0 4px #d0ac65, 0 0 0 7px #50472e, 0 0 0 9px #ac884c, 0 12px 25px #06112288; }
-.pharaoh-game .board::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 6; box-shadow: inset 0 7px 18px #07101d66; border: 1px solid #fde1a033; background: repeating-linear-gradient(90deg, transparent 0 calc(16.666667% - 1px), #d7bd7d0e calc(16.666667% - 1px) 16.666667%); }
-.pharaoh-game .cell { padding: 2px; }
 .pharaoh-game .pharaoh-tile { background: transparent; box-shadow: none; border-radius: 2px; }
-.pharaoh-symbol { display: block; width: 100%; height: 100%; background: url('/assets/pharaoh/symbols.png') no-repeat; background-size: 400% 300%; transform: scale(1.15); filter: drop-shadow(0 3px 2px #07132166); }
+.pharaoh-symbol { display: block; width: min(100%, var(--cell)); aspect-ratio: 1; background: url('/assets/pharaoh/symbols.png') no-repeat; background-size: 400% 300%; filter: drop-shadow(0 3px 2px #07132166); }
 .pharaoh-game .t-mult { border: 0; border-radius: 0; }
 .pharaoh-game .t-mult .mv { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #fff3bb; font: 600 calc(var(--cell) * .22) Georgia, serif; text-shadow: 0 2px 3px #0b1b29; }
 .pharaoh-game .tile .lab { bottom: 2%; color: #fff2b9; background: #704f29; border: 1px solid #d8b775; font: 600 calc(var(--cell) * .08) var(--ui); letter-spacing: .04em; border-radius: 2px; padding: 1px 3px; }
@@ -43,26 +35,8 @@
 .pharaoh-reel-symbol { padding: 2px; }
 .pharaoh-sun-flight { position: fixed; z-index: 60; pointer-events: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; border: 2px solid #fae4a3; background: #876125; color: #fff4cd; box-shadow: 0 0 22px #edc977aa; font: 600 14px Georgia, serif; }
 .pharaoh-collecting .pharaoh-bank-total { filter: brightness(1.35) drop-shadow(0 0 14px #e3b35d77); }
-.pharaoh-game .m-win { flex: 0 0 44px; min-height: 36px; padding: 4px 0; gap: 12px; }
-.pharaoh-game .m-win .lbl { font: 500 8px var(--ui); letter-spacing: .12em; color: #bbbec0; opacity: 1; }
-.pharaoh-game .m-win .val { font: 500 31px Georgia, serif; color: #ffe0a0; text-shadow: 0 2px 5px #071522; }
-.pharaoh-game .m-info { flex: 0 0 50px; margin: 0 22px; padding: 0; gap: 0; border-block: 1px solid #c9a76333; }
-.pharaoh-game .info-box { background: transparent; border-radius: 0; padding: 7px; }
-.pharaoh-game .info-box + .info-box { border-left: 1px solid #c9a76333; }
-.pharaoh-game .info-box .lbl { font: 400 8px var(--ui); color: #b7c1cb; letter-spacing: .12em; opacity: 1; }
-.pharaoh-game .info-box .val { font: 500 18px var(--ui); color: #fcf0cf; font-variant-numeric: tabular-nums; }
-.pharaoh-game .m-controls { flex: 0 0 95px; grid-template-columns: 1fr 1fr 92px 1fr 1fr; gap: 8px; padding: 5px 22px 0; }
-.pharaoh-game .ctl { width: 40px; height: 40px; justify-self: center; border: 1px solid #a795694d; background: #243951; border-radius: 3px; color: #e2d4ac; box-shadow: 0 3px #091a2b; }
-.pharaoh-game .ctl span { font-size: 22px; font-weight: 400; }
-.pharaoh-game .ctl small { font: 500 7px var(--ui); letter-spacing: .06em; }
-.pharaoh-game .bet-adjust { width: 32px; height: 32px; background: transparent; box-shadow: none; }
-.pharaoh-game .spin { width: 76px; height: 76px; justify-self: center; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff1bc, #dbb66b 55%, #9c7336); border: 1px solid #ffe4a1; box-shadow: 0 0 0 4px #132b40, 0 0 0 5px #a8874a, inset 0 -4px #8d652e66, 0 7px 15px #071422; }
-.pharaoh-game .spin-icon { width: 40px; height: 40px; fill: none; stroke: #3c4651; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-.pharaoh-game .spin-auto { font: 600 25px var(--ui); color: #33424b; }
-.pharaoh-game .m-sub { flex: 0 0 auto; justify-content: center; gap: 12px; padding: 4px 12px max(10px, env(safe-area-inset-bottom)); }
-.pharaoh-game .pill { font: 500 9px var(--ui); color: #c1c7cc; border: 1px solid #879ba84d; background: transparent; border-radius: 3px; padding: 4px 8px; }
-.pharaoh-game .pill.on { color: #ffe2a1; border-color: #d5b16c; background: #bc924b22; }
-.pharaoh-game .rtp-note { font: 400 8px var(--ui); color: #a4b3bf; opacity: 1; }
+.pharaoh-game .m-sub { grid-column: 1 / -1; justify-content: center; gap: 8px; padding: 0; }
+.pharaoh-game .rtp-note { font: 400 10px var(--ui); color: #a4b3bf; opacity: 1; }
 .pharaoh-game .age-note { font: 400 8px var(--ui); color: #a4b3bf; border: 1px solid #879ba84d; border-radius: 3px; padding: 2px; }
 .pharaoh-game button { transition: filter .18s, transform .18s, background .18s; }
 .pharaoh-game button:hover:not(:disabled) { filter: brightness(1.16); }
@@ -79,7 +53,7 @@
 .pharaoh-game .overlay { background: radial-gradient(ellipse at 50% 40%, #30475de6, #08182cf5); backdrop-filter: blur(7px); }
 .pharaoh-game .ov-card, .pharaoh-game .gate { gap: 16px; }
 .pharaoh-game .ov-title { font: 500 clamp(34px, 8vw, 50px)/1.05 Georgia, serif; color: #fbe4aa; text-shadow: 0 2px 9px #09182c; max-width: 11ch; }
-.pharaoh-game .ov-glyph { width: 150px; height: 150px; font-size: initial; }
+.pharaoh-game .ov-glyph { width: 150px; height: 150px; font-size: initial; --cell: 150px; }
 .pharaoh-game .ov-sub, .pharaoh-game .gate p { font: 400 13px/1.6 var(--ui); color: #d3dce3; max-width: 28ch; }
 .pharaoh-game .ov-btn { background: linear-gradient(#f3dfae, #c19b55); color: #283647; font: 600 14px var(--ui); border-radius: 3px; box-shadow: 0 4px #7a6239; }
 .pharaoh-game .ghost-btn { font: 500 14px var(--ui); border-radius: 3px; }
@@ -91,67 +65,12 @@
 .pharaoh-game .toast { background: #263c52; color: #f4e3bd; border: 1px solid #b7a16a66; font: 500 13px var(--ui); border-radius: 3px; }
 .pharaoh-game .toast-error { background: #5d3231; }
 .pharaoh-game .fs-counter { top: 1px; font: 600 11px var(--ui); padding: 5px 12px; border-radius: 2px; color: #433c2a; background: #f3daa1; border: 1px solid #fff0c4; }
-.pharaoh-game .machine.free { background: #192c42; }
-.pharaoh-game .free::before { filter: sepia(.25) saturate(1.4) brightness(1.2); }
 .pharaoh-game .free .pharaoh-bank { background: linear-gradient(90deg, #59422499, #1b3148cc); border-color: #e6c47a99; }
 .pharaoh-game .free .board { box-shadow: 0 0 0 2px #77592f, 0 0 0 4px #ffe2a0, 0 0 0 7px #7c633c, 0 0 0 9px #c7a565, 0 0 35px #cba05b44; }
-@media (min-width: 900px) and (min-height: 600px) {
-  .pharaoh-game .machine { width: min(1260px, 96vw); height: min(940px, 96dvh); max-height: none; display: grid; grid-template-columns: 240px minmax(0, 1fr); grid-template-rows: 45px 90px minmax(150px, 1fr) 100px 30px; border: 1px solid #bfa16a66; border-radius: 5px; padding: 0 22px; }
-  .pharaoh-game .machine::before { background: linear-gradient(90deg, #12203522, #122035a6 27%, #122035e6 65%), url('/assets/pharaoh/temple.png') left top / cover; }
-  .pharaoh-game .m-top { grid-column: 1 / -1; grid-row: 1; }
-  .pharaoh-hero { grid-column: 1; grid-row: 2 / 4; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; min-height: 0; padding: 30px 20px; border-right: 1px solid #c1a46a33; }
-  .pharaoh-brand { max-width: none; }
-  .pharaoh-brand h1 { font-size: 42px; }
-  .pharaoh-brand > span { font-size: 8px; }
-  .pharaoh-brand p { font-size: 11px; line-height: 1.5; }
-  .pharaoh-emblem { width: 175px; height: 175px; top: 2%; right: 12%; }
-  .pharaoh-legend { display: block; margin-top: 28px; }
-  .pharaoh-legend > strong { color: #f3d698; font: 500 26px Georgia, serif; }
-  .pharaoh-legend p { font: 400 10px/1.8 var(--ui); color: #c3d0dc; margin: 9px 0; }
-  .pharaoh-legend hr { border: 0; border-top: 1px solid #c1a46a33; margin: 20px 0 10px; }
-  .legend-urn { display: block; float: left; width: 52px; height: 52px; margin: 3px 8px 0 0; background: url('/assets/pharaoh/symbols.png') 0 0 / 400% 300%; }
-  .pharaoh-game .m-banner { grid-column: 2; grid-row: 2; padding: 0 18px 4px; }
-  .pharaoh-bank { padding-inline: 20px; }
-  .pharaoh-bank-text > strong { font-size: 10px; letter-spacing: .14em; }
-  .pharaoh-bank-text > span { font-size: 11px; }
-  .pharaoh-bank-total { width: 90px; height: 82px; }
-  .pharaoh-bank-total > span { font-size: 26px; }
-  .pharaoh-game .board-wrap { grid-column: 2; grid-row: 3; min-height: 0; }
-  .pharaoh-game .m-win { grid-column: 1; grid-row: 4; flex-direction: column; align-items: flex-start; justify-content: center; gap: 4px; margin: 0 20px; border-top: 1px solid #c1a46a33; }
-  .pharaoh-game .m-win .val { font-size: 37px; }
-  .pharaoh-game .m-info { grid-column: 2; grid-row: 4; align-self: center; width: 220px; height: 52px; margin: 0 0 0 20px; }
-  .pharaoh-game .m-controls { grid-column: 2; grid-row: 4; align-self: center; margin-left: 250px; padding: 4px 20px; }
-  .pharaoh-game .m-sub { grid-column: 1 / -1; grid-row: 5; padding-top: 0; }
-}
-@media (max-height: 730px) and (max-width: 899px) {
-  .pharaoh-game .m-top { flex-basis: 35px; }
-  .pharaoh-hero { flex-basis: 95px; padding: 5px 20px; }
-  .pharaoh-brand h1 { font-size: 29px; }
-  .pharaoh-brand > span { font-size: 7px; }
-  .pharaoh-brand p { font-size: 9px; margin-top: 5px; }
-  .pharaoh-emblem { width: 100px; height: 100px; }
-  .pharaoh-game .m-banner { flex-basis: 72px; min-height: 68px; }
-  .pharaoh-bank-total { width: 50px; height: 50px; }
-  .pharaoh-bank-total > span { font-size: 17px; }
-  .pharaoh-game .m-win { flex-basis: 36px; }
-  .pharaoh-game .m-win .val { font-size: 26px; }
-  .pharaoh-game .m-info { flex-basis: 44px; }
-  .pharaoh-game .info-box .val { font-size: 16px; }
-  .pharaoh-game .m-controls { flex-basis: 80px; grid-template-columns: 1fr 1fr 74px 1fr 1fr; }
-  .pharaoh-game .spin { width: 62px; height: 62px; }
-  .pharaoh-game .spin-icon { width: 33px; height: 33px; }
-}
-@media (min-width: 900px) and (max-height: 760px) { .pharaoh-game .machine { grid-template-rows: 40px 80px minmax(150px, 1fr) 88px 28px; } .pharaoh-hero { padding: 15px 20px; } .pharaoh-emblem { width: 130px; height: 130px; top: 0; right: 20%; } .pharaoh-brand h1 { font-size: 37px; } .pharaoh-legend { margin-top: 18px; } .pharaoh-legend hr { margin-top: 12px; } }
-@media (max-width: 899px) and (max-height: 620px) {
-  .pharaoh-hero { flex-basis: 48px; justify-content: center; padding: 2px 16px; }
-  .pharaoh-brand { max-width: none; text-align: center; }
-  .pharaoh-brand h1 { max-width: none; font-size: 26px; margin: 3px 0; }
-  .pharaoh-brand > span { font-size: 6px; }
-  .pharaoh-brand p, .pharaoh-emblem { display: none; }
-  .pharaoh-game .m-banner { flex-basis: 62px; min-height: 58px; }
+
+@media (max-height: 540px) and (orientation: landscape) {
   .pharaoh-bank { padding-block: 4px; }
   .pharaoh-bank-total { width: 44px; height: 44px; }
-  .pharaoh-game .m-controls { flex-basis: 74px; }
+  .pharaoh-bank-total > span { font-size: 15px; }
 }
-@media (max-height: 540px) { .pharaoh-game { overflow-y: auto; } .pharaoh-game .stage { position: relative; min-height: 650px; } .pharaoh-game .machine { height: 650px; flex-shrink: 0; } }
 @media (prefers-reduced-motion: reduce) { .pharaoh-game *, .pharaoh-game *::after { animation: none !important; transition: none !important; } .pharaoh-reel-belt { filter: none; } }

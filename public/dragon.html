@@ -11,45 +11,40 @@
   <link rel="preload" href="/assets/dragon/symbols-v2.png" as="image">
   <link rel="stylesheet" href="/css/game.css">
   <link rel="stylesheet" href="/css/dragon.css">
+  <link rel="stylesheet" href="/css/slot-cabinet.css">
 </head>
 <body class="dragon-game">
   <main class="stage" id="stage">
-    <div class="machine" id="machine">
+    <div class="machine slot-machine" id="machine">
       <header class="m-top">
-        <a class="icon-btn" href="/" aria-label="Volver al lobby">‹</a>
-        <span class="dragon-studio">VLT <span>ORIGINALS</span></span>
+        <a class="icon-btn back" href="/" aria-label="Volver al lobby">‹</a>
+        <h1 id="title">Dragón de Jade</h1>
         <button class="icon-btn" id="soundBtn" type="button" aria-label="Activar o desactivar sonido" aria-pressed="true"></button>
       </header>
-      <section class="dragon-hero" aria-label="Santuario del dragón entre montañas de jade">
-        <div class="dragon-brand"><span>EL DESPERTAR DEL SANTUARIO</span><h1 id="title">Dragón de Jade</h1><p>1.024 formas de ganar</p></div>
-        <div class="dragon-emblem" aria-hidden="true"></div>
+      <section class="slot-cabinet" aria-label="Tragamonedas">
+        <div class="m-banner" id="banner" role="status" aria-live="polite"></div>
+        <section class="board-wrap" id="boardWrap" aria-label="Tablero de cinco rodillos y cuatro filas">
+          <div class="board" id="board"><svg class="paylines" id="paylines" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+          <div class="float-win" id="floatWin" aria-hidden="true"></div>
+          <div class="fs-counter" id="fsCounter" hidden></div>
+        </section>
+        <div class="slot-console">
+          <div class="m-info">
+            <div class="info-box"><span class="lbl">Créditos <span id="creditMode"></span></span><span class="val" id="balVal">—</span></div>
+            <div class="info-box m-win" id="winbar" aria-live="polite"><span class="lbl">Premio de la ronda</span><span class="val" id="winVal">0,00</span></div>
+            <div class="info-box"><span class="lbl">Apuesta total</span><span class="val" id="betVal">—</span></div>
+          </div>
+          <div class="m-controls">
+            <button class="ctl" id="menuBtn" type="button" aria-label="Pagos, reglas e historial">Menú</button>
+            <button class="ctl" id="autoBtn" type="button" aria-label="Juego automático">Auto</button>
+            <button class="ctl" id="turboBtn" type="button" aria-pressed="false">Turbo</button>
+            <button class="ctl bet-adjust" id="betDown" type="button" aria-label="Bajar apuesta">−</button>
+            <button class="ctl bet-adjust" id="betUp" type="button" aria-label="Subir apuesta">+</button>
+            <button class="spin" id="spinBtn" type="button" aria-label="Girar" data-stop-label="Detener giros automáticos"><svg class="spin-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M37 16a15 15 0 1 0 1 15M37 7v11H26"/></svg><span class="spin-label">Girar</span><span class="spin-stop">Parar</span><span class="spin-auto" id="spinAuto"></span></button>
+          </div>
+          <footer class="m-sub"><span class="rtp-note" id="rtpNote"></span><span class="age-note">18+</span></footer>
+        </div>
       </section>
-      <div class="m-banner" id="banner" role="status" aria-live="polite"></div>
-      <section class="board-wrap" id="boardWrap" aria-label="Tablero de cinco rodillos y cuatro filas">
-        <div class="board" id="board"><svg class="paylines" id="paylines" aria-hidden="true"></svg></div>
-        <div class="float-win" id="floatWin" aria-hidden="true"></div>
-        <div class="fs-counter" id="fsCounter" hidden></div>
-      </section>
-      <aside class="dragon-guide" aria-label="Funciones del santuario">
-        <div class="guide-kicker" id="dragonMode">EL SANTUARIO</div>
-        <h2>Cada caída<br>despierta<br><em>más poder.</em></h2>
-        <p>Los símbolos ganadores desaparecen. Los nuevos símbolos pueden formar otro premio.</p>
-        <div class="dragon-mult-badge"><span>MULTIPLICADOR</span><strong id="dragonMult">×1</strong><small id="dragonStep">Comienza cada giro</small></div>
-        <div class="dragon-scatter-guide"><span class="guide-scatter" aria-hidden="true"></span><p><strong>3 pagodas</strong><br>activan 10 giros gratis.<br>Multiplicadores de ×2 a ×10.</p></div>
-      </aside>
-      <div class="m-win" id="winbar" aria-live="polite"><span class="lbl">Premio de la ronda</span><span class="val" id="winVal">0,00</span></div>
-      <div class="m-info">
-        <div class="info-box"><span class="lbl">Créditos <span id="creditMode"></span></span><span class="val" id="balVal">—</span></div>
-        <div class="info-box"><span class="lbl">Apuesta total</span><span class="val" id="betVal">—</span></div>
-      </div>
-      <div class="m-controls">
-        <button class="ctl" id="menuBtn" type="button" aria-label="Pagos, reglas e historial"><span>☰</span><small>Menú</small></button>
-        <button class="ctl bet-adjust" id="betDown" type="button" aria-label="Bajar apuesta"><span>−</span></button>
-        <button class="spin" id="spinBtn" type="button" aria-label="Girar"><svg class="spin-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M37 16a15 15 0 1 0 1 15M37 7v11H26"/></svg><span class="spin-auto" id="spinAuto"></span></button>
-        <button class="ctl bet-adjust" id="betUp" type="button" aria-label="Subir apuesta"><span>+</span></button>
-        <button class="ctl" id="autoBtn" type="button" aria-label="Juego automático"><span>▷</span><small>Auto</small></button>
-      </div>
-      <footer class="m-sub"><button class="pill" id="turboBtn" type="button" aria-pressed="false">Turbo</button><span class="rtp-note" id="rtpNote"></span><span class="age-note">18+</span></footer>
       <div class="overlay" id="overlay" hidden></div>
     </div>
   </main>

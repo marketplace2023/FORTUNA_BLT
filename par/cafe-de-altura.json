@@ -2,68 +2,68 @@
   "id": "cafe-de-altura",
   "name": "Café de Altura",
   "engine": "lines",
-  "configHash": "0cac80d6da313ca14ab51fb6ff1ccc0db68e05b24d85ba1502c434c7257e0666",
+  "configHash": "06cb02258763e1d8f065853a27aff2cacdf93b76807a6366f7edb4bda55095a0",
   "scale": 1,
   "targetRtp": 96,
   "spins": 5000000,
-  "rtp": 96.19223255942472,
-  "ci95": 0.45767696877336317,
-  "sd": 5.221412315884125,
+  "rtp": 95.78382643959989,
+  "ci95": 0.4605593346264641,
+  "sd": 5.254295815800237,
   "volatility": "Media",
-  "hitRate": 24.043139999999998,
+  "hitRate": 19.9321,
   "featureEvery": 44,
-  "featureRtp": 35.4278968000196,
-  "baseRtp": 60.76433575940511,
-  "avgFeatureWin": 15.705108031677884,
+  "featureRtp": 34.94613744001965,
+  "baseRtp": 60.83768899958025,
+  "avgFeatureWin": 15.503503620110932,
   "avgCascades": 0,
-  "maxWinX": 318.056,
+  "maxWinX": 243.12,
   "maxWinCap": 900,
   "cappedRounds": 0,
   "distribution": [
     {
       "label": "0x",
-      "count": 3797843,
-      "pct": 75.95686
+      "count": 4003395,
+      "pct": 80.06790000000001
     },
     {
       "label": "0–1x",
-      "count": 322583,
-      "pct": 6.4516599999999995
+      "count": 229077,
+      "pct": 4.5815399999999995
     },
     {
       "label": "1–2x",
-      "count": 287686,
-      "pct": 5.7537199999999995
+      "count": 217696,
+      "pct": 4.3539200000000005
     },
     {
       "label": "2–5x",
-      "count": 388739,
-      "pct": 7.774780000000001
+      "count": 332011,
+      "pct": 6.640219999999999
     },
     {
       "label": "5–10x",
-      "count": 94663,
-      "pct": 1.8932600000000002
+      "count": 95359,
+      "pct": 1.9071799999999999
     },
     {
       "label": "10–20x",
-      "count": 83396,
-      "pct": 1.66792
+      "count": 89956,
+      "pct": 1.7991199999999998
     },
     {
       "label": "20–50x",
-      "count": 18633,
-      "pct": 0.37266
+      "count": 26426,
+      "pct": 0.52852
     },
     {
       "label": "50–100x",
-      "count": 3069,
-      "pct": 0.06138
+      "count": 3006,
+      "pct": 0.06012
     },
     {
       "label": "100–500x",
-      "count": 3388,
-      "pct": 0.06776
+      "count": 3074,
+      "pct": 0.06148
     },
     {
       "label": "500–1000x",
@@ -99,6 +99,6 @@
       4.37
     ]
   },
-  "generatedAt": "2026-11-27T14:41:06.636Z",
-  "elapsedMs": 98419
+  "generatedAt": "2026-11-27T15:51:44.232Z",
+  "elapsedMs": 51911
 }
