@@ -19,8 +19,7 @@ body:has(.slot-machine) .stage {
 }
 
 .machine.slot-machine {
-  --cabinet-fit: calc((100dvh - 195px) * var(--cabinet-ratio, 1.6) * 1.34);
-  width: min(100%, 1240px, clamp(61vw, var(--cabinet-fit), 77vw));
+  width: min(100%, 84vw, 1680px);
   height: min(calc(100dvh - 22px), 1040px);
   min-height: 335px;
   max-height: none;

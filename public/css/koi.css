@@ -18,7 +18,7 @@
 }
 .koi-game .stage::before { display: none; }
 .koi-game .machine {
-  width: min(64vw, 1120px);
+  width: min(84vw, 1680px);
   height: min(calc(100dvh - 24px), 1050px);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
