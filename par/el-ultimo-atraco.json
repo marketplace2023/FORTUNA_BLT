@@ -1,0 +1,104 @@
+{
+  "id": "el-ultimo-atraco",
+  "name": "El Último Atraco",
+  "engine": "lines",
+  "configHash": "af26cc2cfc2562a27be736c52ddaee07101e07122cef0c608d6b83a68800ee3a",
+  "scale": 1,
+  "targetRtp": 96,
+  "spins": 5000000,
+  "rtp": 96.05882000028413,
+  "ci95": 0.7557322895107623,
+  "sd": 8.621779449681714,
+  "volatility": "Alta",
+  "hitRate": 28.16826,
+  "featureEvery": 114,
+  "featureRtp": 29.335856000000106,
+  "baseRtp": 66.72296400028402,
+  "avgFeatureWin": 33.44870929490115,
+  "avgCascades": 0,
+  "maxWinX": 886.4,
+  "maxWinCap": 2500,
+  "cappedRounds": 0,
+  "distribution": [
+    {
+      "label": "0x",
+      "count": 3591587,
+      "pct": 71.83174
+    },
+    {
+      "label": "0–1x",
+      "count": 391161,
+      "pct": 7.82322
+    },
+    {
+      "label": "1–2x",
+      "count": 608232,
+      "pct": 12.16464
+    },
+    {
+      "label": "2–5x",
+      "count": 229207,
+      "pct": 4.58414
+    },
+    {
+      "label": "5–10x",
+      "count": 101504,
+      "pct": 2.03008
+    },
+    {
+      "label": "10–20x",
+      "count": 57320,
+      "pct": 1.1464
+    },
+    {
+      "label": "20–50x",
+      "count": 14745,
+      "pct": 0.2949
+    },
+    {
+      "label": "50–100x",
+      "count": 2543,
+      "pct": 0.05086
+    },
+    {
+      "label": "100–500x",
+      "count": 3215,
+      "pct": 0.0643
+    },
+    {
+      "label": "500–1000x",
+      "count": 486,
+      "pct": 0.009720000000000001
+    },
+    {
+      "label": "1000x+",
+      "count": 0,
+      "pct": 0
+    }
+  ],
+  "paytable": {
+    "W": [
+      160
+    ],
+    "H1": [
+      78
+    ],
+    "H2": [
+      33
+    ],
+    "H3": [
+      17
+    ],
+    "L1": [
+      8
+    ],
+    "L2": [
+      5
+    ],
+    "L3": [
+      3
+    ]
+  },
+  "generatedAt": "2026-11-27T14:40:55.104Z",
+  "elapsedMs": 86899
+}

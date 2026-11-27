@@ -59,15 +59,19 @@ function renderGrid() {
     const cover = g.engine === 'roulette' && t.art
       ? { className: 'roulette-card', background: `linear-gradient(0deg, ${t.bg1}, transparent 75%), url("${t.art}") center / cover` }
       : illustratedCovers[g.id];
-    const coverBackground = cover?.background || `radial-gradient(120% 90% at 50% 20%, ${t.bg2}, ${t.bg1})`;
+    const coverBackground = cover?.background || t.scene || `radial-gradient(120% 90% at 50% 20%, ${t.bg2}, ${t.bg1})`;
+    const themeClass = t.effect ? ' themed-card' : '';
+    const art = t.effect && t.art;
     grid.append(
-      el('a', { class: `card${cover ? ` ${cover.className}` : ''}`, href: `/play/${g.id}`, onclick: (e) => go(e, g) },
+      el('a', { class: `card${themeClass}${cover ? ` ${cover.className}` : ''}`, href: `/play/${g.id}`, onclick: (e) => go(e, g) },
         el('div', { class: 'cover', style: { background: coverBackground } },
           el('span', { class: 'play-pill' }, 'Jugar'),
-          el('span', { class: 'mini m1' }, b),
-          el('span', { class: 'mini m2' }, c),
-          d ? el('span', { class: 'mini m3' }, d) : null,
-          el('span', { class: 'big' }, a),
+          art ? el('img', { class: 'slot-cover-art', src: art, alt: '', loading: 'lazy', decoding: 'async' }) : [
+            el('span', { class: 'mini m1' }, b),
+            el('span', { class: 'mini m2' }, c),
+            d ? el('span', { class: 'mini m3' }, d) : null,
+            el('span', { class: 'big' }, a),
+          ],
           g.id === 'frutas-neon' ? el('span', { class: 'neon-cover-star', 'aria-hidden': 'true' }) : null,
           el('span', { class: 'title' }, g.name),
         ),

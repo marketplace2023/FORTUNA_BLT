@@ -1,6 +1,6 @@
 # VLT Royale — sala de juegos VLT auditables
 
-Sitio con 10 tragamonedas originales, una ruleta europea, FortunaZoo y un hipódromo virtual de carreras individuales, servidor de resultados auditable y panel de administración. Node 20+, **sin dependencias de ejecución**.
+Sitio con 40 tragamonedas originales, una ruleta europea, FortunaZoo y un hipódromo virtual de carreras individuales, servidor de resultados auditable y panel de administración. Node 20+, **sin dependencias de ejecución**.
 
 ```bash
 npm start            # http://localhost:3000  ·  panel en /admin
@@ -10,11 +10,11 @@ En el primer arranque se crea el usuario `admin` con una contraseña aleatoria. 
 
 Variables de entorno: `PORT`, `DATA_DIR` (por defecto `./data`), `SITE_NAME`, `ADMIN_PASSWORD`.
 
-## Las 10 tragamonedas
+## Tragamonedas originales
 
 | Juego | Mecánica | RTP (PAR, 5M giros) | Volatilidad |
 |---|---|---|---|
-| Koi Dorado | 3×3, 5 líneas, respin con bloqueo, pantalla llena x10 | 96,59 % ± 0,98 | Alta |
+| Koi Dorado | 5×3, 5 líneas, respin con bloqueo, pantalla llena x10 | 97,27 % ± 1,57 | Muy alta |
 | Panda Zen | 3×3, 5 líneas, respin con bloqueo, pantalla llena x10 | 95,70 % ± 1,21 | Alta |
 | Frutas Neón | 3×3, 5 líneas, rodillos salvajes aleatorios | 95,67 % ± 1,57 | Muy alta |
 | Dragón de Jade | 5×4, 1.024 ways, cascadas x1→x5 / FS x2→x10 | 96,70 % ± 0,31 | Media |
@@ -26,6 +26,14 @@ Variables de entorno: `PORT`, `DATA_DIR` (por defecto `./data`), `SITE_NAME`, `A
 | Fiesta Dulce | 6×5, paga en cualquier lugar (8+), multiplicadores en FS | 95,80 % ± 1,19 | Alta |
 
 Temas, símbolos, tablas de pago y tiras son originales. Las mecánicas (cascadas, ways, respin, pago en cualquier lugar) son genéricas del género.
+
+## Expansión de 30 tragamonedas
+
+Incluye 8 juegos de 3×3 con respins o rodillos comodín, 12 con ways y cascadas, y 10 con pago en cualquier posición. Las definiciones se encuentran en [el catálogo de expansión](server/games/expansion/index.js). El lobby muestra los juegos y el RTP medido de cada [hoja PAR](par/).
+
+Cada máquina tiene una composición de escritorio con escena lateral y rodillos amplios, y una vista adaptable para móvil. Las figuras ilustradas de los rodillos y la tabla de pagos se guardan en `public/assets/expansion/<id>/<símbolo>.webp`.
+
+`node tools/test-slot-expansion.mjs` comprueba los 30 juegos en el lobby, valida el arte y la disposición de cada máquina y verifica un giro demo a partir de la semilla guardada. Requiere Playwright y Microsoft Edge.
 
 ## Ruleta del Eclipse
 

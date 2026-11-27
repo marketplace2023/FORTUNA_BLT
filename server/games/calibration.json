@@ -1,8 +1,83 @@
 {
+  "arcade-de-bolsillo": {
+    "scale": 0.9840056950177531,
+    "target": 96.1,
+    "calibratedAt": "2026-11-27T14:39:27.860Z"
+  },
+  "arepas-de-madrugada": {
+    "scale": 0.9850954686194495,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:36:18.107Z"
+  },
+  "biblioteca-de-los-mapas-imposibles": {
+    "scale": 1.0064317996996128,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:34:31.166Z"
+  },
+  "bosque-bioluminiscente": {
+    "scale": 0.9949495366820601,
+    "target": 96.1,
+    "calibratedAt": "2026-11-27T14:34:28.303Z"
+  },
+  "cafe-de-altura": {
+    "scale": 1,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:39:27.860Z"
+  },
+  "caravana-de-las-dunas": {
+    "scale": 0.980478770759886,
+    "target": 96.3,
+    "calibratedAt": "2026-11-27T14:36:32.604Z"
+  },
+  "carnaval-de-barranquilla": {
+    "scale": 1.0083646780608755,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:36:12.464Z"
+  },
+  "ciudad-de-vapor": {
+    "scale": 1.0219657055509903,
+    "target": 96.2,
+    "calibratedAt": "2026-11-27T14:34:16.679Z"
+  },
+  "cosecha-de-cacao": {
+    "scale": 0.9963519986984136,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:44:59.786Z"
+  },
+  "cumbre-de-los-condores": {
+    "scale": 0.9790170638100855,
+    "target": 96.4,
+    "calibratedAt": "2026-11-27T14:44:22.036Z"
+  },
+  "dinosaurios-de-bolsillo": {
+    "scale": 0.9931310196487778,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:37:46.135Z"
+  },
   "dragon-jade": {
     "scale": 0.5658223507962733,
     "target": 96.5,
     "calibratedAt": "2026-11-26T14:30:10.877Z"
+  },
+  "el-palacio-de-cristal": {
+    "scale": 0.9927764073693771,
+    "target": 96.4,
+    "calibratedAt": "2026-11-27T14:34:15.623Z"
+  },
+  "el-ultimo-atraco": {
+    "scale": 1,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:39:27.859Z"
+  },
+  "estacion-aurora": {
+    "scale": 1,
+    "target": 96.3,
+    "calibratedAt": "2026-11-27T14:39:27.860Z"
+  },
+  "expreso-polar": {
+    "scale": 1.003099936441572,
+    "target": 96.2,
+    "calibratedAt": "2026-11-27T14:34:31.477Z"
   },
   "faraon-dorado": {
     "scale": 1.6233879619478855,
@@ -14,15 +89,65 @@
     "target": 96.2,
     "calibratedAt": "2026-11-26T14:35:03.029Z"
   },
+  "forja-de-titanio": {
+    "scale": 1,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:39:27.860Z"
+  },
   "frutas-neon": {
     "scale": 0.7227332750773429,
     "target": 96,
     "calibratedAt": "2026-11-26T14:29:48.722Z"
   },
+  "gasolinera-66": {
+    "scale": 0.9888909525168119,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:39:27.860Z"
+  },
+  "gran-premio-de-karts": {
+    "scale": 0.9939215279485311,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:38:11.945Z"
+  },
+  "jukebox-de-medianoche": {
+    "scale": 0.995292608894497,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:39:27.860Z"
+  },
   "koi-dorado": {
-    "scale": 0.5564230128485933,
+    "scale": 1.092449964483268,
     "target": 96.5,
-    "calibratedAt": "2026-11-26T14:27:32.851Z"
+    "calibratedAt": "2026-11-27T15:37:19.231Z"
+  },
+  "la-mansion-de-los-espejos": {
+    "scale": 1,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:35:20.814Z"
+  },
+  "la-noche-de-los-faros": {
+    "scale": 1.003544541682375,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:45:41.677Z"
+  },
+  "la-opera-de-las-sombras": {
+    "scale": 1,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:35:35.918Z"
+  },
+  "mercado-de-los-alquimistas": {
+    "scale": 0.9816386453227198,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:44:28.613Z"
+  },
+  "meteoritos-del-canon": {
+    "scale": 1.0032091180959448,
+    "target": 96.5,
+    "calibratedAt": "2026-11-27T14:36:13.606Z"
+  },
+  "mision-titan": {
+    "scale": 0.991709238752426,
+    "target": 96.4,
+    "calibratedAt": "2026-11-27T14:33:42.309Z"
   },
   "noche-catrinas": {
     "scale": 0.998014150840728,
@@ -39,14 +164,39 @@
     "target": 96.3,
     "calibratedAt": "2026-11-26T14:28:17.865Z"
   },
+  "relojeria-secreta": {
+    "scale": 1,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:39:27.860Z"
+  },
+  "rescate-en-marte": {
+    "scale": 1.005876404346821,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:37:52.418Z"
+  },
   "samurai-viento": {
     "scale": 1.3630959137770244,
     "target": 96.3,
     "calibratedAt": "2026-11-26T14:31:03.439Z"
   },
+  "taller-de-vidrio": {
+    "scale": 1.009491040221341,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:37:25.079Z"
+  },
   "templo-jaguar": {
     "scale": 0.2847976168909541,
     "target": 96.7,
     "calibratedAt": "2026-11-26T14:30:18.833Z"
+  },
+  "vinilos-del-barrio": {
+    "scale": 1.0010752267474283,
+    "target": 96,
+    "calibratedAt": "2026-11-27T14:37:40.627Z"
+  },
+  "volcan-de-obsidiana": {
+    "scale": 0.9899539459575758,
+    "target": 96.2,
+    "calibratedAt": "2026-11-27T14:34:42.773Z"
   }
 }

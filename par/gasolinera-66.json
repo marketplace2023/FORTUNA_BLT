@@ -1,0 +1,104 @@
+{
+  "id": "gasolinera-66",
+  "name": "Gasolinera 66",
+  "engine": "lines",
+  "configHash": "159336b33d01eb30ec10f6036dcbac924d71d2ab52d2ffbd0fc7daf42dbf1e84",
+  "scale": 0.9888909525168119,
+  "targetRtp": 96,
+  "spins": 5000000,
+  "rtp": 96.23254839897108,
+  "ci95": 1.2346377775823945,
+  "sd": 14.085377542160714,
+  "volatility": "Muy alta",
+  "hitRate": 26.77264,
+  "featureEvery": 32,
+  "featureRtp": 42.18303439998459,
+  "baseRtp": 54.049513998986484,
+  "avgFeatureWin": 13.593398556323985,
+  "avgCascades": 0,
+  "maxWinX": 775,
+  "maxWinCap": 1100,
+  "cappedRounds": 0,
+  "distribution": [
+    {
+      "label": "0x",
+      "count": 3661368,
+      "pct": 73.22735999999999
+    },
+    {
+      "label": "0–1x",
+      "count": 451563,
+      "pct": 9.031260000000001
+    },
+    {
+      "label": "1–2x",
+      "count": 545049,
+      "pct": 10.90098
+    },
+    {
+      "label": "2–5x",
+      "count": 175114,
+      "pct": 3.50228
+    },
+    {
+      "label": "5–10x",
+      "count": 114470,
+      "pct": 2.2894
+    },
+    {
+      "label": "10–20x",
+      "count": 41349,
+      "pct": 0.82698
+    },
+    {
+      "label": "20–50x",
+      "count": 7854,
+      "pct": 0.15708
+    },
+    {
+      "label": "50–100x",
+      "count": 1336,
+      "pct": 0.02672
+    },
+    {
+      "label": "100–500x",
+      "count": 336,
+      "pct": 0.006719999999999999
+    },
+    {
+      "label": "500–1000x",
+      "count": 1561,
+      "pct": 0.03122
+    },
+    {
+      "label": "1000x+",
+      "count": 0,
+      "pct": 0
+    }
+  ],
+  "paytable": {
+    "W": [
+      155
+    ],
+    "H1": [
+      73.6
+    ],
+    "H2": [
+      36.8
+    ],
+    "H3": [
+      19.6
+    ],
+    "L1": [
+      9.2
+    ],
+    "L2": [
+      5.76
+    ],
+    "L3": [
+      3.45
+    ]
+  },
+  "generatedAt": "2026-11-27T14:40:58.480Z",
+  "elapsedMs": 90268
+}

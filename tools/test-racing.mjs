@@ -247,7 +247,7 @@ try {
   await page.goto(origin);await page.waitForSelector('.racing-card');assert.equal(await page.locator('#grid .card').count(),loadGames().size);
   await page.getByRole('button',{name:'Ruletas',exact:true}).click();assert.equal(await page.locator('#grid .roulette-card').count(),[...loadGames().values()].filter(g=>g.def.engine==='roulette').length);
   await page.getByRole('button',{name:'Hipódromo',exact:true}).click();assert.equal(await page.locator('#grid .card').count(),1);
-  for (const [id,count] of [['koi-dorado',9],['panda-zen',9],['fiesta-dulce',30]]) {await page.goto(`${origin}/play/${id}`);await page.waitForFunction(n=>document.querySelectorAll('.cell').length===n,count);}
+  for (const [id,count] of [['koi-dorado',15],['panda-zen',9],['fiesta-dulce',30]]) {await page.goto(`${origin}/play/${id}`);await page.waitForFunction(n=>document.querySelectorAll('.cell').length===n,count);}
   assert.deepEqual(errors,[]);
   console.log('PASS racing UI/API: responsive, selection, gross/net quote, single debit, duplicate token, invalid wager, player isolation, lost response, reload recovery, skip, exact arrival, audit, rebuilt store, lobby filters and slot regression.');
 } finally {await browser?.close();server.kill();await delay(300);await rm(dir,{recursive:true,force:true});}

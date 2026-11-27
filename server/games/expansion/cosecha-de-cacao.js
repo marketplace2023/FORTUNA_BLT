@@ -1,0 +1,51 @@
+const harvestReels = (weights) => Array.from({ length: 5 }, () => ({ ...weights }));
+
+export default {
+  id: 'cosecha-de-cacao',
+  name: 'Cosecha de Cacao',
+  engine: 'anywhere',
+  tag: '5×5 · Caídas · Del secadero al tostado',
+  blurb: 'Siete símbolos iguales pagan en cualquier posición. Cuatro sacos llevan la cosecha del secadero al tostado, donde salen más nibs y tabletas.',
+  cols: 5,
+  rows: 5,
+  theme: {
+    bg1: '#1d2416', bg2: '#536039', accent: '#ecc172', ink: '#ffefd1', tile: '#f8e7c8', tile2: '#d0a473',
+    scene: 'radial-gradient(ellipse at 23% 15%, #fce1948c, transparent 35%), linear-gradient(170deg, transparent 42%, #273922 43% 49%, transparent 50%), repeating-linear-gradient(85deg, #3a281e 0 2px, #845b3a 3px 30px) bottom / 100% 27% no-repeat, linear-gradient(155deg, #74814d, #3d512a 66%, #292e1c)',
+    bonusScene: 'radial-gradient(ellipse at 50% 83%, #ff973c95, transparent 41%), radial-gradient(ellipse at 52% 55%, #bc6a39a1, transparent 62%), repeating-linear-gradient(0deg, #2e201c 0 2px, #533327 2px 29px)',
+    cue: '¡Cacao al tostador!',
+    bonusArt: '/assets/expansion/cosecha-de-cacao-bonus.webp',
+    bonusTitle: 'El taller de tostado',
+    effect: 'cacao',
+  },
+  cover: ['🫘', '🍫', '🥣', '🌰'],
+  symbols: {
+    S: { g: '🛍️', n: 'Saco de cacao (scatter)', t: 'scatter' },
+    M: { g: '🔥', n: 'Brasa multiplicadora', t: 'mult' },
+    H1: { g: '🍫', n: 'Tableta de cacao venezolano', t: 'high' },
+    H2: { g: '🥣', n: 'Mortero de piedra', t: 'high' },
+    H3: { g: '🫘', n: 'Mazorca de cacao', t: 'high' },
+    H4: { g: '🌰', n: 'Nibs de cacao', t: 'high' },
+    L1: { g: '🧺', n: 'Cesta de la finca', t: 'low' },
+    L2: { g: '🍃', n: 'Hoja de cacaotero', t: 'low' },
+    L3: { g: '🪵', n: 'Tablilla del secadero', t: 'low' },
+    L4: { g: '🫙', n: 'Frasco de la finca', t: 'low' },
+    L5: { g: '🪣', n: 'Balde de cosecha', t: 'low' },
+  },
+  pay: {
+    H1: [16.9, 45.1, 126], H2: [9.48, 24.8, 72.2], H3: [6.77, 18.1, 51.9], H4: [5.42, 13.5, 38.4],
+    L1: [2.82, 7.67, 20.3], L2: [1.92, 5.87, 15.8], L3: [1.47, 4.51, 11.3], L4: [1.08, 3.27, 9.03], L5: [0.745, 2.35, 6.77],
+  },
+  payDiv: 1,
+  tiers: [7, 9, 11],
+  reels: {
+    base: harvestReels({ S: 6, M: 2, H1: 9, H2: 15, H3: 20, H4: 18, L1: 24, L2: 26, L3: 28, L4: 30, L5: 32 }),
+    free: harvestReels({ S: 5, M: 5, H1: 17, H2: 15, H3: 16, H4: 25, L1: 23, L2: 24, L3: 26, L4: 28, L5: 31 }),
+  },
+  mult: {
+    base: { 2: 85, 4: 15 },
+    free: { 2: 53, 4: 30, 6: 13, 12: 4 },
+  },
+  scatter: { min: 4, spins: 10, reMin: 3, reSpins: 4, maxSpins: 64 },
+  maxWin: 4500,
+  targetRtp: 96,
+};

@@ -1,0 +1,123 @@
+{
+  "id": "la-opera-de-las-sombras",
+  "name": "La Ópera de las Sombras",
+  "engine": "ways",
+  "configHash": "d6eaf45454f033a69d77dabaeb9fed8fdaefd93e72e17fcbb8077b715aefd7c1",
+  "scale": 1,
+  "targetRtp": 96,
+  "spins": 1000000,
+  "rtp": 96.36952622985011,
+  "ci95": 0.7942305410045748,
+  "sd": 4.052196637778443,
+  "volatility": "Media",
+  "hitRate": 56.781099999999995,
+  "featureEvery": 33,
+  "featureRtp": 45.9153358800003,
+  "baseRtp": 50.45419034984982,
+  "avgFeatureWin": 15.150576083943871,
+  "avgCascades": 0.952504,
+  "maxWinX": 292.9645,
+  "maxWinCap": 4000,
+  "cappedRounds": 0,
+  "distribution": [
+    {
+      "label": "0x",
+      "count": 432189,
+      "pct": 43.2189
+    },
+    {
+      "label": "0–1x",
+      "count": 414791,
+      "pct": 41.4791
+    },
+    {
+      "label": "1–2x",
+      "count": 68348,
+      "pct": 6.8348
+    },
+    {
+      "label": "2–5x",
+      "count": 44451,
+      "pct": 4.4451
+    },
+    {
+      "label": "5–10x",
+      "count": 18449,
+      "pct": 1.8449
+    },
+    {
+      "label": "10–20x",
+      "count": 13422,
+      "pct": 1.3422
+    },
+    {
+      "label": "20–50x",
+      "count": 7244,
+      "pct": 0.7243999999999999
+    },
+    {
+      "label": "50–100x",
+      "count": 990,
+      "pct": 0.099
+    },
+    {
+      "label": "100–500x",
+      "count": 116,
+      "pct": 0.0116
+    },
+    {
+      "label": "500–1000x",
+      "count": 0,
+      "pct": 0
+    },
+    {
+      "label": "1000x+",
+      "count": 0,
+      "pct": 0
+    }
+  ],
+  "paytable": {
+    "H1": [
+      2.6,
+      7.45,
+      23.8
+    ],
+    "H2": [
+      2.23,
+      5.58,
+      17.1
+    ],
+    "H3": [
+      1.86,
+      4.46,
+      12.3
+    ],
+    "H4": [
+      1.49,
+      3.72,
+      10
+    ],
+    "L1": [
+      1.12,
+      2.6,
+      6.32
+    ],
+    "L2": [
+      0.744,
+      2.23,
+      5.21
+    ],
+    "L3": [
+      0.558,
+      1.49,
+      3.72
+    ],
+    "L4": [
+      0.372,
+      1.12,
+      2.98
+    ]
+  },
+  "generatedAt": "2026-11-27T14:35:35.915Z",
+  "elapsedMs": 34068
+}

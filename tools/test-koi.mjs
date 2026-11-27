@@ -24,7 +24,7 @@ const jaguar = gameId === 'templo-jaguar';
 const sweet = gameId === 'fiesta-dulce';
 const panda = gameId === 'panda-zen';
 const clients = {
-  'koi-dorado': { prefix: 'koi', cells: 9 },
+  'koi-dorado': { prefix: 'koi', cells: 15 },
   'frutas-neon': { prefix: 'neon', cells: 9 },
   'dragon-jade': { prefix: 'dragon', cells: 20, active: '.dragon-rung.on' },
   'faraon-dorado': { prefix: 'pharaoh', cells: 30 },
@@ -70,7 +70,9 @@ try {
   if (jaguar) assert.deepEqual(await page.locator('.jaguar-stair strong').allTextContents(), Array.from({ length: 10 }, (_, i) => `×${i + 1}`));
   await page.screenshot({ path: path.join(output, 'desktop.png') });
 
-  for (const [width, height] of [[390, 844], [320, 568], [768, 1024], [844, 390], [1366, 768]]) {
+  const sizes = [[390, 844], [320, 568], [768, 1024], [844, 390], [1366, 768]];
+  if (gameId === 'koi-dorado') sizes.push([1024, 768], [1920, 927]);
+  for (const [width, height] of sizes) {
     await page.setViewportSize({ width, height });
     await delay(200);
     const geometry = await page.evaluate(() => {
@@ -83,6 +85,20 @@ try {
     assert(geometry.board.bottom <= geometry.wrap.bottom + 1, `Board height clipped at ${width}`);
     assert(geometry.spin.bottom <= geometry.machine.bottom, `Spin clipped at ${width}`);
     if (height >= 540) assert(geometry.machine.bottom <= height + 1, `Machine clipped at ${width}`);
+    if (gameId === 'koi-dorado') {
+      const { board, spin } = geometry;
+      const minWidthShare = width <= 420 ? 0.84 : 0.55;
+      const minHeightShare = width >= 1000 ? 0.53 : 0.38;
+      assert(Math.abs(board.x + board.width / 2 - width / 2) < 2, `Koi reels must stay centered at ${width}×${height}`);
+      assert(board.width >= width * minWidthShare && board.height >= height * minHeightShare, `Koi reels (${board.width}×${board.height}) must dominate the layout at ${width}×${height}`);
+      assert(spin.y > board.bottom && spin.bottom <= height, `Koi controls must fit below the reels at ${width}×${height}`);
+      const controlsFit = await page.locator('#turboBtn').evaluate(button => {
+        const auto = button.previousElementSibling;
+        const row = button.parentElement;
+        return auto.id === 'autoBtn' && auto.offsetTop === button.offsetTop && row.scrollWidth <= row.clientWidth;
+      });
+      assert(controlsFit, `Turbo must fit alongside Auto at ${width}×${height}`);
+    }
     if (jaguar) {
       const stairs = await page.locator('.jaguar-stair').evaluateAll(nodes => nodes.map(n => ({ height: n.getBoundingClientRect().height, bottom: n.getBoundingClientRect().bottom })));
       for (let i = 1; i < stairs.length; i++) assert(stairs[i].height > stairs[i - 1].height, 'Stair heights must visibly ascend');
@@ -94,10 +110,15 @@ try {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole('button', { name: 'Pagos, reglas e historial' }).click();
   assert.equal(await page.locator('.pt-row').count(), (pharaoh || sweet) ? 11 : ways ? 10 : 7);
+  if (gameId === 'koi-dorado') assert.equal(await page.locator('.pt-pays').filter({ hasText: '5 en línea' }).count(), 7);
   await page.getByRole('button', { name: 'Reglas', exact: true }).click();
   assert.match(await page.locator('#menuBody').textContent(), (pharaoh || sweet) ? /cualquier posición/ : ways ? /formas de ganar/ : /mismo símbolo/);
   await page.getByRole('button', { name: 'Cerrar', exact: true }).first().click();
-  if (!samurai) await page.getByRole('button', { name: 'Turbo', exact: true }).click();
+  if (!samurai) {
+    const turbo = page.getByRole('button', { name: 'Turbo', exact: true });
+    await turbo.click();
+    if (gameId === 'koi-dorado') assert.equal(await turbo.getAttribute('aria-pressed'), 'true');
+  }
   if (samurai) {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.evaluate(() => {
@@ -118,6 +139,9 @@ try {
   const response = page.waitForResponse(r => r.url().endsWith('/api/spin') && r.request().method() === 'POST');
   await page.getByRole('button', { name: 'Girar', exact: true }).dblclick();
   const round = await (await response).json();
+  if (gameId === 'koi-dorado') {
+    for (const frame of round.result.frames) assert.deepEqual(frame.grid.map(reel => reel.length), [3, 3, 3, 3, 3]);
+  }
   await page.waitForSelector('#spinBtn[aria-busy="false"]', { timeout: 30000 });
   assert.equal(round.balance, Math.round((me.balance - round.bet + round.win) * 10000) / 10000);
   const history = await (await context.request.get(`${origin}/api/history?game=${gameId}`)).json();
@@ -250,6 +274,24 @@ try {
     if (pharaoh || sweet) await page.evaluate(selector => { window.__solarBanks = []; window.__solarFrames = []; });
     await page.getByRole('button', { name: 'Girar', exact: true }).click();
     await page.waitForSelector('#spinBtn[aria-busy="true"]');
+    if (gameId === 'koi-dorado' && kind === 'win') {
+      const line = page.locator('#paylines polyline').first();
+      await line.waitFor({ state: 'attached' });
+      const offsets = await line.evaluate((polyline, positions) => {
+        const cells = [...document.querySelectorAll('#board .cell')];
+        const board = polyline.ownerSVGElement.getBoundingClientRect();
+        const matrix = polyline.getScreenCTM();
+        return positions.map(([col, row], i) => {
+          const cell = cells[col * 3 + row];
+          const center = polyline.points.getItem(i + 1).matrixTransform(matrix);
+          return [
+            center.x - board.x - cell.offsetLeft - cell.offsetWidth / 2,
+            center.y - board.y - cell.offsetTop - cell.offsetHeight / 2,
+          ];
+        });
+      }, fixture.frames[0].wins[0].pos);
+      assert(offsets.every(([x, y]) => Math.abs(x) < 1 && Math.abs(y) < 1), `Winning line must cross the centers of the reel cells (offsets: ${JSON.stringify(offsets)})`);
+    }
     if (!neon && !cascading && (kind === 'respin' || kind === 'full')) {
       await page.waitForSelector('#overlay:not([hidden])');
       await page.locator('#overlay').click();
@@ -381,8 +423,9 @@ try {
   await page.unroute('**/api/spin');
 
   // Another illustrated client must remain functional.
-  await page.goto(`${origin}/play/${panda ? 'koi-dorado' : 'panda-zen'}`);
-  await page.waitForFunction(() => document.querySelectorAll('.cell').length === 9);
+  const alternateId = panda ? 'koi-dorado' : 'panda-zen';
+  await page.goto(`${origin}/play/${alternateId}`);
+  await page.waitForFunction(count => document.querySelectorAll('.cell').length === count, clients[alternateId].cells);
   assert.equal(await page.locator(panda ? '.koi-game' : '.panda-game').count(), 1);
   assert.equal(await page.locator('.tile .g').count(), 0);
   assert.deepEqual(errors, []);

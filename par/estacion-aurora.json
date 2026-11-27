@@ -1,0 +1,104 @@
+{
+  "id": "estacion-aurora",
+  "name": "Estación Aurora",
+  "engine": "lines",
+  "configHash": "48761c5bd5ba0ef31dcae6eb0cee7c5898d75a7c13646854a97108eafb86e496",
+  "scale": 1,
+  "targetRtp": 96.3,
+  "spins": 5000000,
+  "rtp": 96.50289883916773,
+  "ci95": 0.7239278235840845,
+  "sd": 8.2589378792729,
+  "volatility": "Alta",
+  "hitRate": 28.3957,
+  "featureEvery": 52,
+  "featureRtp": 52.86593643997326,
+  "baseRtp": 43.63696239919447,
+  "avgFeatureWin": 27.730477250539366,
+  "avgCascades": 0,
+  "maxWinX": 448.464,
+  "maxWinCap": 1800,
+  "cappedRounds": 0,
+  "distribution": [
+    {
+      "label": "0x",
+      "count": 3580215,
+      "pct": 71.6043
+    },
+    {
+      "label": "0–1x",
+      "count": 790974,
+      "pct": 15.81948
+    },
+    {
+      "label": "1–2x",
+      "count": 310520,
+      "pct": 6.2104
+    },
+    {
+      "label": "2–5x",
+      "count": 167658,
+      "pct": 3.3531600000000004
+    },
+    {
+      "label": "5–10x",
+      "count": 103832,
+      "pct": 2.0766400000000003
+    },
+    {
+      "label": "10–20x",
+      "count": 18479,
+      "pct": 0.36958
+    },
+    {
+      "label": "20–50x",
+      "count": 17920,
+      "pct": 0.3584
+    },
+    {
+      "label": "50–100x",
+      "count": 4078,
+      "pct": 0.08156
+    },
+    {
+      "label": "100–500x",
+      "count": 6324,
+      "pct": 0.12647999999999998
+    },
+    {
+      "label": "500–1000x",
+      "count": 0,
+      "pct": 0
+    },
+    {
+      "label": "1000x+",
+      "count": 0,
+      "pct": 0
+    }
+  ],
+  "paytable": {
+    "W": [
+      91.4
+    ],
+    "H1": [
+      44.7
+    ],
+    "H2": [
+      29.1
+    ],
+    "H3": [
+      14.9
+    ],
+    "L1": [
+      8.12
+    ],
+    "L2": [
+      4.74
+    ],
+    "L3": [
+      2.71
+    ]
+  },
+  "generatedAt": "2026-11-27T14:42:07.126Z",
+  "elapsedMs": 71470
+}

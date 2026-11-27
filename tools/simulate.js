@@ -2,7 +2,7 @@
  * Simulador / hoja PAR.
  *
  *   node tools/simulate.js                      → PAR de todos los juegos (1M giros c/u)
- *   node tools/simulate.js --game koi-dorado     → un juego
+ *   node tools/simulate.js --game koi-dorado     → uno o más juegos (repetir --game)
  *   node tools/simulate.js --spins 5000000
  *   node tools/simulate.js --calibrate           → ajusta la escala de pagos al RTP objetivo y luego hace la PAR
  *
@@ -26,14 +26,20 @@ async function main() {
   const opt = (name, def) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : def; };
   const calibrate = args.includes('--calibrate');
   const spins = Number(opt('--spins', 1_000_000));
-  const only = opt('--game', null);
+  const only = new Set(args.flatMap((arg, i) => arg === '--game' ? [args[i + 1]] : []));
 
   const { CATALOG } = await import('../server/games/catalog.js');
   const { buildGame, readCalibration, CALIBRATION_FILE, PAR_DIR } = await import('../server/games/index.js');
   const cal = readCalibration();
-  if (only === 'hipodromo-royale') { console.error('Usa node tools/test-racing.mjs para validar el modelo de carreras. Las cuotas se derivan de probabilidades exactas.'); process.exit(1); }
-  const selected = CATALOG.filter((d) => !only || d.id === only);
-  if (!selected.length) { console.error('Juego no encontrado:', only); process.exit(1); }
+  if (only.has('hipodromo-royale')) { console.error('Usa node tools/test-racing.mjs para validar el modelo de carreras. Las cuotas se derivan de probabilidades exactas.'); process.exit(1); }
+  const knownIds = new Set(CATALOG.map(({ id }) => id));
+  const unknown = [...only].filter((id) => !knownIds.has(id));
+  if (unknown.length) { console.error('Juego no encontrado:', unknown.map((id) => id ?? '(falta id)').join(', ')); process.exit(1); }
+  if (!Number.isSafeInteger(spins) || spins <= 0) {
+    console.error('--spins requiere un entero positivo');
+    process.exit(1);
+  }
+  const selected = CATALOG.filter((d) => !only.size || only.has(d.id));
   for (const d of selected.filter((d) => d.engine === 'roulette')) {
     const { par } = buildGame(d);
     console.log(`✓ ${d.id} · PAR exacta, calculada por tipo de apuesta`);
@@ -87,9 +93,8 @@ async function worker() {
     const def = CATALOG.find((d) => d.id === id);
     let s = scale;
     if (calibrate) {
-      const calSpins = spins;
       for (let it = 0; it < 5; it++) {
-        const st = run(buildGame(def, s), calSpins, sha256(`cal|${id}`));
+        const st = run(buildGame(def, s), spins, sha256(`cal|${id}`));
         const rtp = (st.total / st.n) * 100;
         parentPort.postMessage({ log: `  · ${id} iter ${it + 1}: escala ${s.toFixed(5)} → RTP ${rtp.toFixed(3)}%` });
         if (Math.abs(rtp - target) < 0.05) break;
