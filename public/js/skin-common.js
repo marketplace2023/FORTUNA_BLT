@@ -30,8 +30,7 @@ export function createReelPresentation({ tile, prefix, symbols, speed = 460, pad
   return { rollOut, stopReel, dispose, resize };
 }
 
-export function soundButton(on) {
-  const b = document.querySelector('#soundBtn');
-  b.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="${on ? 'M15 8q5 4 0 8M18 5q8 7 0 14' : 'm16 9 6 6m0-6-6 6'}"/></svg>`;
-  b.setAttribute('aria-pressed', String(on));
+export function soundButton(on, button = document.querySelector('#soundBtn')) {
+  button.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="${on ? 'M15 8q5 4 0 8M18 5q8 7 0 14' : 'm16 9 6 6m0-6-6 6'}"/></svg>`;
+  button.setAttribute('aria-pressed', String(on));
 }

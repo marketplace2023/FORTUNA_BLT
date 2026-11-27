@@ -102,6 +102,17 @@ h1, h2 { margin: 0; }
   text-transform: uppercase;
 }
 #sound, #cinema { justify-self: end; }
+#sound { width: 36px; padding-inline: 0; display: grid; place-items: center; }
+#sound[aria-pressed="true"] { color: var(--gold); }
+#sound svg {
+  width: 18px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 .viewport {
   position: relative;
   isolation: isolate;
@@ -441,7 +452,6 @@ h1, h2 { margin: 0; }
   #mode { max-width: 9ch; }
   .track-id { display: grid; }
   #conditions { font-size: 9px; }
-  #sound { font-size: 10px; padding-inline: 2px; }
   #raceState { font-size: 9px; letter-spacing: .06em; }
   .viewport { grid-template-rows: minmax(0, 1fr) 9px auto; }
   .scene { grid-area: 1 / 1 / 3; }
