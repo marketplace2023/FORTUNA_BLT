@@ -1,6 +1,7 @@
 import { api, el, money } from './api.js';
 import { RaceTrack } from './race-track.js';
 import { Sound } from './sound.js';
+import { soundButton } from './skin-common.js';
 const $ = s => document.querySelector(s), ID = 'hipodromo-royale';
 const state = { card: null, selected: null, me: null, busy: false, result: null, stake: 1, betType: 'win', order: '' };
 const betTypes = { win: 'Ganador', place: 'Place', show: 'Show' };
@@ -108,7 +109,11 @@ async function newCard() {
   } catch (e) { status(e.message); }
   finally { state.busy = false; controls(); updateExpiry(); }
 }
-function setSound() { $('#sound').textContent = Sound.on ? 'Sonido activado' : 'Sonido apagado'; $('#sound').setAttribute('aria-pressed', String(Sound.on)); $('#sound').setAttribute('aria-label', Sound.on ? 'Desactivar sonido' : 'Activar sonido'); }
+function setSound() {
+  const button = $('#sound');
+  soundButton(Sound.on, button);
+  button.title = Sound.on ? 'Silenciar sonido' : 'Activar sonido';
+}
 async function present(receipt, animate = true) {
   const result = receipt.result;
   state.busy = true; state.result = receipt; state.card = { ...result.card, bets: [receipt.bet], expiresAt: 0 };
