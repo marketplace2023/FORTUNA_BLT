@@ -5,13 +5,17 @@ import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
 import { chromium } from 'playwright';
-import { RACING_DEF, buildRacing, raceCard } from '../server/games/racing.js';
+import { RACING_DEF, RACING_PLACES, buildRacing, raceCard } from '../server/games/racing.js';
 import { Drbg } from '../server/rng.js';
 import { canonical, sha256 } from '../server/util.js';
 import { Store } from '../server/store.js';
 import { loadGames } from '../server/games/index.js';
 
 const root = path.resolve(import.meta.dirname, '..'), game = buildRacing(RACING_DEF);
+const legacy = buildRacing({ ...RACING_DEF, model: { ...RACING_DEF.model, version: 1 } });
+assert.equal(legacy.configHash, '6298daa131754e671f4c51dfc3f48881e7099a14b54008e2b92c76855eb65078');
+const legacyResult = legacy.play(new Drbg(sha256('legacy-race')), { offerSeed: sha256('legacy-card'), horseId: 4 });
+assert.equal(sha256(canonical(legacyResult)), '214e64d4b377ab37ae86849df0371cd47983b03751bb15a7cca4c2c5facedf03');
 let minRtp = 100, maxOdds = 0;
 for (let i = 0; i < 500; i++) {
   const offerSeed = sha256(`race-card-${i}`), card = raceCard(RACING_DEF, offerSeed);
@@ -22,17 +26,37 @@ for (let i = 0; i < 500; i++) {
     minRtp = Math.min(minRtp,h.returnPct); maxOdds = Math.max(maxOdds,h.odds);
   }
   const input = { offerSeed, horseId: i % 8 + 1 };
-  const r = game.play(new Drbg(sha256(`race-${i}`)),input);
-  assert.deepEqual(r, game.play(new Drbg(sha256(`race-${i}`)),input));
+  const seed = sha256(`race-${i}`), r = game.play(new Drbg(seed), input);
+  assert.deepEqual(r, game.play(new Drbg(seed), input));
   assert.equal(new Set(r.order).size,8);
   assert.equal(r.win, r.order[0] === input.horseId ? card.horses[input.horseId-1].odds : 0);
   assert(r.win <= RACING_DEF.maxWin);
   assert.deepEqual([...r.runners].sort((a,b)=>a.finishMs-b.finishMs).map(h=>h.id),r.order);
+  for (const [betType, places] of Object.entries(RACING_PLACES)) {
+    let probabilitySum = 0;
+    for (const { markets } of card.horses) {
+      const { probability, oddsCents } = markets[betType];
+      assert.equal(oddsCents, Math.floor(.96 / probability * 100 + 1e-9));
+      assert(oddsCents >= 100 && probability * oddsCents <= 96 + 1e-10);
+      probabilitySum += probability;
+    }
+    assert(Math.abs(probabilitySum - places) < 1e-12);
+    const result = game.play(new Drbg(seed), { ...input, betType });
+    assert.equal(result.betType, betType);
+    assert.deepEqual(result.order, r.order);
+    assert.equal(result.win, r.order.indexOf(input.horseId) < places ? card.horses[input.horseId - 1].markets[betType].oddsCents / 100 : 0);
+  }
 }
-// Sampling validates that the implemented winner draw follows the published probabilities.
-const offerSeed = sha256('distribution-card'), card = raceCard(RACING_DEF,offerSeed), counts=Array(8).fill(0), rng=new Drbg(sha256('distribution-outcomes'));
-for (let i=0;i<30000;i++) counts[game.play(rng,{offerSeed,horseId:1}).order[0]-1]++;
-card.horses.forEach((h,i)=>assert(Math.abs(counts[i]/30000-h.probability)<.012));
+// The arrival order is independent of the selected market.
+const offerSeed = sha256('distribution-card'), card = raceCard(RACING_DEF, offerSeed);
+const counts = Array.from({ length: 3 }, () => Array(8).fill(0)), rng = new Drbg(sha256('distribution-outcomes'));
+for (let i = 0; i < 30000; i++) {
+  const { order } = game.play(rng, { offerSeed, horseId: 1 });
+  counts.forEach((bucket, rank) => order.slice(0, rank + 1).forEach(id => bucket[id - 1]++));
+}
+for (const [betType, places] of Object.entries(RACING_PLACES)) {
+  card.horses.forEach((horse, i) => assert(Math.abs(counts[places - 1][i] / 30000 - horse.markets[betType].probability) < .012));
+}
 console.log(`PASS model: deterministic replay, 500 programs, exact probabilities and quotes, 30,000 sampled races. Sample minimum RTP ${minRtp.toFixed(4)}%, max quote ${maxOdds}.`);
 
 const dir=await mkdtemp(path.join(tmpdir(),'vlt-racing-')), origin='http://127.0.0.1:4319', output=path.join(root,'output/racing-qa');
@@ -50,23 +74,53 @@ try {
   await page.goto(`${origin}/play/hipodromo-royale`);await page.waitForSelector('.horse');
   assert.equal(await page.locator('.horse').count(),8);
   await page.screenshot({path:path.join(output,'desktop.png'),fullPage:true});
-  for(const [width,height] of [[390,844],[320,568],[768,1024],[844,390],[1366,768]]) {
+  assert.equal(await page.locator('select').count(), 0);
+  for(const [width,height] of [[390,844],[320,568],[768,1024],[844,390],[568,320],[480,320],[1366,768]]) {
     await page.setViewportSize({width,height});await delay(150);
-    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`No overflow at ${width}`);
+    const fits = () => page.evaluate(() => {
+      const viewport = document.querySelector('.viewport').getBoundingClientRect();
+      const within = n => {
+        const r = n.getBoundingClientRect();
+        return r.width && r.height && r.left >= 0 && r.right <= innerWidth + 1 && r.top >= viewport.top && r.bottom <= viewport.bottom;
+      };
+      return document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight &&
+        [...document.querySelectorAll('.panel')].filter(n => n.getClientRects().length).every(within);
+    });
+    assert(await fits(), `No overflow at ${width}×${height}`);
     assert(await page.locator('#track').evaluate(n=>n.width>0&&n.height>0));
     await page.screenshot({path:path.join(output,`${width}x${height}.png`),fullPage:true});
+    if (await page.locator('#showTicket').isVisible()) {
+      await page.locator('#showTicket').click();
+      assert(await fits(), `Ticket fits at ${width}×${height}`);
+      await page.screenshot({path:path.join(output,`ticket-${width}x${height}.png`),fullPage:true});
+      await page.locator('#showHorses').click();
+    }
   }
   await page.getByRole('button',{name:'Ver ficha de Relámpago',exact:true}).click();
-  assert.equal(await page.locator('#horse-1-details meter').count(),6);
+  assert.equal(await page.locator('#horseDetails meter').count(),6);
+  await page.getByRole('button',{name:'Cerrar ficha',exact:true}).click();
   await page.getByRole('button',{name:'Elegir Relámpago',exact:true}).click();
+  const originalOdds = await page.locator('#ticketOdds').textContent();
+  await page.locator('[data-bet-type=place]').click();
+  assert.notEqual(await page.locator('#ticketOdds').textContent(), originalOdds);
+  await page.locator('#stakeUp').click();
+  assert.equal(await page.locator('#stake').textContent(), '2,00');
+  await page.locator('#stakeDown').click();
+  assert.equal(await page.locator('#stake').textContent(), '1,00');
+  const format = new Intl.NumberFormat('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const placeOdds = Number((await page.locator('#ticketOdds').textContent()).slice(1));
+  assert.equal(await page.locator('#potential').textContent(), format.format(placeOdds));
+  assert.equal(await page.locator('#profit').textContent(), format.format(placeOdds - 1));
   await page.getByRole('button',{name:'Jugar demo · 2.000 créditos',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('#balance').textContent.includes('000'));
   await page.emulateMedia({reducedMotion:'reduce'});
   const before=(await (await context.request.get(`${origin}/api/me`)).json()).balance;
   const response=page.waitForResponse(r=>r.url().endsWith('/api/racing/bet')&&r.request().method()==='POST');
-  await page.getByRole('button',{name:'Confirmar apuesta →',exact:true}).dblclick();
+  await page.getByRole('button',{name:'Iniciar carrera',exact:true}).dblclick();
   const receipt=await (await response).json();await page.waitForSelector('#result:not([hidden])');
   assert(receipt.result&&receipt.roundId,JSON.stringify(receipt));
+  assert.equal(receipt.result.betType, 'place');
+  assert.equal(receipt.result.card.horses[0].markets.place.oddsCents / 100, placeOdds);
   assert.equal(receipt.balance,Math.round((before-receipt.bet+receipt.win)*10000)/10000);
   let history=await (await context.request.get(`${origin}/api/history?game=hipodromo-royale`)).json();assert.equal(history.length,1);
   assert.deepEqual(await page.locator('#runningOrder .runner-number').allTextContents(),receipt.result.order.map(String));
@@ -81,10 +135,13 @@ try {
   assert.equal((await post('/api/racing/bet',{token:q.token+'x',bet:1,horseId:1})).status(),409);
   assert.equal((await post('/api/racing/bet',{token:q.token,bet:-1,horseId:1})).status(),400);
   assert.equal((await post('/api/racing/bet',{token:q.token,bet:1,horseId:9})).status(),400);
+  assert.equal((await post('/api/racing/bet',{token:q.token,bet:1,horseId:1,betType:'toString'})).status(),400);
   assert.equal((await post('/api/spin',{gameId:'hipodromo-royale',bet:1})).status(),400);
-  const payload={token:q.token,horseId:2,bet:.2};
+  const payload={token:q.token,horseId:2,bet:.2,betType:'show'};
   const duplicates=await Promise.all([post('/api/racing/bet',payload),post('/api/racing/bet',payload)]);
   const packets=await Promise.all(duplicates.map(r=>r.json()));assert.equal(packets[0].roundId,packets[1].roundId);
+  assert.equal(packets[0].result.betType, 'show');
+  assert.equal((await post('/api/racing/bet',{...payload,betType:'place'})).status(),409);
   assert.equal((await post('/api/racing/bet',{...payload,horseId:3})).status(),409);
   const other=await browser.newContext();await other.request.post(`${origin}/api/auth/demo`,{data:{}});
   assert.equal((await other.request.get(`${origin}/api/racing/rounds/${receipt.roundId}`)).status(),404);await other.close();
@@ -92,21 +149,21 @@ try {
   await page.getByRole('button',{name:'Elegir Bruma Real',exact:true}).click();
   let intercepted=0;
   await page.route('**/api/racing/bet',async route=>{intercepted++;if(intercepted===1){await route.fetch();await route.abort('connectionfailed');}else await route.continue();});
-  await page.getByRole('button',{name:'Confirmar apuesta →',exact:true}).click();await page.waitForSelector('#result:not([hidden])');
+  await page.getByRole('button',{name:'Iniciar carrera',exact:true}).click();await page.waitForSelector('#result:not([hidden])');
   assert.equal(intercepted,2);await page.unroute('**/api/racing/bet');
   history=await (await context.request.get(`${origin}/api/history?game=hipodromo-royale`)).json();assert.equal(history.length,3);
   // Keep the unresolved token through repeated network errors, then recover on reload.
   await page.getByRole('button',{name:'Preparar otra carrera →',exact:true}).click();await page.waitForSelector('#result[hidden]',{state:'attached'});
   await page.getByRole('button',{name:'Elegir Oro Negro',exact:true}).click();
   await page.route('**/api/racing/bet',async route=>{await route.fetch();await route.abort('connectionfailed');});
-  await page.getByRole('button',{name:'Confirmar apuesta →',exact:true}).click();await page.waitForFunction(()=>document.querySelector('#ticketStatus').textContent.includes('Recarga'));
+  await page.getByRole('button',{name:'Iniciar carrera',exact:true}).click();await page.waitForFunction(()=>document.querySelector('#ticketStatus').textContent.includes('Recarga'));
   await delay(1200);assert(await page.locator('#bet').isDisabled());assert(await page.locator('#refresh').isDisabled());
   await page.unroute('**/api/racing/bet');await page.reload();await page.waitForSelector('#result:not([hidden])');
   assert.equal((await (await context.request.get(`${origin}/api/history?game=hipodromo-royale`)).json()).length,4);
   // Normal motion: skip the actual animation without creating a second wager.
   await page.getByRole('button',{name:'Preparar otra carrera →',exact:true}).click();await page.waitForSelector('#result[hidden]',{state:'attached'});
   await page.emulateMedia({reducedMotion:'no-preference'});await page.getByRole('button',{name:'Elegir Esmeralda',exact:true}).click();
-  await page.getByRole('button',{name:'Confirmar apuesta →',exact:true}).click();await page.waitForSelector('#skip:not([hidden])');
+  await page.getByRole('button',{name:'Iniciar carrera',exact:true}).click();await page.waitForSelector('#skip:not([hidden])');
   await delay(1200);await page.screenshot({path:path.join(output,'racing.png'),fullPage:true});
   await page.getByRole('button',{name:'Ver llegada',exact:true}).click();await page.waitForSelector('#result:not([hidden])');
   // Deterministic win/loss presentation from real engine fixtures, without writing them to the ledger.
@@ -119,13 +176,17 @@ try {
     await fixturePage.route('**/api/racing/bet', async route=>{
       const body=route.request().postDataJSON(), offer=JSON.parse(Buffer.from(body.token.split('.')[0],'base64url').toString());
       let result;
-      for(let i=0;i<1000;i++){result=game.play(new Drbg(sha256(`ui-${i}`)),{offerSeed:offer.offerSeed,horseId:body.horseId});if((result.win>0)===won)break;}
+      for(let i=0;i<1000;i++){
+        result=game.play(new Drbg(sha256(`ui-${i}`)),{offerSeed:offer.offerSeed,horseId:body.horseId,betType:body.betType});
+        if (won ? result.order.indexOf(body.horseId) === 2 : result.win === 0) break;
+      }
       assert.equal(result.win>0,won);expected=result.win*body.bet;
       await route.fulfill({json:{roundId:'UI-FIXTURE',result,win:expected,bet:body.bet,balance:2000-body.bet+expected}});
     });
     await fixturePage.getByRole('button',{name:'Elegir Relámpago',exact:true}).click();
-    await fixturePage.getByRole('button',{name:'Confirmar apuesta →',exact:true}).click();await fixturePage.waitForSelector('#result:not([hidden])');
-    assert.equal((await fixturePage.locator('#result').textContent()).includes('TU CABALLO GANÓ'),won);
+    await fixturePage.locator('[data-bet-type=show]').click();
+    await fixturePage.getByRole('button',{name:'Iniciar carrera',exact:true}).click();await fixturePage.waitForSelector('#result:not([hidden])');
+    assert.equal((await fixturePage.locator('#result').textContent()).includes('Apuesta acertada'),won);
     assert((await fixturePage.locator('#result').textContent()).includes(new Intl.NumberFormat('es',{minimumFractionDigits:2,maximumFractionDigits:2}).format(expected)));
     await fixturePage.screenshot({path:path.join(output,won?'winning-ticket.png':'losing-ticket.png'),fullPage:true});
     await fixturePage.unroute('**/api/racing/bet');

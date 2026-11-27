@@ -39,7 +39,7 @@ Pruebas: `node tools/test-zoo.mjs`. [Reglas, modelo y prompts](docs/fortunazoo.m
 
 ## Hipódromo Royale
 
-`http://localhost:3000/play/hipodromo-royale`: ocho caballos, apuesta a ganador y una carrera individual por apuesta. Velocidad, resistencia, salida, jinete, forma y adaptación a la pista determinan las probabilidades; las cuotas fijas corresponden a un retorno teórico inferior o igual al 96% por redondeo. No usa la PAR ni la calibración de las tragamonedas.
+`http://localhost:3000/play/hipodromo-royale`: ocho caballos, apuestas Ganador, Place y Show y una carrera individual por apuesta. Velocidad, resistencia, salida, jinete, forma y adaptación a la pista determinan las probabilidades. Las cuotas fijas corresponden a un retorno teórico de hasta el 96% por redondeo. El hipódromo emplea su propio modelo de probabilidades.
 
 Incluye pista 3D con cámaras de retransmisión (Canvas alternativo en dispositivos sin WebGL), boleto con retorno total y beneficio neto, historial, auditoría y protección contra cargos duplicados. [Modelo, API y arte](docs/hipodromo-royale.md).
 

@@ -9,7 +9,7 @@ import { CATALOG, BETS } from './games/catalog.js';
 import { normalizeRouletteBets } from './engine/roulette.js';
 import { Drbg, newSeed } from './rng.js';
 import { UNIT, toUnits, toCredits, canonical, sha256, randomId } from './util.js';
-import { RACING_ID, raceCard } from './games/racing.js';
+import { RACING_ID, RACING_PLACES, raceCard } from './games/racing.js';
 
 const PORT = Number(process.env.PORT || 3000);
 const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, 'data');
@@ -295,9 +295,11 @@ route('POST', '/api/racing/bet', (req, _params, body) => {
   if (typeof token !== 'string' || token.length > 2048) fail(400, 'Programa inválido');
   const offerId = sha256(token);
   const betC = Number(body.bet), horseId = Number(body.horseId);
+  const betType = body.betType === undefined ? 'win' : body.betType;
+  if (typeof betType !== 'string' || !Object.hasOwn(RACING_PLACES, betType)) fail(400, 'Tipo de apuesta inválido');
   const previous = store.raceOffers.get(`${p.id}|${offerId}`);
   if (previous) {
-    if (betC !== toCredits(previous.bet) || horseId !== previous.input.horseId) fail(409, 'Este programa ya tiene una apuesta registrada');
+    if (betC !== toCredits(previous.bet) || horseId !== previous.input.horseId || betType !== (previous.input.betType ?? 'win')) fail(409, 'Este programa ya tiene una apuesta registrada');
     return raceReceipt(previous);
   }
   const [data, signature, extra] = token.split('.');
@@ -312,7 +314,7 @@ route('POST', '/api/racing/bet', (req, _params, body) => {
   if (typeof body.bet !== 'number' || !BETS.includes(betC) || betC < s.minBet || betC > s.maxBet) fail(400, 'Apuesta no permitida');
   const bet = toUnits(betC), before = store.balance(p.id);
   if (before < bet) fail(402, 'Saldo insuficiente');
-  const seed = newSeed(), input = { offerSeed: offer.offerSeed, offerId, horseId };
+  const seed = newSeed(), input = { offerSeed: offer.offerSeed, offerId, horseId, betType };
   const result = g.play(new Drbg(seed), input);
   const win = Math.floor(result.win * bet + 1e-6);
   const e = store.append({ type: 'round', roundId: 'H' + Date.now().toString(36).toUpperCase() + randomId(3).toUpperCase(), playerId: p.id, demo: p.demo || undefined, gameId: RACING_ID, cfg: g.configHash, bet, win, bal: before - bet + win, seed, input, rh: sha256(canonical(result)) });

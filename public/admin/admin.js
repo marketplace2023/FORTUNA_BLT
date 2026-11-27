@@ -225,12 +225,15 @@ function framesOf(res, game) {
     )];
   }
   if (res.engine === 'race') {
+    const betType = res.betType ?? 'win';
+    const typeLabel = { win: 'Ganador', place: 'Place', show: 'Show' }[betType];
     return el('div', { class: 'note' },
       el('strong', {}, `${res.card.distance} m · Pista ${res.card.surface}`),
-      el('p', {}, `Caballo elegido: ${res.card.horses.find(h => h.id === res.selected).name}`),
+      el('p', {}, `${typeLabel} · Caballo elegido: ${res.card.horses.find(h => h.id === res.selected).name}`),
       el('ol', {}, res.order.map(id => {
         const h = res.card.horses.find(h => h.id === id);
-        return el('li', {}, `#${id} ${h.name} · cuota ${h.odds.toFixed(2)} · ${(res.runners.find(r => r.id === id).finishMs / 1000).toFixed(3)} s`);
+        const odds = (h.markets?.[betType].oddsCents ?? h.oddsCents) / 100;
+        return el('li', {}, `#${id} ${h.name} · cuota ${odds.toFixed(2)} · ${(res.runners.find(r => r.id === id).finishMs / 1000).toFixed(3)} s`);
       })),
     );
   }

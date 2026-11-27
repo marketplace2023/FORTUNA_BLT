@@ -1,16 +1,16 @@
 # Hipódromo Royale
 
-Carreras virtuales individuales de ocho participantes y apuesta a ganador. Cada apuesta inicia su propia carrera; no hay rondas compartidas ni datos de carreras reales. La referencia aportada orientó la presentación deportiva, los dorsales y la llegada. Se utilizó arte original, sin copiar marca, interfaz ni vídeos del proveedor de la referencia.
+Carreras virtuales individuales de ocho participantes con apuestas Ganador, Place y Show. Cada apuesta inicia su propia carrera. La referencia aportada orientó la presentación deportiva, los dorsales y la llegada.
 
 ## Experiencia
 
-El programa muestra distancia, pista, ocho caballos, probabilidad y cuota fija. Cada ficha abre seis atributos: velocidad, resistencia, salida, jinete, forma del día y adaptación. El boleto muestra apuesta, cuota, retorno total y beneficio neto si gana. El retorno incluye la apuesta.
+La pista ocupa el espacio disponible, con el programa a la izquierda y el boleto a la derecha. En pantallas estrechas, los botones Caballos y Jugada alternan los paneles. Cada ficha muestra la probabilidad para el tipo de apuesta elegido y seis atributos: velocidad, resistencia, salida, jinete, forma del día y adaptación. El boleto permite cambiar el importe con + y − y muestra la cuota, el retorno y la ganancia potencial. El retorno incluye la apuesta.
 
 Al confirmar, el servidor registra y liquida la ronda antes de la animación. La salida lleva una breve cuenta atrás individual; la carrera se reproduce acelerada y puede omitirse sin cambiar el premio. El movimiento reducido muestra directamente la llegada. Hay resultados, clasificación, historial, verificación y recuperación tras recargar.
 
 La presentación principal utiliza WebGL/Three.js con ocho caballos animados por esqueleto, distintas capas, jinetes originales, mantillas numeradas, barandillas, sombras y gradas en 3D. La realización automática alterna salida, seguimiento lateral, frontal y meta. También permite elegir cámara y ampliar la retransmisión. El trazado representa una recta de la carrera; las distancias no se reproducen a escala real. En dispositivos sin WebGL o si falla el modelo se utiliza la vista Canvas anterior. No se reproduce un vídeo como sustituto del resultado.
 
-## Modelo de probabilidades v1
+## Modelo de probabilidades
 
 El programa sortea una distancia (1.200, 1.600 o 2.000 metros), una pista (seca, húmeda o pesada) y una forma del día entre 65 y 95 para cada caballo. El resto de sus cualidades y preferencias son propias de cada participante y están versionadas.
 
@@ -22,9 +22,11 @@ Para 1.200 y 1.600 metros se pondera velocidad 40%, resistencia 16%, salida 12%,
 
 La probabilidad exacta de victoria es `peso / suma de pesos`. El servidor sortea el ganador sobre esos pesos enteros y después extrae las otras posiciones sin reemplazo. El importe, la cuenta, el saldo y el historial no intervienen en la selección. La animación no decide ni cambia la llegada.
 
+Ganador cubre el primer puesto. Place suma las probabilidades de quedar primero o segundo. Show añade la probabilidad de quedar tercero. El modelo calcula esas probabilidades sumando las secuencias de llegada posibles según los pesos que quedan en cada extracción. Los recibos archivados con el modelo v1 conservan el cálculo y la verificación originales.
+
 `cuota = floor(0,96 / probabilidad × 100) / 100`
 
-La cuota queda fijada en el programa firmado y no se acepta una cuota enviada por el navegador. Su redondeo implica que el retorno teórico de una elección es ligeramente inferior o igual al 96%; no es una garantía de retorno personal. En los 500 programas de la prueba, el mínimo observado fue 95,7855% y la cuota máxima observada 17,97. Son observaciones de esa muestra, no los extremos absolutos del modelo.
+El programa firmado fija la cuota. El redondeo deja el retorno teórico de cada elección en el 96% o por debajo. En los 500 programas de la prueba, Ganador registró un retorno teórico mínimo de 95,7855% y una cuota máxima de 17,97.
 
 El dinero se registra como enteros de 1/10.000 de crédito; los pagos se redondean hacia abajo a esa unidad. El formato de pantalla usa dos decimales. La distribución y las cuotas tienen una base matemática explícita, pero esto no constituye certificación independiente.
 
@@ -32,8 +34,8 @@ El dinero se registra como enteros de 1/10.000 de crédito; los pagos se redonde
 
 - Se añade `hipodromo-royale` al catálogo con motor `race`, conservando las diez matemáticas existentes.
 - `GET /api/racing/card` entrega un programa firmado por HMAC con vigencia de cinco minutos, condiciones, cuotas y apuestas permitidas. Cambiar de programa no cobra.
-- `POST /api/racing/bet` recibe `{ token, horseId, bet }`, exige sesión válida, juego habilitado, caballo válido, apuesta permitida y saldo suficiente. Recalcula el programa y sus cuotas en el servidor.
-- Un token solo puede liquidarse una vez por jugador. Repetirlo con la misma selección e importe devuelve el recibo existente; con otros datos responde 409. La consulta de duplicados precede a la caducidad, permitiendo recuperar una ronda ya liquidada incluso tras reiniciar el servidor.
+- `POST /api/racing/bet` recibe `{ token, horseId, bet, betType }`. Los valores de `betType` son `win`, `place` y `show`. Si se omite, se usa `win` para admitir las solicitudes anteriores. El servidor valida la sesión, el estado del juego, el caballo, la modalidad, el importe y el saldo, y recalcula las cuotas.
+- Un token solo puede liquidarse una vez por jugador. Repetirlo con el mismo caballo, modalidad e importe devuelve el recibo original. Si algún dato cambia, devuelve 409. La consulta de duplicados precede a la caducidad, así que se puede recuperar una ronda liquidada incluso tras reiniciar el servidor.
 - El secreto de firma es efímero: al reiniciar vencen los programas no apostados. Los recibos registrados siguen recuperables con su token, porque su identificador se conserva en el libro.
 - El cobro y el abono forman un solo asiento `round`. El índice de programas utilizados se reconstruye desde el libro al arrancar.
 - Un fallo de red se reintenta con el mismo token. Si ambas respuestas se pierden, el navegador conserva la solicitud y bloquea nuevas apuestas hasta recuperarla al recargar. El saldo se reconcilia con `/api/me`.
@@ -49,7 +51,7 @@ Motor: `server/games/racing.js`. API: `server/index.js`. Cliente: `public/racing
 
 La integración cubre autenticación, tipos de apuesta inválidos, firma alterada, cargo único, solicitudes simultáneas, recuperación de respuesta perdida y de recarga, aislamiento entre jugadores, llegada exacta, movimiento reducido, omisión de animación, boletos ganadores y perdedores, detalle de administrador, reconstrucción del índice y auditoría independiente. Los boletos visuales deterministas se interceptan solo en el navegador de pruebas; no hay controles de resultados forzados en producción.
 
-Se inspeccionan 320×568, 390×844, 768×1024, 844×390, 1366×768 y 1440×1000. Capturas en `output/racing-qa/`. La regresión de Koi se ejecuta con `node tools/test-koi.mjs koi-dorado` en un libro temporal distinto.
+Se inspeccionan 320×568, 390×844, 480×320, 568×320, 768×1024, 844×390, 1366×768 y 1440×1000. Capturas en `output/racing-qa/`. La regresión de Koi se ejecuta con `node tools/test-koi.mjs koi-dorado` en un libro temporal distinto.
 
 `tools/simulate.js` continúa simulando y calibrando únicamente tragamonedas; el hipódromo utiliza sus probabilidades exactas y sus propias pruebas. No se atribuye una PAR de tragamonedas a las carreras.
 

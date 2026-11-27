@@ -2,13 +2,14 @@ import { Drbg } from '../rng.js';
 import { canonical, sha256 } from '../util.js';
 
 export const RACING_ID = 'hipodromo-royale';
+export const RACING_PLACES = Object.freeze({ win: 1, place: 2, show: 3 });
 export const RACING_DEF = {
-  id: RACING_ID, name: 'Hipódromo Royale', engine: 'race', tag: '8 caballos · A ganador',
+  id: RACING_ID, name: 'Hipódromo Royale', engine: 'race', tag: '8 caballos · Ganador, Place y Show',
   blurb: 'Elige tu caballo. Estudia la pista, compara sus cualidades y vive tu propia carrera.',
   theme: { bg1: '#101f1b', bg2: '#284437', accent: '#d7b77b', ink: '#f5efdf' },
   symbols: { H1: { g: '', n: 'Carrera', t: 'high' } }, maxWin: 100, targetRtp: 96,
   model: {
-    version: 1, returnBps: 9600, distances: [1200, 1600, 2000], surfaces: ['Seca', 'Húmeda', 'Pesada'],
+    version: 2, returnBps: 9600, distances: [1200, 1600, 2000], surfaces: ['Seca', 'Húmeda', 'Pesada'],
     horses: [
       { id: 1, name: 'Relámpago', color: '#d8483e', speed: 94, stamina: 68, start: 92, jockey: 78, ground: 0, distance: 1200 },
       { id: 2, name: 'Bruma Real', color: '#527dd8', speed: 80, stamina: 91, start: 70, jockey: 90, ground: 2, distance: 2000 },
@@ -24,6 +25,26 @@ export const RACING_DEF = {
     visual: { baseMs: 70000, per400Ms: 23000, startRange: 1200, gapMin: 160, gapRange: 500, paceAmplitude: 0.055 },
   },
 };
+
+function placementMarkets(horse, horses, total, returnBps) {
+  let second = 0, third = 0;
+  for (const first of horses) {
+    if (first === horse) continue;
+    const firstProbability = first.weight / total;
+    const afterFirst = total - first.weight;
+    second += firstProbability * horse.weight / afterFirst;
+    for (const next of horses) {
+      if (next === first || next === horse) continue;
+      third += firstProbability * (next.weight / afterFirst) * (horse.weight / (afterFirst - next.weight));
+    }
+  }
+  const market = probability => ({ probability, oddsCents: Math.floor(returnBps / (100 * probability)) });
+  return {
+    win: { probability: horse.probability, oddsCents: horse.oddsCents },
+    place: market(horse.probability + second),
+    show: market(horse.probability + second + third),
+  };
+}
 
 export function raceCard(def, seed) {
   const m = def.model, rng = new Drbg(seed);
@@ -44,6 +65,7 @@ export function raceCard(def, seed) {
     h.oddsCents = Math.floor(m.returnBps * total / (100 * h.weight));
     h.odds = h.oddsCents / 100;
     h.returnPct = h.probability * h.odds * 100;
+    if (m.version >= 2) h.markets = placementMarkets(h, horses, total, m.returnBps);
   }
   return { distance, surface: m.surfaces[surface], horses };
 }
@@ -56,6 +78,8 @@ export function buildRacing(def) {
     const card = raceCard(def, input.offerSeed);
     const chosen = card.horses.find(h => h.id === input.horseId);
     if (!chosen) throw Error('Caballo inválido');
+    const betType = input.betType === undefined ? 'win' : input.betType;
+    if (typeof betType !== 'string' || !Object.hasOwn(RACING_PLACES, betType) || (!chosen.markets && betType !== 'win')) throw Error('Tipo de apuesta inválido');
     // Plackett–Luce: first-place probability is exactly weight / total.
     const remaining = [...card.horses], order = [];
     while (remaining.length) {
@@ -71,7 +95,9 @@ export function buildRacing(def) {
       const h = card.horses.find(h => h.id === id);
       return { id, finishMs: finish, pace: (h.start - h.stamina) / 100 * v.paceAmplitude, surge: (rng.int(101) - 50) / 100 * v.paceAmplitude };
     });
-    return { engine: 'race', card, selected: chosen.id, order, runners, win: order[0] === chosen.id ? chosen.odds : 0 };
+    const odds = chosen.markets ? chosen.markets[betType].oddsCents / 100 : chosen.odds;
+    const win = order.indexOf(chosen.id) < RACING_PLACES[betType] ? odds : 0;
+    return { engine: 'race', card, selected: chosen.id, order, runners, win, ...(chosen.markets && { betType }) };
   } };
 }
 
