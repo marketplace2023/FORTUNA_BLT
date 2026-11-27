@@ -1,7 +1,7 @@
 import { spinStrips } from './common.js';
 
 /**
- * Motor de líneas (3×3). Todos los pagos se expresan en múltiplos de la apuesta total.
+ * Motor de líneas. Todos los pagos se expresan en múltiplos de la apuesta total.
  *
  * Funciones:
  *  - Pantalla llena (un solo símbolo + comodines): multiplica la ganancia por `fullScreenMult`.

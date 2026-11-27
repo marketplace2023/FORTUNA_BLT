@@ -47,14 +47,14 @@ export const CATALOG = [
     },
   },
   RACING_DEF,
-  // ───────────────────────────── 3×3 RESPIN ─────────────────────────────
+  // ───────────────────────────── RODILLOS CON RESPIN ─────────────────────────────
   {
     id: 'koi-dorado',
     name: 'Koi Dorado',
     engine: 'lines',
-    tag: '3×3 · Respin',
+    tag: '5×3 · Respin',
     blurb: 'El koi bloquea los símbolos y vuelve a girar hasta llenar la pantalla. Pantalla llena = x10.',
-    cols: 3, rows: 3,
+    cols: 5, rows: 3,
     theme: { bg1: '#5b0712', bg2: '#c3172c', accent: '#ffcf3f', ink: '#fff6df', tile: '#fff1cf', tile2: '#f6c86b' },
     symbols: {
       W: { g: '🎏', n: 'Koi (comodín)', t: 'wild' },
@@ -68,9 +68,15 @@ export const CATALOG = [
     },
     pay: { W: [200], H1: [80], H2: [30], H3: [15], L1: [8], L2: [5], L3: [3] },
     payDiv: 5,
-    lines: LINES_3X3,
+    lines: [
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [2, 2, 2, 2, 2],
+      [0, 1, 2, 1, 0],
+      [2, 1, 0, 1, 2],
+    ],
     fullScreenMult: 10,
-    reels: { base: same(3, { W: 2, H1: 3, H2: 4, H3: 5, L1: 7, L2: 8, L3: 9 }) },
+    reels: { base: same(5, { W: 2, H1: 3, H2: 4, H3: 5, L1: 7, L2: 8, L3: 9 }) },
     feature: { type: 'respinLock', per10k: 260, targets: { H1: 1, H2: 2, H3: 3, L1: 5, L2: 6, L3: 7 }, cells: { T: 3, W: 1, X: 7 }, maxRespins: 20 },
     maxWin: 2500,
     targetRtp: 96.5,

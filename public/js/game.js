@@ -57,7 +57,8 @@ async function init() {
       .map(([key]) => key);
     illustratedReels = createReelPresentation({ tile: makeTile, prefix: 'slot', symbols: paying });
   }
-  $('#rtpNote').textContent = `RTP ${S.info.rtp.toFixed(2)}% · máx ${S.info.maxWin.toLocaleString('es')}x`;
+  const rtpNote = $('#rtpNote');
+  if (rtpNote) rtpNote.textContent = `RTP ${S.info.rtp.toFixed(2)}% · máx ${S.info.maxWin.toLocaleString('es')}x`;
   S.betIdx = Math.max(0, S.info.bets.indexOf(S.info.defaultBet));
   try { const saved = Number(localStorage.getItem(`bet:${gameId}`)); if (S.info.bets.includes(saved)) S.betIdx = S.info.bets.indexOf(saved); } catch {}
   try { S.turbo = localStorage.getItem('turbo') === '1'; Sound.on = localStorage.getItem('sound') !== '0'; } catch {}
@@ -149,7 +150,7 @@ function makeTile(sym) {
 }
 
 function place(node, c, r) {
-  node.style.left = `${c * S.cell}px`;
+  node.style.left = `${c * (S.cellWidth ?? S.cell)}px`;
   node.style.top = `${r * S.cell}px`;
 }
 
@@ -249,14 +250,16 @@ async function showWins(frame, amount) {
 function drawLines(wins) {
   const svg = $('#paylines');
   svg.replaceChildren();
+  const cellWidth = S.cellWidth ?? S.cell;
+  svg.setAttribute('viewBox', `0 0 ${S.info.cols * cellWidth} ${S.info.rows * S.cell}`);
   const ns = 'http://www.w3.org/2000/svg';
   for (const w of wins) {
     const pl = document.createElementNS(ns, 'polyline');
-    const pts = w.pos.map(([c, r]) => `${(c + 0.5) * S.cell},${(r + 0.5) * S.cell}`);
+    const pts = w.pos.map(([c, r]) => `${(c + 0.5) * cellWidth},${(r + 0.5) * S.cell}`);
     const [c0, r0] = w.pos[0];
     const [c1, r1] = w.pos.at(-1);
-    pts.unshift(`${(c0 + 0.08) * S.cell},${(r0 + 0.5) * S.cell}`);
-    pts.push(`${(c1 + 0.92) * S.cell},${(r1 + 0.5) * S.cell}`);
+    pts.unshift(`${(c0 + 0.08) * cellWidth},${(r0 + 0.5) * S.cell}`);
+    pts.push(`${(c1 + 0.92) * cellWidth},${(r1 + 0.5) * S.cell}`);
     pl.setAttribute('points', pts.join(' '));
     svg.append(pl);
   }
@@ -419,7 +422,7 @@ async function spin() {
   }
 }
 
-/** 3×3: giro normal, respin con bloqueo o rodillos salvajes. */
+/** Giro por líneas, respin con bloqueo o rodillos salvajes. */
 async function playLines(r, b) {
   const f = r.feature;
   if (!f) {
@@ -449,7 +452,7 @@ async function playLines(r, b) {
         old.remove();
         const n = makeCell(fr.grid[c][rr], c, rr);
         S.cells[c][rr] = n;
-        jobs.push(anim(n, [{ transform: `translateY(${-S.cell * 0.8}px)`, opacity: 0 }, { transform: 'translateY(0)', opacity: 1 }], { duration: T(320), delay: T((c * 3 + rr) * 25), easing: 'cubic-bezier(.3,1.4,.55,1)' }));
+        jobs.push(anim(n, [{ transform: `translateY(${-S.cell * 0.8}px)`, opacity: 0 }, { transform: 'translateY(0)', opacity: 1 }], { duration: T(320), delay: T((c * S.info.rows + rr) * 25), easing: 'cubic-bezier(.3,1.4,.55,1)' }));
       }
       Sound.stop();
       await Promise.all(jobs);
@@ -670,6 +673,7 @@ async function bigWin(amount, x) {
 function renderAuto() {
   const btn = $('#spinBtn');
   btn.classList.toggle('auto', S.auto > 0);
+  if (btn.dataset.stopLabel) btn.setAttribute('aria-label', S.auto > 0 ? btn.dataset.stopLabel : 'Girar');
   $('#spinAuto').textContent = S.auto > 0 ? S.auto : '';
   $('#autoBtn').classList.toggle('on', S.auto > 0);
 }
@@ -720,7 +724,7 @@ function rules() {
   const i = S.info;
   const list = [];
   if (i.engine === 'lines') {
-    list.push(['Cómo se gana', [`Tablero de ${i.cols}×${i.rows} con ${i.lines.length} líneas fijas. Tres símbolos iguales en una línea pagan, de izquierda a derecha.`, 'El comodín sustituye a cualquier símbolo y, tres en línea, paga el premio mayor.', `Si toda la pantalla es un mismo símbolo (o comodines), la ganancia se multiplica x${i.fullScreenMult}.`]]);
+    list.push(['Cómo se gana', [`Tablero de ${i.cols}×${i.rows} con ${i.lines.length} líneas fijas. Una línea paga cuando tiene ${i.cols} símbolos iguales de izquierda a derecha.`, `El comodín sustituye a cualquier símbolo. ${i.cols} comodines en línea pagan el premio mayor de la tabla.`, `Si toda la pantalla es un mismo símbolo (o comodines), la ganancia se multiplica x${i.fullScreenMult}.`]]);
     if (i.feature?.type === 'respinLock') list.push(['Respin de la suerte', ['Puede activarse al azar en cualquier giro.', 'Se elige un símbolo; solo pueden caer ese símbolo, comodines o casillas vacías.', `Los símbolos se bloquean y las casillas vacías giran mientras aparezcan símbolos nuevos, con un máximo de ${i.feature.maxRespins} respins.`]]);
     if (i.feature?.type === 'wildReels') list.push(['Rodillos salvajes', ['Puede activarse al azar en cualquier giro.', 'Uno, dos o tres rodillos completos se convierten en comodín antes de pagar.']]);
   } else if (i.engine === 'ways') {

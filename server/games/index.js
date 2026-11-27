@@ -134,7 +134,7 @@ export function publicInfo(game, settings) {
   const unit = 1 / d.payDiv;
   const paytable = Object.entries(game.math.pay).map(([sym, arr]) => {
     let labels;
-    if (d.engine === 'lines') labels = ['3 en línea'];
+    if (d.engine === 'lines') labels = [`${d.cols} en línea`];
     else if (d.engine === 'ways') labels = arr.map((_, i) => `${i + 3}`);
     else labels = d.tiers.map((t, i) => (i + 1 < d.tiers.length ? `${t}-${d.tiers[i + 1] - 1}` : `${t}+`));
     return { sym, pays: arr.map((v, i) => ({ label: labels[i], x: v * unit })) };

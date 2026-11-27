@@ -14,7 +14,7 @@ Variables de entorno: `PORT`, `DATA_DIR` (por defecto `./data`), `SITE_NAME`, `A
 
 | Juego | Mecánica | RTP (PAR, 5M giros) | Volatilidad |
 |---|---|---|---|
-| Koi Dorado | 3×3, 5 líneas, respin con bloqueo, pantalla llena x10 | 96,59 % ± 0,98 | Alta |
+| Koi Dorado | 5×3, 5 líneas, respin con bloqueo, pantalla llena x10 | 97,27 % ± 1,57 | Muy alta |
 | Panda Zen | 3×3, 5 líneas, respin con bloqueo, pantalla llena x10 | 95,70 % ± 1,21 | Alta |
 | Frutas Neón | 3×3, 5 líneas, rodillos salvajes aleatorios | 95,67 % ± 1,57 | Muy alta |
 | Dragón de Jade | 5×4, 1.024 ways, cascadas x1→x5 / FS x2→x10 | 96,70 % ± 0,31 | Media |
