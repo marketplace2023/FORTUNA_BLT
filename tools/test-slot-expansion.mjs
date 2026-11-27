@@ -121,7 +121,8 @@ try {
         const buttons = [...document.querySelectorAll('.m-controls button')].map((button) => button.getBoundingClientRect());
         const controlsFit = buttons.every((a, index) => a.height >= 44 && a.width >= 44 &&
           buttons.slice(index + 1).every((b) => a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top));
-        return board.height >= rows * 23 && board.width >= Math.min(innerWidth * .55, 1080) &&
+        const minBoardWidth = innerWidth >= 1024 && innerHeight >= 540 ? Math.min(innerWidth * .8, 1600) : innerWidth * .55;
+        return board.height >= rows * 23 && board.width >= minBoardWidth &&
           Math.abs(board.x + board.width / 2 - innerWidth / 2) <= 2 &&
           title.bottom < board.top && board.bottom < meters.top && meters.bottom <= controls.top &&
           board.top >= wrap.top - 1 && board.bottom <= wrap.bottom + 1 &&

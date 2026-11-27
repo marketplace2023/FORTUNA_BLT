@@ -87,10 +87,10 @@ try {
     if (height >= 540) assert(geometry.machine.bottom <= height + 1, `Machine clipped at ${width}`);
     if (gameId === 'koi-dorado') {
       const { board, spin } = geometry;
-      const minWidthShare = width <= 420 ? 0.84 : 0.55;
+      const minBoardWidth = width >= 1024 ? Math.min(width * 0.8, 1600) : width * (width <= 420 ? 0.84 : 0.55);
       const minHeightShare = width >= 1000 ? 0.53 : 0.38;
       assert(Math.abs(board.x + board.width / 2 - width / 2) < 2, `Koi reels must stay centered at ${width}×${height}`);
-      assert(board.width >= width * minWidthShare && board.height >= height * minHeightShare, `Koi reels (${board.width}×${board.height}) must dominate the layout at ${width}×${height}`);
+      assert(board.width >= minBoardWidth && board.height >= height * minHeightShare, `Koi reels (${board.width}×${board.height}) must dominate the layout at ${width}×${height}`);
       assert(spin.y > board.bottom && spin.bottom <= height, `Koi controls must fit below the reels at ${width}×${height}`);
       const controlsFit = await page.locator('#turboBtn').evaluate(button => {
         const auto = button.previousElementSibling;
